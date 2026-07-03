@@ -18,6 +18,8 @@
     </header>
 
     <main class="max-w-md mx-auto mt-6 px-4 space-y-4">
+        
+        <!-- SEZIONE PROSSIMI TOUR IN PARTENZA -->
         <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3">
             <div class="flex items-center gap-2">
                 <span class="flex h-2 w-2 relative">
@@ -28,8 +30,26 @@
             </div>
             <div id="lista-prossimi" class="space-y-2"></div>
         </div>
+
+        <!-- NUOVA SEZIONE: RICERCA PER DATA -->
+        <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center gap-2">
+                <span class="text-lg">📅</span>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
+            </div>
+            <div class="flex gap-2">
+                <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
+                <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
+            </div>
+            <!-- Contenitore Risultati Ricerca -->
+            <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50">
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
+                <div id="search-results-list" class="space-y-2"></div>
+            </div>
+        </div>
         
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- TOUR 1 -->
+        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Da Barisciano a Fontecchio">
             <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
                 <div>
                     <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Nuovo Tour 2026</span>
@@ -41,42 +61,13 @@
                     <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Giugno 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 24</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Mer 24 Giugno (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 27</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 27 Giugno (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Luglio 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 4</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 4 Luglio (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 15</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Mer 15 Luglio (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 18</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 18 Luglio (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 22</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Mer 22 Luglio (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Agosto 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 8</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 8 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 16</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Dom 16 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 29</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 29 Agosto (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Settembre 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 2</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Mer 2 Settembre (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 12</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 12 Settembre (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 19</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Da Barisciano a Fontecchio', 'Sab 19 Settembre (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
+            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                <!-- Date dinamiche -->
             </div>
         </details>
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+        <!-- TOUR 2 -->
+        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
             <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
                 <div>
                     <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">I più amati</span>
@@ -87,37 +78,13 @@
                     <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Luglio 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 1</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Mer 1 Luglio (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 5</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Dom 5 Luglio (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 11</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Sab 11 Luglio (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 18</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Sab 18 Luglio (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 25</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Sab 25 Luglio (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Agosto 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 1</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Sab 1 Agosto (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 8</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Sab 8 Agosto (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 12</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Mer 12 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 22</span> <span class="text-slate-600 text-sm ml-2 font-medium text-amber-600">Doppio turno</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Sab 22 Agosto (Doppio Turno)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Ven 28</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Ven 28 Agosto (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Settembre 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 23</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Mer 23 Settembre (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 27</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Tesori d\'Abruzzo - Bominaco', 'Dom 27 Settembre (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
+            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                <!-- Date dinamiche -->
             </div>
         </details>
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+        <!-- TOUR 3 -->
+        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
             <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
                 <div>
                     <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Grandi Scenari</span>
@@ -128,32 +95,13 @@
                     <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Luglio 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 8</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio ore 15:00</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore e i Tre Laghi', 'Mer 8 Luglio (Ore 15:00)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 26</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore e i Tre Laghi', 'Dom 26 Luglio (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Agosto 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 5</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore e i Tre Laghi', 'Mer 5 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 23</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore e i Tre Laghi', 'Dom 23 Agosto (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Settembre 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 9</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore e i Tre Laghi', 'Mer 9 Settembre (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 20</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore e i Tre Laghi', 'Dom 20 Settembre (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
+            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                <!-- Date dinamiche -->
             </div>
         </details>
 
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <!-- TOUR 4 -->
+        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
             <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
                 <div>
                     <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Alta Quota</span>
@@ -164,31 +112,13 @@
                     <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50">
-                <div>
-                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Luglio 2026</h3>
-                     <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 12</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore - Piccolo Tibet', 'Dom 12 Luglio (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 29</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore - Piccolo Tibet', 'Mer 29 Luglio (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Agosto 2026</h3>
-                     <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 9</span> <span class="text-slate-600 text-sm ml-2 font-medium text-emerald-600">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore - Piccolo Tibet', 'Dom 9 Agosto (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 19</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore - Piccolo Tibet', 'Mer 19 Agosto (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Settembre 2026</h3>
-                     <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 6</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore - Piccolo Tibet', 'Dom 6 Settembre (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 16</span> <span class="text-slate-600 text-sm ml-2">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Campo Imperatore - Piccolo Tibet', 'Mer 16 Settembre (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
+            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                <!-- Date dinamiche -->
             </div>
         </details>
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+
+        <!-- TOUR 5 -->
+        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
             <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
                 <div>
                     <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Borghi e Castelli</span>
@@ -199,38 +129,8 @@
                     <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </div>
             </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50">
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Giugno 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 27</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 27 Giugno (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Luglio 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 11</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 11 Luglio (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 25</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 25 Luglio (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Agosto 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 1</span> <span class="text-slate-600 text-sm ml-2 text-amber-600 font-medium">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 1 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 5</span> <span class="text-slate-600 text-sm ml-2 text-amber-600 font-medium">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Mer 5 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Dom 16</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Dom 16 Agosto (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 19</span> <span class="text-slate-600 text-sm ml-2 text-amber-600 font-medium">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Mer 19 Agosto (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 29</span> <span class="text-slate-600 text-sm ml-2 text-amber-600 font-medium">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 29 Agosto (Pomeriggio)')">Prenota</button></div>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 mt-2">Settembre 2026</h3>
-                    <div class="space-y-1.5">
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 12</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 12 Settembre (Mattina)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Mer 16</span> <span class="text-slate-600 text-sm ml-2 text-amber-600 font-medium">Pomeriggio</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Mer 16 Settembre (Pomeriggio)')">Prenota</button></div>
-                        <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm"><div class="flex items-center"><span class="font-semibold text-slate-700 min-w-[70px]">Sab 26</span> <span class="text-slate-600 text-sm ml-2">Mattina</span></div><button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('Rocca Calascio', 'Sab 26 Settembre (Mattina)')">Prenota</button></div>
-                    </div>
-                </div>
+            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                <!-- Date dinamiche -->
             </div>
         </details>
         
@@ -243,6 +143,8 @@
         </div>
 
     </main>
+
+    <!-- MODALE DI PRENOTAZIONE -->
     <div id="bookingModal" class="modal">
         <div class="modal-content" id="modalContent">
             <span class="absolute top-3 right-4 text-2xl font-semibold text-slate-400 hover:text-slate-600 cursor-pointer select-none" onclick="closeModal()">&times;</span>
@@ -284,7 +186,7 @@
                     <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
                 </div>
 
-		<div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
                     <label class="flex items-start space-x-3 cursor-pointer">
                         <div class="flex items-center h-5">
                             <input type="checkbox" id="richiesta_carrellino" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
@@ -304,6 +206,7 @@
             </form>
         </div>
     </div>
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
         summary::-webkit-details-marker { display: none; }
@@ -312,7 +215,17 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
         .modal-content { background-color: white; padding: 25px; border-radius: 16px; max-width: 450px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     </style>
+
     <script>
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
+
+        const mappaturaMesi = {
+            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
+            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
+        };
+
+        let databaseTourLocali = []; // Conterrà tutti i tour validati estratti dal CSV
+
         function openModal(nomeTour, dettagliData) {
             document.getElementById('bookingModal').style.display = 'flex';
             document.getElementById('form-escursione').value = nomeTour + " - " + dettagliData;
@@ -336,10 +249,9 @@
                 headers: { 'Accept': 'application/json' } 
             })
             .then(response => {
-                if(response.ok) { console.log("Email inviata a Formspree!"); } 
-                else { console.error("Errore nell'invio"); }
+                if(response.ok) { console.log("Email inviata con successo!"); }
             })
-            .catch(error => console.error("Errore di rete:", error));
+            .catch(error => console.error("Errore:", error));
 
             form.style.display = 'none';
             
@@ -348,24 +260,22 @@
             const numBici = document.getElementById('num_bici').value;
             const altezza = document.getElementById('custom_altezza').value;
             const dettagliTour = document.getElementById('form-escursione').value;
-	    const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
+            const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
 
             const screenshotHTML = `
                 <div id="screenshotBox" class="text-center p-4 border-2 border-dashed border-emerald-500 bg-emerald-50/50 rounded-2xl">
                     <h3 class="text-lg font-bold text-slate-900 mb-1">✓ Richiesta Ricevuta!</h3>
-                    <p class="text-xs text-slate-500 mb-3">Fai uno screenshot di questa schermata. Riceverai anche un riepilogo via email.</p>
-                    
+                    <p class="text-xs text-slate-500 mb-3">Fai uno screenshot di questa schermata.</p>
                     <div class="bg-emerald-100 text-emerald-800 text-xs font-bold p-2.5 rounded-lg mb-4 border border-emerald-200">
-                        ⚠️ La prenotazione si intende confermata solo a ricevimento della email di conferma dopo controllo disponibilità.
+                        ⚠️ La prenotazione si intende confermata solo a ricevimento della email di conferma.
                     </div>
-
                     <div class="bg-white p-4 rounded-xl shadow-sm text-left border border-slate-100 space-y-2 text-sm text-slate-700 mb-4">
                         <p><strong>Tour:</strong> ${dettagliTour}</p>
                         <p><strong>Referente:</strong> ${nome}</p>
                         <p><strong>Telefono:</strong> ${telefono}</p>
                         <p><strong>Numero Bici:</strong> ${numBici}</p>
                         <p><strong>Altezze:</strong> ${altezza} cm</p>
-			<p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
+                        <p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
                         <p class="text-center text-amber-600 font-bold text-xs uppercase tracking-wider pt-2 mt-2 border-t border-slate-100">• Pagamento alla partenza •</p>
                     </div>
                     <div class="text-xs font-bold tracking-wider uppercase text-emerald-700">Hike Experience</div>
@@ -373,100 +283,243 @@
             `;
             document.getElementById('modalContent').insertAdjacentHTML('beforeend', screenshotHTML);
         }
-        (function() {
-            const tuttiITour = [
-                { data: '2026-06-24', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-06-27', nome: 'Rocca Calascio', info: 'Mattina' },
-                { data: '2026-06-27', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-07-01', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-07-04', nome: 'Da Barisciano a Fontecchio', info: 'Mattina' },
-                { data: '2026-07-05', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-07-08', nome: 'Campo Imperatore e i Tre Laghi', info: 'Ore 15:00' },
-                { data: '2026-07-11', nome: 'Rocca Calascio', info: 'Mattina' },
-                { data: '2026-07-11', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-07-12', nome: 'Campo Imperatore - Piccolo Tibet', info: 'Mattina' },
-                { data: '2026-07-15', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-07-18', nome: "Tesori d'Abruzzo - Bominaco", info: 'Mattina' },
-                { data: '2026-07-18', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-07-22', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-07-25', nome: 'Rocca Calascio', info: 'Mattina' },
-                { data: '2026-07-25', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-07-26', nome: 'Campo Imperatore e i Tre Laghi', info: 'Mattina' },
-                { data: '2026-07-29', nome: 'Campo Imperatore - Piccolo Tibet', info: 'Pomeriggio' },
-                { data: '2026-08-01', nome: 'Rocca Calascio', info: 'Pomeriggio' },
-                { data: '2026-08-01', nome: "Tesori d'Abruzzo - Bominaco", info: 'Mattina' },
-                { data: '2026-08-05', nome: 'Rocca Calascio', info: 'Pomeriggio' },
-                { data: '2026-08-05', nome: 'Campo Imperatore e i Tre Laghi', info: 'Pomeriggio' },
-                { data: '2026-08-08', nome: "Tesori d'Abruzzo - Bominaco", info: 'Mattina' },
-                { data: '2026-08-08', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-08-09', nome: 'Campo Imperatore - Piccolo Tibet', info: 'Mattina' },
-                { data: '2026-08-12', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-08-16', nome: 'Rocca Calascio', info: 'Mattina' },
-                { data: '2026-08-16', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-08-19', nome: 'Rocca Calascio', info: 'Pomeriggio' },
-                { data: '2026-08-19', nome: 'Campo Imperatore - Piccolo Tibet', info: 'Pomeriggio' },
-                { data: '2026-08-22', nome: "Tesori d'Abruzzo - Bominaco", info: 'Doppio turno' },
-                { data: '2026-08-28', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-08-29', nome: 'Rocca Calascio', info: 'Pomeriggio' },
-                { data: '2026-08-29', nome: 'Da Barisciano a Fontecchio', info: 'Mattina' },
-                { data: '2026-09-02', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-09-12', nome: 'Rocca Calascio', info: 'Mattina' },
-                { data: '2026-09-12', nome: 'Da Barisciano a Fontecchio', info: 'Pomeriggio' },
-                { data: '2026-09-16', nome: 'Rocca Calascio', info: 'Pomeriggio' },
-                { data: '2026-09-16', nome: 'Campo Imperatore - Piccolo Tibet', info: 'Pomeriggio' },
-                { data: '2026-09-19', nome: 'Da Barisciano a Fontecchio', info: 'Mattina' },
-                { data: '2026-09-20', nome: 'Campo Imperatore e i Tre Laghi', info: 'Mattina' },
-                { data: '2026-09-23', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' },
-                { data: '2026-09-26', nome: 'Rocca Calascio', info: 'Mattina' },
-                { data: '2026-09-27', nome: "Tesori d'Abruzzo - Bominaco", info: 'Pomeriggio' }
-            ];
 
-            function aggiornaDateInTempoReale() {
-                const sezione = document.getElementById('sezione-prossimi');
-                const lista = document.getElementById('lista-prossimi');
-                if (!sezione || !lista) return;
-                try {
-                    const oggi = new Date(); oggi.setHours(0,0,0,0);
-                    const domani = new Date(oggi); domani.setDate(domani.getDate() + 1);
-                    const prossimiTour = [];
-                    for (let i = 0; i < tuttiITour.length; i++) {
-                        const t = tuttiITour[i]; const parti = t.data.split('-');
-                        const dataObj = new Date(parseInt(parti[0],10), parseInt(parti[1],10)-1, parseInt(parti[2],10),0,0,0,0);
-                        if (dataObj >= oggi) prossimiTour.push({ nome: t.nome, info: t.info, dataObj: dataObj });
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+            const headers = lines[0].split(/[,\t]/).map(h => h.trim().toUpperCase());
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const currentline = lines[i].split(/[,\t]/).map(c => c.trim().replace(/^"|"$/g, ''));
+                if(currentline.length < headers.length) continue;
+                
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = currentline[index];
+                });
+                result.push(obj);
+            }
+            return result;
+        }
+
+        // LOGICA DI RICERCA PER DATA
+        function gestisciRicercaData(event) {
+            const dataSceltaString = event.target.value; // Restituisce YYYY-MM-DD
+            const containerRisultati = document.getElementById('search-results-container');
+            const listaRisultati = document.getElementById('search-results-list');
+            const btnClear = document.getElementById('clear-date-btn');
+
+            if (!dataSceltaString) {
+                containerRisultati.style.display = 'none';
+                btnClear.style.display = 'none';
+                return;
+            }
+
+            btnClear.style.display = 'block';
+            listaRisultati.innerHTML = "";
+            containerRisultati.style.display = 'block';
+
+            const dataScelta = new Date(dataSceltaString);
+            dataScelta.setHours(0,0,0,0);
+
+            // Filtra i tour del database locale corrispondenti al giorno scelto
+            const tourTrovati = databaseTourLocales.filter(t => t.dataObj.getTime() === dataScelta.getTime());
+
+            if (tourTrovati.length === 0) {
+                listaRisultati.innerHTML = `<p class="text-xs text-slate-500 italic p-1">Nessun tour programmato per questa data.</p>`;
+                return;
+            }
+
+            tourTrovati.forEach(d => {
+                const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                const shortDay = giorniSettimana[d.dataObj.getDay()];
+
+                let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO");
+                let btnHtml = isSoldOut 
+                    ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200 shrink-0">SOLD OUT</span>`
+                    : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0" onclick="openModal('${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+
+                let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
+
+                listaRisultati.innerHTML += `
+                    <div class="flex items-center justify-between bg-emerald-50/40 p-3 rounded-xl border border-emerald-100 shadow-sm">
+                        <div class="flex flex-col min-w-0 pr-2">
+                            <span class="text-sm font-bold text-slate-800 truncate">${d.nome}</span>
+                            <span class="${textSessioneStyle} text-xs mt-0.5">${d.sessione}</span>
+                        </div>
+                        ${btnHtml}
+                    </div>
+                `;
+            });
+        }
+
+        async function inizializzaCalendarioDinamico() {
+            try {
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                const tuttiITour = parseCSV(csvText);
+
+                const oggi = new Date();
+                oggi.setHours(0,0,0,0);
+
+                const raggruppatiPerTour = {};
+                const prossimiInAssoluto = [];
+                databaseTourLocales = []; // Resetta ad ogni caricamento
+
+                tuttiITour.forEach(t => {
+                    const giorno = parseInt(t.GIORNO, 10);
+                    const anno = parseInt(t.ANNO, 10);
+                    const meseString = t.MESE.toLowerCase();
+                    const meseId = mappaturaMesi[meseString] !== undefined ? mappaturaMesi[meseString] : 5;
+                    
+                    const dataObj = new Date(anno, meseId, giorno);
+                    
+                    if (dataObj < oggi) return; // Salta passati
+
+                    const infoTour = {
+                        id: t.ID,
+                        giorno: giorno,
+                        meseText: t.MESE,
+                        anno: anno,
+                        sessione: t.SESSIONE,
+                        nome: t.TOUR,
+                        stato: t.STATO ? t.STATO.toUpperCase() : "ATTIVO",
+                        dataObj: dataObj
+                    };
+
+                    databaseTourLocales.push(infoTour);
+                    
+                    if (!raggruppatiPerTour[t.TOUR]) { raggruppatiPerTour[t.TOUR] = {}; }
+                    if (!raggruppatiPerTour[t.TOUR][t.MESE]) { raggruppatiPerTour[t.TOUR][t.MESE] = []; }
+                    
+                    raggruppatiPerTour[t.TOUR][t.MESE].push(infoTour);
+                    prossimiInAssoluto.push(infoTour);
+                });
+
+                // 1. POPOLA ACCORDION DEI SINGOLI TOUR
+                document.querySelectorAll('details[data-tour-name]').forEach(detailsEl => {
+                    const nomeTour = detailsEl.getAttribute('data-tour-name');
+                    const containerDate = detailsEl.querySelector('.container-date');
+                    if (!containerDate) return;
+
+                    containerDate.innerHTML = "";
+
+                    if (!raggruppatiPerTour[nomeTour]) {
+                        containerDate.innerHTML = "<p class='text-xs text-slate-400 italic p-2'>Nessuna data in programma al momento.</p>";
+                        return;
                     }
-                    prossimiTour.sort((a,b) => a.dataObj - b.dataObj);
-                    const daMostrare = prossimiTour.slice(0,3);
+
+                    for (const mese in raggruppatiPerTour[nomeTour]) {
+                        const dateMese = raggruppatiPerTour[nomeTour][mese];
+                        dateMese.sort((a,b) => a.dataObj - b.dataObj);
+
+                        let meseBlock = document.createElement('div');
+                        meseBlock.innerHTML = `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${mese} ${dateMese[0].anno}</h3>`;
+                        
+                        let wrapperDate = document.createElement('div');
+                        wrapperDate.className = "space-y-1.5";
+
+                        dateMese.forEach(d => {
+                            const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                            const shortDay = giorniSettimana[d.dataObj.getDay()];
+
+                            let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO");
+                            let btnHtml = isSoldOut 
+                                ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200">SOLD OUT</span>`
+                                : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+
+                            let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
+
+                            wrapperDate.innerHTML += `
+                                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
+                                    <div class="flex items-center">
+                                        <span class="font-semibold text-slate-700 min-w-[70px]">${shortDay} ${d.giorno}</span> 
+                                        <span class="${textSessioneStyle} text-sm ml-2">${d.sessione}</span>
+                                    </div>
+                                    ${btnHtml}
+                                </div>
+                            `;
+                        });
+
+                        meseBlock.appendChild(wrapperDate);
+                        containerDate.appendChild(meseBlock);
+                    }
+                });
+
+                // 2. POPOLA PROSSIMI IN PARTENZA
+                const sezioneProssimi = document.getElementById('sezione-prossimi');
+                const listaProssimi = document.getElementById('lista-prossimi');
+                
+                if (sezioneProssimi && listaProssimi) {
+                    prossimiInAssoluto.sort((a,b) => a.dataObj - b.dataObj);
+                    const daMostrare = prossimiInAssoluto.slice(0, 3);
+
                     if (daMostrare.length > 0) {
-                        sezione.style.display = 'block';
+                        sezioneProssimi.style.display = 'block';
+                        listaProssimi.innerHTML = "";
+                        
+                        const domani = new Date(oggi);
+                        domani.setDate(domani.getDate() + 1);
+
                         const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-                        const mesi = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
-                        let outputHtml = '';
-                        for (let j = 0; j < daMostrare.length; j++) {
-                            const item = daMostrare[j]; let etichettaData = '';
+                        const mesiAbbr = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+
+                        daMostrare.forEach(item => {
+                            let etichettaData = '';
                             let stileBadge = 'bg-slate-800 text-slate-300 text-xs font-medium';
                             const tTime = item.dataObj.getTime();
-                            if (tTime === oggi.getTime()) { etichettaData = 'OGGI'; stileBadge = 'bg-rose-500 text-white font-bold animate-pulse text-xs'; }
-                            else if (tTime === domani.getTime()) { etichettaData = 'DOMANI'; stileBadge = 'bg-amber-500 text-slate-900 font-bold text-xs'; }
-                            else { etichettaData = giorniSettimana[item.dataObj.getDay()] + ' ' + item.dataObj.getDate() + ' ' + mesi[item.dataObj.getMonth()]; }
-                            outputHtml += `
-                                <div class="flex items-center justify-between bg-slate-800/40 p-3 rounded-xl border border-slate-700/30">
+
+                            if (tTime === oggi.getTime()) {
+                                etichettaData = 'OGGI';
+                                stileBadge = 'bg-rose-500 text-white font-bold animate-pulse text-xs';
+                            } else if (tTime === domani.getTime()) {
+                                etichettaData = 'DOMANI';
+                                stileBadge = 'bg-amber-500 text-slate-900 font-bold text-xs';
+                            } else {
+                                etichettaData = giorniSettimana[item.dataObj.getDay()] + ' ' + item.dataObj.getDate() + ' ' + mesiAbbr[item.dataObj.getMonth()];
+                            }
+
+                            let isSoldOut = (item.stato === "SOLD OUT" || item.stato === "SOLD_OUT" || item.stato === "ESAURITO");
+                            let badgeSoldOutHtml = isSoldOut ? `<span class="text-[10px] bg-rose-900/60 text-rose-300 font-bold px-1.5 py-0.5 rounded ml-1.5 uppercase">Completo</span>` : '';
+
+                            listaProssimi.innerHTML += `
+                                <div class="flex items-center justify-between bg-slate-800/40 p-3 rounded-xl border border-slate-700/30 ${isSoldOut ? 'opacity-60' : ''}">
                                     <div class="flex flex-col min-w-0 pr-2">
-                                        <span class="text-sm font-semibold text-slate-100 truncate">${item.nome}</span>
-                                        <span class="text-xs text-slate-400 mt-0.5">${item.info}</span>
+                                        <span class="text-sm font-semibold text-slate-100 truncate flex items-center">${item.nome} ${badgeSoldOutHtml}</span>
+                                        <span class="text-xs text-slate-400 mt-0.5">${item.sessione}</span>
                                     </div>
                                     <span class="px-2.5 py-1 rounded-md shrink-0 text-center min-w-[85px] ${stileBadge}">${etichettaData}</span>
                                 </div>
                             `;
-                        }
-                        lista.innerHTML = outputHtml;
-                    } else { sezione.style.display = 'none'; }
-                } catch (e) { sezione.style.display = 'none'; }
+                        });
+                    } else {
+                        sezioneProssimi.style.display = 'none';
+                    }
+                }
+
+            } catch (error) {
+                console.error("Errore caricamento Google Fogli:", error);
             }
-            aggiornaDateInTempoReale();
-            if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', aggiornaDateInTempoReale); }
-            window.addEventListener('load', aggiornaDateInTempoReale);
-            setTimeout(aggiornaDateInTempoReale, 100);
-        })();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inizializzaCalendarioDinamico();
+            
+            // Event listener per la ricerca data
+            const inputData = document.getElementById('search-date-input');
+            if(inputData) inputData.addEventListener('change', gestisciRicercaData);
+
+            // Bottone azzera ricerca
+            const btnClear = document.getElementById('clear-date-btn');
+            if(btnClear) {
+                btnClear.addEventListener('click', () => {
+                    inputData.value = "";
+                    document.getElementById('search-results-container').style.display = 'none';
+                    btnClear.style.display = 'none';
+                });
+            }
+        });
     </script>
 </body>
 </html>
