@@ -7,144 +7,140 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col pb-8">
+<body class="text-slate-800 min-h-screen flex flex-col pb-8 bg-slate-50">
 
     <header class="bg-white border-b border-slate-100 shadow-sm pt-6 pb-6 text-center px-4">
-        <div class="max-w-md mx-auto flex flex-col items-center">
+        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
             <img src="https://www.instagram.com/p/C-j4opIiK2u/media/?size=l" alt="HiKe Logo" class="h-20 w-auto object-contain mb-2">
             <p class="text-emerald-600 font-semibold text-xs tracking-wider uppercase mt-1">Calendario Ufficiale Tour E-Bike 2026</p>
-            <h1 class="text-xl font-bold text-slate-900 mt-0.5">Scegli la tua prossima avventura</h1>
+            <h1 class="text-xl md:text-2xl font-bold text-slate-900 mt-0.5">Scegli la tua prossima avventura</h1>
         </div>
     </header>
 
-    <main class="max-w-md mx-auto mt-6 px-4 space-y-4">
+    <main class="max-w-md md:max-w-6xl mx-auto mt-6 px-4 w-full space-y-6">
         
-        <!-- SEZIONE PROSSIMI TOUR IN PARTENZA -->
-        <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3">
-            <div class="flex items-center gap-2">
-                <span class="flex h-2 w-2 relative">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">In partenza a breve</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">In partenza a breve</h3>
+                </div>
+                <div id="lista-prossimi" class="space-y-2 flex-1 mt-2"></div>
             </div>
-            <div id="lista-prossimi" class="space-y-2"></div>
+
+            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3 h-full flex flex-col">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">📅</span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
+                </div>
+                <div class="flex gap-2">
+                    <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
+                    <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
+                </div>
+                <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50 flex-1">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
+                    <div id="search-results-list" class="space-y-2 mt-1"></div>
+                </div>
+            </div>
+            
         </div>
 
-        <!-- NUOVA SEZIONE: RICERCA PER DATA -->
-        <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3">
-            <div class="flex items-center gap-2">
-                <span class="text-lg">📅</span>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
-            </div>
-            <div class="flex gap-2">
-                <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
-                <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
-            </div>
-            <!-- Contenitore Risultati Ricerca -->
-            <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50">
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
-                <div id="search-results-list" class="space-y-2"></div>
-            </div>
-        </div>
-        
-        <!-- TOUR 1 -->
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Da Barisciano a Fontecchio">
-            <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                <div>
-                    <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Nuovo Tour 2026</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-1.5">Da Barisciano a Fontecchio</h2>
-                    <p class="text-xs text-slate-500 font-medium italic mt-0.5">La valle dei Vestini, storia e natura</p>
-                    <span class="text-sm font-semibold text-slate-600 mt-1 block">Prezzo: 40€</span>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                <!-- Date dinamiche -->
-            </div>
-        </details>
+        <hr class="border-slate-200/60 my-2 hidden md:block">
 
-        <!-- TOUR 2 -->
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
-            <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                <div>
-                    <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">I più amati</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-1.5">Tesori d'Abruzzo - Bominaco</h2>
-                    <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 40€</span>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                <!-- Date dinamiche -->
-            </div>
-        </details>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Da Barisciano a Fontecchio">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Nuovo Tour 2026</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Da Barisciano a Fontecchio</h2>
+                        <p class="text-xs text-slate-500 font-medium italic mt-0.5">La valle dei Vestini, storia e natura</p>
+                        <span class="text-sm font-semibold text-slate-600 mt-1 block">Prezzo: 40€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+            </details>
 
-        <!-- TOUR 3 -->
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
-            <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                <div>
-                    <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Grandi Scenari</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore e i Tre Laghi</h2>
-                    <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                <!-- Date dinamiche -->
-            </div>
-        </details>
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">I più amati</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Tesori d'Abruzzo - Bominaco</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 40€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+            </details>
 
-        <!-- TOUR 4 -->
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
-            <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                <div>
-                    <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Alta Quota</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore - Piccolo Tibet</h2>
-                    <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
-                </div>
-                <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                <!-- Date dinamiche -->
-            </div>
-        </details>
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Grandi Scenari</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore e i Tre Laghi</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+            </details>
 
-        <!-- TOUR 5 -->
-        <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
-            <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                <div>
-                    <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Borghi e Castelli</span>
-                    <h2 class="text-lg font-bold text-slate-900 mt-1.5">Rocca Calascio</h2>
-                    <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 35€</span>
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Alta Quota</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore - Piccolo Tibet</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Borghi e Castelli</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Rocca Calascio</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 35€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+            </details>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 text-center shadow-sm h-full flex flex-col justify-center min-h-[140px]">
+                <h3 class="font-bold text-slate-900 mb-2">Prenotazioni & Info</h3>
+                <div class="space-y-1 text-slate-600 text-sm">
+                    <p class="flex items-center justify-center gap-2"><span>📞</span> +39 371 7743946</p>
+                    <p class="flex items-center justify-center gap-2"><span>📧</span> hike.experience.store@gmail.com</p>
                 </div>
-                <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
-            </summary>
-            <div class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                <!-- Date dinamiche -->
             </div>
-        </details>
-        
-        <div class="bg-white p-6 rounded-2xl border border-slate-100 text-center shadow-sm">
-            <h3 class="font-bold text-slate-900 mb-3">Prenotazioni & Info</h3>
-            <div class="space-y-2 text-slate-600">
-                <p class="flex items-center justify-center gap-2"><span>📞</span> +39 371 7743946</p>
-                <p class="flex items-center justify-center gap-2"><span>📧</span> hike.experience.store@gmail.com</p>
-            </div>
+            
         </div>
 
     </main>
 
-    <!-- MODALE DI PRENOTAZIONE -->
     <div id="bookingModal" class="modal">
         <div class="modal-content" id="modalContent">
             <span class="absolute top-3 right-4 text-2xl font-semibold text-slate-400 hover:text-slate-600 cursor-pointer select-none" onclick="closeModal()">&times;</span>
@@ -208,7 +204,7 @@
     </div>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; }
         summary::-webkit-details-marker { display: none; }
         summary { list-style: none; }
         details[open] .ruota-freccia { transform: rotate(180deg); }
@@ -224,7 +220,7 @@
             "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
         };
 
-        let databaseTourLocali = []; // Conterrà tutti i tour validati estratti dal CSV
+        let databaseTourLocali = []; 
 
         function openModal(nomeTour, dettagliData) {
             document.getElementById('bookingModal').style.display = 'flex';
@@ -303,9 +299,8 @@
             return result;
         }
 
-        // LOGICA DI RICERCA PER DATA
         function gestisciRicercaData(event) {
-            const dataSceltaString = event.target.value; // Restituisce YYYY-MM-DD
+            const dataSceltaString = event.target.value; 
             const containerRisultati = document.getElementById('search-results-container');
             const listaRisultati = document.getElementById('search-results-list');
             const btnClear = document.getElementById('clear-date-btn');
@@ -323,8 +318,7 @@
             const dataScelta = new Date(dataSceltaString);
             dataScelta.setHours(0,0,0,0);
 
-            // Filtra i tour del database locale corrispondenti al giorno scelto
-            const tourTrovati = databaseTourLocales.filter(t => t.dataObj.getTime() === dataScelta.getTime());
+            const tourTrovati = databaseTourLocali.filter(t => t.dataObj.getTime() === dataScelta.getTime());
 
             if (tourTrovati.length === 0) {
                 listaRisultati.innerHTML = `<p class="text-xs text-slate-500 italic p-1">Nessun tour programmato per questa data.</p>`;
@@ -365,7 +359,7 @@
 
                 const raggruppatiPerTour = {};
                 const prossimiInAssoluto = [];
-                databaseTourLocales = []; // Resetta ad ogni caricamento
+                databaseTourLocali = []; 
 
                 tuttiITour.forEach(t => {
                     const giorno = parseInt(t.GIORNO, 10);
@@ -375,7 +369,7 @@
                     
                     const dataObj = new Date(anno, meseId, giorno);
                     
-                    if (dataObj < oggi) return; // Salta passati
+                    if (dataObj < oggi) return; 
 
                     const infoTour = {
                         id: t.ID,
@@ -388,7 +382,7 @@
                         dataObj: dataObj
                     };
 
-                    databaseTourLocales.push(infoTour);
+                    databaseTourLocali.push(infoTour);
                     
                     if (!raggruppatiPerTour[t.TOUR]) { raggruppatiPerTour[t.TOUR] = {}; }
                     if (!raggruppatiPerTour[t.TOUR][t.MESE]) { raggruppatiPerTour[t.TOUR][t.MESE] = []; }
@@ -506,11 +500,9 @@
         document.addEventListener('DOMContentLoaded', () => {
             inizializzaCalendarioDinamico();
             
-            // Event listener per la ricerca data
             const inputData = document.getElementById('search-date-input');
             if(inputData) inputData.addEventListener('change', gestisciRicercaData);
 
-            // Bottone azzera ricerca
             const btnClear = document.getElementById('clear-date-btn');
             if(btnClear) {
                 btnClear.addEventListener('click', () => {
