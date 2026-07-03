@@ -66,7 +66,7 @@
                     </div>
                 </summary>
                 <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                    </div>
+                </div>
             </details>
 
             <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
@@ -81,7 +81,7 @@
                     </div>
                 </summary>
                 <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                    </div>
+                </div>
             </details>
 
             <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
@@ -96,7 +96,7 @@
                     </div>
                 </summary>
                 <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                    </div>
+                </div>
             </details>
 
             <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
@@ -111,7 +111,7 @@
                     </div>
                 </summary>
                 <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                    </div>
+                </div>
             </details>
 
             <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
@@ -126,7 +126,7 @@
                     </div>
                 </summary>
                 <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                    </div>
+                </div>
             </details>
 
             <div class="bg-white p-6 rounded-2xl border border-slate-100 text-center shadow-sm h-full flex flex-col justify-center min-h-[140px]">
@@ -145,15 +145,15 @@
         <div class="modal-content" id="modalContent">
             <span class="absolute top-3 right-4 text-2xl font-semibold text-slate-400 hover:text-slate-600 cursor-pointer select-none" onclick="closeModal()">&times;</span>
             
-            <form id="bookingForm" action="https://formspree.io/f/mykqgzvb" method="POST" onsubmit="handleFormSubmit(event)">
-                <input type="hidden" name="_subject" value="Nuova Prenotazione Escursione Hike Experience">
-                <input type="hidden" name="_autoresponse" value="Grazie per aver inviato la tua richiesta! Ti contatteremo a breve per confermare la disponibilità.">
+            <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="form-id-tour" name="id_tour">
                 
                 <h2 class="text-xl font-bold text-emerald-700 mb-4 pr-6">Prenota il tuo Tour</h2>
                 
                 <div class="mb-3">
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Escursione Scelta</label>
                     <input type="text" id="form-escursione" name="escursione" readonly class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-3 text-sm focus:outline-none">
+                    <div id="info-posti-realtime" class="text-xs font-semibold text-emerald-600 mt-1 pl-1">Verifica disponibilità in corso...</div>
                 </div>
 
                 <div class="mb-3">
@@ -198,7 +198,7 @@
                     <strong>Nota bene:</strong> Il pagamento verrà effettuato direttamente alla partenza presso il nostro Hike Point.
                 </div>
 
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta</button>
+                <button type="submit" id="submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta</button>
             </form>
         </div>
     </div>
@@ -214,6 +214,7 @@
 
     <script>
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
 
         const mappaturaMesi = {
             "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
@@ -221,11 +222,45 @@
         };
 
         let databaseTourLocali = []; 
+        let postiInTempoReale = {};
 
-        function openModal(nomeTour, dettagliData) {
+        // Carica la disponibilità dei posti in tempo reale all'apertura del sito
+        async function fetchPostiRealtime() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                if (response.ok) {
+                    postiInTempoReale = await response.json();
+                }
+            } catch (e) {
+                console.error("Impossibile caricare i posti in tempo reale:", e);
+            }
+        }
+
+        function openModal(idTour, nomeTour, dettagliData) {
             document.getElementById('bookingModal').style.display = 'flex';
+            document.getElementById('form-id-tour').value = idTour;
             document.getElementById('form-escursione').value = nomeTour + " - " + dettagliData;
             document.getElementById('bookingForm').style.display = 'block';
+            
+            const infoPosti = document.getElementById('info-posti-realtime');
+            const numBiciInput = document.getElementById('num_bici');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Ripristina lo stato iniziale del bottone
+            submitBtn.disabled = false;
+            submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md";
+            submitBtn.innerText = "Invia Richiesta";
+
+            if (postiInTempoReale[idTour]) {
+                const liberi = postiInTempoReale[idTour].posti_disponibili;
+                infoPosti.innerText = `Posti ancora disponibili: ${liberi}`;
+                infoPosti.className = "text-xs font-semibold text-emerald-600 mt-1 pl-1";
+                numBiciInput.max = liberi;
+            } else {
+                infoPosti.innerText = "Verifica disponibilità attiva";
+                infoPosti.className = "text-xs font-semibold text-slate-500 mt-1 pl-1";
+            }
+
             const screenBox = document.getElementById('screenshotBox');
             if(screenBox) screenBox.remove();
         }
@@ -234,69 +269,81 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        function handleFormSubmit(event) {
+        async function handleFormSubmit(event) {
             event.preventDefault();
             const form = event.target;
-            const formData = new FormData(form);
+            const submitBtn = document.getElementById('submit-btn');
+            const idTour = document.getElementById('form-id-tour').value;
+            const numBici = parseInt(document.getElementById('num_bici').value, 10);
+            const infoPosti = document.getElementById('info-posti-realtime');
 
-            fetch(form.action, { 
-                method: 'POST', 
-                body: formData, 
-                headers: { 'Accept': 'application/json' } 
-            })
-            .then(response => {
-                if(response.ok) { console.log("Email inviata con successo!"); }
-            })
-            .catch(error => console.error("Errore:", error));
-
-            form.style.display = 'none';
-            
-            const nome = document.getElementById('name').value;
-            const telefono = document.getElementById('phone').value;
-            const numBici = document.getElementById('num_bici').value;
-            const altezza = document.getElementById('custom_altezza').value;
-            const dettagliTour = document.getElementById('form-escursione').value;
-            const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
-
-            const screenshotHTML = `
-                <div id="screenshotBox" class="text-center p-4 border-2 border-dashed border-emerald-500 bg-emerald-50/50 rounded-2xl">
-                    <h3 class="text-lg font-bold text-slate-900 mb-1">✓ Richiesta Ricevuta!</h3>
-                    <p class="text-xs text-slate-500 mb-3">Fai uno screenshot di questa schermata.</p>
-                    <div class="bg-emerald-100 text-emerald-800 text-xs font-bold p-2.5 rounded-lg mb-4 border border-emerald-200">
-                        ⚠️ La prenotazione si intende confermata solo a ricevimento della email di conferma.
-                    </div>
-                    <div class="bg-white p-4 rounded-xl shadow-sm text-left border border-slate-100 space-y-2 text-sm text-slate-700 mb-4">
-                        <p><strong>Tour:</strong> ${dettagliTour}</p>
-                        <p><strong>Referente:</strong> ${nome}</p>
-                        <p><strong>Telefono:</strong> ${telefono}</p>
-                        <p><strong>Numero Bici:</strong> ${numBici}</p>
-                        <p><strong>Altezze:</strong> ${altezza} cm</p>
-                        <p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
-                        <p class="text-center text-amber-600 font-bold text-xs uppercase tracking-wider pt-2 mt-2 border-t border-slate-100">• Pagamento alla partenza •</p>
-                    </div>
-                    <div class="text-xs font-bold tracking-wider uppercase text-emerald-700">Hike Experience</div>
-                </div>
-            `;
-            document.getElementById('modalContent').insertAdjacentHTML('beforeend', screenshotHTML);
-        }
-
-        function parseCSV(text) {
-            const lines = text.split('\n');
-            const result = [];
-            const headers = lines[0].split(/[,\t]/).map(h => h.trim().toUpperCase());
-            
-            for (let i = 1; i < lines.length; i++) {
-                if (!lines[i].trim()) continue;
-                const currentline = lines[i].split(/[,\t]/).map(c => c.trim().replace(/^"|"$/g, ''));
-                if(currentline.length < headers.length) continue;
-                
-                const obj = {};
-                headers.forEach((header, index) => {
-                    obj[header] = currentline[index];
-                });
-                result.push(obj);
+            // Controllo client side di sicurezza prima dell'invio
+            if (postiInTempoReale[idTour] && postiInTempoReale[idTour].posti_disponibili < numBici) {
+                alert(`Spiacente! Sono rimasti solo ${postiInTempoReale[idTour].posti_disponibili} posti.`);
+                return;
             }
-            return result;
+
+            // Cambia stato al pulsante di invio per dare feedback visivo di caricamento
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Invio in corso...";
+            submitBtn.className = "w-full bg-slate-400 text-white font-bold p-3 rounded-xl text-sm shadow-md cursor-not-allowed";
+
+            const formData = new FormData(form);
+            const queryString = new URLSearchParams(formData).toString();
+
+            try {
+                // Invia i dati direttamente al foglio Google
+                const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
+                const resData = await response.json();
+
+                if (resData.result === "success") {
+                    // Aggiorna la cache locale per riflettere i posti scalati senza ricaricare la pagina
+                    if (postiInTempoReale[idTour]) {
+                        postiInTempoReale[idTour].posti_disponibili -= numBici;
+                    }
+                    
+                    form.style.display = 'none';
+                    
+                    const nome = document.getElementById('name').value;
+                    const telefono = document.getElementById('phone').value;
+                    const biciScelte = document.getElementById('num_bici').value;
+                    const altezza = document.getElementById('custom_altezza').value;
+                    const dettagliTour = document.getElementById('form-escursione').value;
+                    const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
+
+                    const screenshotHTML = `
+                        <div id="screenshotBox" class="text-center p-4 border-2 border-dashed border-emerald-500 bg-emerald-50/50 rounded-2xl">
+                            <h3 class="text-lg font-bold text-slate-900 mb-1">✓ Richiesta Ricevuta!</h3>
+                            <p class="text-xs text-slate-500 mb-3">Fai uno screenshot di questa schermata.</p>
+                            <div class="bg-emerald-100 text-emerald-800 text-xs font-bold p-2.5 rounded-lg mb-4 border border-emerald-200">
+                                ⚠️ La prenotazione è andata a buon fine e i posti sono stati riservati sul tabellone.
+                            </div>
+                            <div class="bg-white p-4 rounded-xl shadow-sm text-left border border-slate-100 space-y-2 text-sm text-slate-700 mb-4">
+                                <p><strong>Tour:</strong> ${dettagliTour}</p>
+                                <p><strong>Referente:</strong> ${nome}</p>
+                                <p><strong>Telefono:</strong> ${telefono}</p>
+                                <p><strong>Numero Bici:</strong> ${biciScelte}</p>
+                                <p><strong>Altezze:</strong> ${altezza} cm</p>
+                                <p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
+                                <p class="text-center text-amber-600 font-bold text-xs uppercase tracking-wider pt-2 mt-2 border-t border-slate-100">• Pagamento alla partenza •</p>
+                            </div>
+                            <div class="text-xs font-bold tracking-wider uppercase text-emerald-700">Hike Experience</div>
+                        </div>
+                    `;
+                    document.getElementById('modalContent').insertAdjacentHTML('beforeend', screenshotHTML);
+                } else {
+                    alert("Errore: Posti insufficienti o esauriti nel frattempo!");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Invia Richiesta";
+                    submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-sm shadow-md";
+                }
+            } catch (error) {
+                console.error("Errore nell'invio della richiesta:", error);
+                alert("Si è verificato un errore di rete. Riprova.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Invia Richiesta";
+                submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-sm shadow-md";
+            }
         }
 
         function gestisciRicercaData(event) {
@@ -329,18 +376,23 @@
                 const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
                 const shortDay = giorniSettimana[d.dataObj.getDay()];
 
-                let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO");
+                // Controllo se è sold out da stato CSV o da contatore posti Realtime
+                let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
+                let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
+                
                 let btnHtml = isSoldOut 
                     ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200 shrink-0">SOLD OUT</span>`
-                    : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0" onclick="openModal('${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+                    : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
 
                 let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
+                let infoPostiMini = !isSoldOut && postiInTempoReale[d.id] ? `<span class="text-[11px] text-slate-400 block">Posti rimasti: ${realTimePosti}</span>` : '';
 
                 listaRisultati.innerHTML += `
                     <div class="flex items-center justify-between bg-emerald-50/40 p-3 rounded-xl border border-emerald-100 shadow-sm">
                         <div class="flex flex-col min-w-0 pr-2">
                             <span class="text-sm font-bold text-slate-800 truncate">${d.nome}</span>
                             <span class="${textSessioneStyle} text-xs mt-0.5">${d.sessione}</span>
+                            ${infoPostiMini}
                         </div>
                         ${btnHtml}
                     </div>
@@ -348,8 +400,30 @@
             });
         }
 
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+            const headers = lines[0].split(/[,\t]/).map(h => h.trim().toUpperCase());
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const currentline = lines[i].split(/[,\t]/).map(c => c.trim().replace(/^"|"$/g, ''));
+                if(currentline.length < headers.length) continue;
+                
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = currentline[index];
+                });
+                result.push(obj);
+            }
+            return result;
+        }
+
         async function inizializzaCalendarioDinamico() {
             try {
+                // Esegui la lettura dei posti realtime in parallelo
+                await fetchPostiRealtime();
+
                 const response = await fetch(CSV_URL);
                 const csvText = await response.text();
                 const tuttiITour = parseCSV(csvText);
@@ -418,18 +492,21 @@
                             const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
                             const shortDay = giorniSettimana[d.dataObj.getDay()];
 
-                            let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO");
+                            let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
+                            let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
+                            
                             let btnHtml = isSoldOut 
                                 ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200">SOLD OUT</span>`
-                                : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+                                : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
 
                             let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
+                            let infoPostiMini = !isSoldOut && postiInTempoReale[d.id] ? `<span class="text-xs text-slate-400 font-normal ml-2">(Posti: ${realTimePosti})</span>` : '';
 
                             wrapperDate.innerHTML += `
                                 <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
                                     <div class="flex items-center">
                                         <span class="font-semibold text-slate-700 min-w-[70px]">${shortDay} ${d.giorno}</span> 
-                                        <span class="${textSessioneStyle} text-sm ml-2">${d.sessione}</span>
+                                        <span class="${textSessioneStyle} text-sm ml-2">${d.sessione} ${infoPostiMini}</span>
                                     </div>
                                     ${btnHtml}
                                 </div>
@@ -474,7 +551,8 @@
                                 etichettaData = giorniSettimana[item.dataObj.getDay()] + ' ' + item.dataObj.getDate() + ' ' + mesiAbbr[item.dataObj.getMonth()];
                             }
 
-                            let isSoldOut = (item.stato === "SOLD OUT" || item.stato === "SOLD_OUT" || item.stato === "ESAURITO");
+                            let realTimePosti = postiInTempoReale[item.id] ? postiInTempoReale[item.id].posti_disponibili : 10;
+                            let isSoldOut = (item.stato === "SOLD OUT" || item.stato === "SOLD_OUT" || item.stato === "ESAURITO" || realTimePosti <= 0);
                             let badgeSoldOutHtml = isSoldOut ? `<span class="text-[10px] bg-rose-900/60 text-rose-300 font-bold px-1.5 py-0.5 rounded ml-1.5 uppercase">Completo</span>` : '';
 
                             listaProssimi.innerHTML += `
