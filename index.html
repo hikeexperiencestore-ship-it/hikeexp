@@ -4,75 +4,592 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Tour E-Bike 2026 - Hike Experience</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen pb-10">
+<body class="text-slate-800 min-h-screen flex flex-col pb-8 bg-slate-50">
 
-    <header class="bg-white border-b shadow-sm py-6 text-center">
-        <h1 class="text-2xl font-bold text-emerald-700">Hike Experience 2026</h1>
+    <header class="bg-white border-b border-slate-100 shadow-sm pt-6 pb-6 text-center px-4">
+        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
+            <img src="https://www.instagram.com/p/C-j4opIiK2u/media/?size=l" alt="HiKe Logo" class="h-20 w-auto object-contain mb-2">
+            <p class="text-emerald-600 font-semibold text-xs tracking-wider uppercase mt-1">Calendario Ufficiale Tour E-Bike 2026</p>
+            <h1 class="text-xl md:text-2xl font-bold text-slate-900 mt-0.5">Scegli la tua prossima avventura</h1>
+        </div>
     </header>
 
-    <main class="max-w-2xl mx-auto p-4 space-y-6">
-        <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl">
-            <h2 class="font-bold text-emerald-800">Noleggio E-Bike Libero</h2>
-            <p class="text-sm text-emerald-600 mb-4">Pedala in totale autonomia.</p>
-            <button onclick="apriPrenotazione('NOLEGGIO', 'Noleggio Libero')" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Prenota Ora</button>
+    <main class="max-w-md md:max-w-6xl mx-auto mt-6 px-4 w-full space-y-6">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-2 w-2 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">In partenza a breve</h3>
+                </div>
+                <div id="lista-prossimi" class="space-y-2 flex-1 mt-2"></div>
+            </div>
+
+            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3 h-full flex flex-col">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">📅</span>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
+                </div>
+                <div class="flex gap-2">
+                    <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
+                    <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
+                </div>
+                <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50 flex-1">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
+                    <div id="search-results-list" class="space-y-2 mt-1"></div>
+                </div>
+            </div>
+            
         </div>
 
-        <div id="calendario-lista" class="space-y-4">
-            <p class="text-center text-slate-400">Caricamento tour...</p>
+        <hr class="border-slate-200/60 my-2 hidden md:block">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Da Barisciano a Fontecchio">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Nuovo Tour 2026</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Da Barisciano a Fontecchio</h2>
+                        <p class="text-xs text-slate-500 font-medium italic mt-0.5">La valle dei Vestini, storia e natura</p>
+                        <span class="text-sm font-semibold text-slate-600 mt-1 block">Prezzo: 40€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">I più amati</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Tesori d'Abruzzo - Bominaco</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 40€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Grandi Scenari</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore e i Tre Laghi</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Alta Quota</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore - Piccolo Tibet</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                </div>
+            </details>
+
+            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
+                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                    <div>
+                        <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Borghi e Castelli</span>
+                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Rocca Calascio</h2>
+                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 35€</span>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </summary>
+                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                </div>
+            </details>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 text-center shadow-sm h-full flex flex-col justify-center min-h-[140px]">
+                <h3 class="font-bold text-slate-900 mb-2">Prenotazioni & Info</h3>
+                <div class="space-y-1 text-slate-600 text-sm">
+                    <p class="flex items-center justify-center gap-2"><span>📞</span> +39 371 7743946</p>
+                    <p class="flex items-center justify-center gap-2"><span>📧</span> hike.experience.store@gmail.com</p>
+                </div>
+            </div>
+            
         </div>
+
     </main>
 
-    <div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white p-6 rounded-2xl w-full max-w-sm">
-            <h2 id="modal-title" class="font-bold text-xl mb-4">Prenota</h2>
-            <form id="form-prenotazione" onsubmit="inviaDati(event)">
-                <input type="hidden" name="id_tour" id="in-id">
-                <input type="hidden" name="escursione" id="in-nome">
-                <input type="text" name="name" placeholder="Nome e Cognome" required class="w-full border p-2 rounded mb-2">
-                <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded mb-2">
-                <input type="tel" name="phone" placeholder="Telefono" required class="w-full border p-2 rounded mb-2">
-                <input type="number" name="numero_bici" placeholder="N. Bici" value="1" min="1" class="w-full border p-2 rounded mb-2">
-                <input type="text" name="altezza" placeholder="Altezza (cm)" required class="w-full border p-2 rounded mb-2">
-                <button type="submit" id="btn-invia" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl mt-2">Conferma Prenotazione</button>
-                <button type="button" onclick="chiudiModale()" class="w-full text-slate-400 mt-3 text-sm">Annulla</button>
+    <div id="bookingModal" class="modal">
+        <div class="modal-content" id="modalContent">
+            <span class="absolute top-3 right-4 text-2xl font-semibold text-slate-400 hover:text-slate-600 cursor-pointer select-none" onclick="closeModal()">&times;</span>
+            
+            <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="form-id-tour" name="id_tour">
+                
+                <h2 class="text-xl font-bold text-emerald-700 mb-4 pr-6">Prenota il tuo Tour</h2>
+                
+                <div class="mb-3">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Escursione Scelta</label>
+                    <input type="text" id="form-escursione" name="escursione" readonly class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-3 text-sm focus:outline-none">
+                    <div id="info-posti-realtime" class="text-xs font-semibold text-emerald-600 mt-1 pl-1">Verifica disponibilità in corso...</div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome Referente</label>
+                    <input type="text" id="name" name="name" required placeholder="Es. Mario Rossi" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Indirizzo Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Es. mario.rossi@email.com" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero di Cellulare</label>
+                    <input type="tel" id="phone" name="phone" required placeholder="Es. 3331234567" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="mb-3">
+                    <label for="num_bici" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero di Bici</label>
+                    <input type="number" id="num_bici" name="numero_bici" required min="1" value="1" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="mb-4">
+                    <label for="custom_altezza" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Altezza Partecipanti (cm)</label>
+                    <input type="text" id="custom_altezza" name="altezza" required placeholder="Es. 175, 160, 182" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                    <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
+                </div>
+
+                <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                    <label class="flex items-start space-x-3 cursor-pointer">
+                        <div class="flex items-center h-5">
+                            <input type="checkbox" id="richiesta_carrellino" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
+                            <span class="text-xs text-slate-500 mt-0.5">Disponiamo di carrellini biposto per bambini. Altezza massima consentita: <strong>115 cm</strong>.</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 mb-4 leading-relaxed">
+                    <strong>Nota bene:</strong> Il pagamento verrà effettuato direttamente alla partenza presso il nostro Hike Point.
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta</button>
             </form>
         </div>
     </div>
 
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        summary::-webkit-details-marker { display: none; }
+        summary { list-style: none; }
+        details[open] .ruota-freccia { transform: rotate(180deg); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
+        .modal-content { background-color: white; padding: 25px; border-radius: 16px; max-width: 450px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    </style>
+
     <script>
-        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
 
-        function apriPrenotazione(id, nome) {
-            document.getElementById('in-id').value = id;
-            document.getElementById('in-nome').value = nome;
-            document.getElementById('modal-title').innerText = "Prenota: " + nome;
-            document.getElementById('modal').classList.remove('hidden');
-        }
+        const mappaturaMesi = {
+            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
+            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
+        };
 
-        function chiudiModale() { document.getElementById('modal').classList.add('hidden'); }
+        let databaseTourLocali = []; 
+        let postiInTempoReale = {};
 
-        async function inviaDati(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btn-invia');
-            btn.innerText = "Invio in corso...";
-            
-            const formData = new FormData(e.target);
+        // Carica la disponibilità dei posti in tempo reale all'apertura del sito
+        async function fetchPostiRealtime() {
             try {
-                const res = await fetch(URL_SCRIPT, { method: 'POST', body: formData });
-                const json = await res.json();
-                if(json.result === "success") {
-                    alert("Prenotazione effettuata con successo!");
-                    chiudiModale();
-                    location.reload();
+                const response = await fetch(SCRIPT_URL);
+                if (response.ok) {
+                    postiInTempoReale = await response.json();
                 }
-            } catch(err) {
-                alert("Errore nell'invio, riprova.");
+            } catch (e) {
+                console.error("Impossibile caricare i posti in tempo reale:", e);
             }
-            btn.innerText = "Conferma Prenotazione";
         }
+
+        function openModal(idTour, nomeTour, dettagliData) {
+            document.getElementById('bookingModal').style.display = 'flex';
+            document.getElementById('form-id-tour').value = idTour;
+            document.getElementById('form-escursione').value = nomeTour + " - " + dettagliData;
+            document.getElementById('bookingForm').style.display = 'block';
+            
+            const infoPosti = document.getElementById('info-posti-realtime');
+            const numBiciInput = document.getElementById('num_bici');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // Ripristina lo stato iniziale del bottone
+            submitBtn.disabled = false;
+            submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md";
+            submitBtn.innerText = "Invia Richiesta";
+
+            if (postiInTempoReale[idTour]) {
+                const liberi = postiInTempoReale[idTour].posti_disponibili;
+                infoPosti.innerText = `Posti ancora disponibili: ${liberi}`;
+                infoPosti.className = "text-xs font-semibold text-emerald-600 mt-1 pl-1";
+                numBiciInput.max = liberi;
+            } else {
+                infoPosti.innerText = "Verifica disponibilità attiva";
+                infoPosti.className = "text-xs font-semibold text-slate-500 mt-1 pl-1";
+            }
+
+            const screenBox = document.getElementById('screenshotBox');
+            if(screenBox) screenBox.remove();
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = document.getElementById('submit-btn');
+            const idTour = document.getElementById('form-id-tour').value;
+            const numBici = parseInt(document.getElementById('num_bici').value, 10);
+            const infoPosti = document.getElementById('info-posti-realtime');
+
+            // Controllo client side di sicurezza prima dell'invio
+            if (postiInTempoReale[idTour] && postiInTempoReale[idTour].posti_disponibili < numBici) {
+                alert(`Spiacente! Sono rimasti solo ${postiInTempoReale[idTour].posti_disponibili} posti.`);
+                return;
+            }
+
+            // Cambia stato al pulsante di invio per dare feedback visivo di caricamento
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Invio in corso...";
+            submitBtn.className = "w-full bg-slate-400 text-white font-bold p-3 rounded-xl text-sm shadow-md cursor-not-allowed";
+
+            const formData = new FormData(form);
+            const queryString = new URLSearchParams(formData).toString();
+
+            try {
+                // Invia i dati direttamente al foglio Google
+                const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
+                const resData = await response.json();
+
+                if (resData.result === "success") {
+                    // Aggiorna la cache locale per riflettere i posti scalati senza ricaricare la pagina
+                    if (postiInTempoReale[idTour]) {
+                        postiInTempoReale[idTour].posti_disponibili -= numBici;
+                    }
+                    
+                    form.style.display = 'none';
+                    
+                    const nome = document.getElementById('name').value;
+                    const telefono = document.getElementById('phone').value;
+                    const biciScelte = document.getElementById('num_bici').value;
+                    const altezza = document.getElementById('custom_altezza').value;
+                    const dettagliTour = document.getElementById('form-escursione').value;
+                    const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
+
+                    const screenshotHTML = `
+                        <div id="screenshotBox" class="text-center p-4 border-2 border-dashed border-emerald-500 bg-emerald-50/50 rounded-2xl">
+                            <h3 class="text-lg font-bold text-slate-900 mb-1">✓ Richiesta Ricevuta!</h3>
+                            <p class="text-xs text-slate-500 mb-3">Fai uno screenshot di questa schermata.</p>
+                            <div class="bg-emerald-100 text-emerald-800 text-xs font-bold p-2.5 rounded-lg mb-4 border border-emerald-200">
+                                ⚠️ La prenotazione è andata a buon fine e i posti sono stati riservati sul tabellone.
+                            </div>
+                            <div class="bg-white p-4 rounded-xl shadow-sm text-left border border-slate-100 space-y-2 text-sm text-slate-700 mb-4">
+                                <p><strong>Tour:</strong> ${dettagliTour}</p>
+                                <p><strong>Referente:</strong> ${nome}</p>
+                                <p><strong>Telefono:</strong> ${telefono}</p>
+                                <p><strong>Numero Bici:</strong> ${biciScelte}</p>
+                                <p><strong>Altezze:</strong> ${altezza} cm</p>
+                                <p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
+                                <p class="text-center text-amber-600 font-bold text-xs uppercase tracking-wider pt-2 mt-2 border-t border-slate-100">• Pagamento alla partenza •</p>
+                            </div>
+                            <div class="text-xs font-bold tracking-wider uppercase text-emerald-700">Hike Experience</div>
+                        </div>
+                    `;
+                    document.getElementById('modalContent').insertAdjacentHTML('beforeend', screenshotHTML);
+                } else {
+                    alert("Errore: Posti insufficienti o esauriti nel frattempo!");
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Invia Richiesta";
+                    submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-sm shadow-md";
+                }
+            } catch (error) {
+                console.error("Errore nell'invio della richiesta:", error);
+                alert("Si è verificato un errore di rete. Riprova.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Invia Richiesta";
+                submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-sm shadow-md";
+            }
+        }
+
+        function gestisciRicercaData(event) {
+            const dataSceltaString = event.target.value; 
+            const containerRisultati = document.getElementById('search-results-container');
+            const listaRisultati = document.getElementById('search-results-list');
+            const btnClear = document.getElementById('clear-date-btn');
+
+            if (!dataSceltaString) {
+                containerRisultati.style.display = 'none';
+                btnClear.style.display = 'none';
+                return;
+            }
+
+            btnClear.style.display = 'block';
+            listaRisultati.innerHTML = "";
+            containerRisultati.style.display = 'block';
+
+            const dataScelta = new Date(dataSceltaString);
+            dataScelta.setHours(0,0,0,0);
+
+            const tourTrovati = databaseTourLocali.filter(t => t.dataObj.getTime() === dataScelta.getTime());
+
+            if (tourTrovati.length === 0) {
+                listaRisultati.innerHTML = `<p class="text-xs text-slate-500 italic p-1">Nessun tour programmato per questa data.</p>`;
+                return;
+            }
+
+            tourTrovati.forEach(d => {
+                const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                const shortDay = giorniSettimana[d.dataObj.getDay()];
+
+                // Controllo se è sold out da stato CSV o da contatore posti Realtime
+                let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
+                let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
+                
+                let btnHtml = isSoldOut 
+                    ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200 shrink-0">SOLD OUT</span>`
+                    : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+
+                let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
+                let infoPostiMini = !isSoldOut && postiInTempoReale[d.id] ? `<span class="text-[11px] text-slate-400 block">Posti rimasti: ${realTimePosti}</span>` : '';
+
+                listaRisultati.innerHTML += `
+                    <div class="flex items-center justify-between bg-emerald-50/40 p-3 rounded-xl border border-emerald-100 shadow-sm">
+                        <div class="flex flex-col min-w-0 pr-2">
+                            <span class="text-sm font-bold text-slate-800 truncate">${d.nome}</span>
+                            <span class="${textSessioneStyle} text-xs mt-0.5">${d.sessione}</span>
+                            ${infoPostiMini}
+                        </div>
+                        ${btnHtml}
+                    </div>
+                `;
+            });
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            const result = [];
+            const headers = lines[0].split(/[,\t]/).map(h => h.trim().toUpperCase());
+            
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const currentline = lines[i].split(/[,\t]/).map(c => c.trim().replace(/^"|"$/g, ''));
+                if(currentline.length < headers.length) continue;
+                
+                const obj = {};
+                headers.forEach((header, index) => {
+                    obj[header] = currentline[index];
+                });
+                result.push(obj);
+            }
+            return result;
+        }
+
+        async function inizializzaCalendarioDinamico() {
+            try {
+                // Esegui la lettura dei posti realtime in parallelo
+                await fetchPostiRealtime();
+
+                const response = await fetch(CSV_URL);
+                const csvText = await response.text();
+                const tuttiITour = parseCSV(csvText);
+
+                const oggi = new Date();
+                oggi.setHours(0,0,0,0);
+
+                const raggruppatiPerTour = {};
+                const prossimiInAssoluto = [];
+                databaseTourLocali = []; 
+
+                tuttiITour.forEach(t => {
+                    const giorno = parseInt(t.GIORNO, 10);
+                    const anno = parseInt(t.ANNO, 10);
+                    const meseString = t.MESE.toLowerCase();
+                    const meseId = mappaturaMesi[meseString] !== undefined ? mappaturaMesi[meseString] : 5;
+                    
+                    const dataObj = new Date(anno, meseId, giorno);
+                    
+                    if (dataObj < oggi) return; 
+
+                    const infoTour = {
+                        id: t.ID,
+                        giorno: giorno,
+                        meseText: t.MESE,
+                        anno: anno,
+                        sessione: t.SESSIONE,
+                        nome: t.TOUR,
+                        stato: t.STATO ? t.STATO.toUpperCase() : "ATTIVO",
+                        dataObj: dataObj
+                    };
+
+                    databaseTourLocali.push(infoTour);
+                    
+                    if (!raggruppatiPerTour[t.TOUR]) { raggruppatiPerTour[t.TOUR] = {}; }
+                    if (!raggruppatiPerTour[t.TOUR][t.MESE]) { raggruppatiPerTour[t.TOUR][t.MESE] = []; }
+                    
+                    raggruppatiPerTour[t.TOUR][t.MESE].push(infoTour);
+                    prossimiInAssoluto.push(infoTour);
+                });
+
+                // 1. POPOLA ACCORDION DEI SINGOLI TOUR
+                document.querySelectorAll('details[data-tour-name]').forEach(detailsEl => {
+                    const nomeTour = detailsEl.getAttribute('data-tour-name');
+                    const containerDate = detailsEl.querySelector('.container-date');
+                    if (!containerDate) return;
+
+                    containerDate.innerHTML = "";
+
+                    if (!raggruppatiPerTour[nomeTour]) {
+                        containerDate.innerHTML = "<p class='text-xs text-slate-400 italic p-2'>Nessuna data in programma al momento.</p>";
+                        return;
+                    }
+
+                    for (const mese in raggruppatiPerTour[nomeTour]) {
+                        const dateMese = raggruppatiPerTour[nomeTour][mese];
+                        dateMese.sort((a,b) => a.dataObj - b.dataObj);
+
+                        let meseBlock = document.createElement('div');
+                        meseBlock.innerHTML = `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${mese} ${dateMese[0].anno}</h3>`;
+                        
+                        let wrapperDate = document.createElement('div');
+                        wrapperDate.className = "space-y-1.5";
+
+                        dateMese.forEach(d => {
+                            const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                            const shortDay = giorniSettimana[d.dataObj.getDay()];
+
+                            let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
+                            let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
+                            
+                            let btnHtml = isSoldOut 
+                                ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200">SOLD OUT</span>`
+                                : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+
+                            let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
+                            let infoPostiMini = !isSoldOut && postiInTempoReale[d.id] ? `<span class="text-xs text-slate-400 font-normal ml-2">(Posti: ${realTimePosti})</span>` : '';
+
+                            wrapperDate.innerHTML += `
+                                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
+                                    <div class="flex items-center">
+                                        <span class="font-semibold text-slate-700 min-w-[70px]">${shortDay} ${d.giorno}</span> 
+                                        <span class="${textSessioneStyle} text-sm ml-2">${d.sessione} ${infoPostiMini}</span>
+                                    </div>
+                                    ${btnHtml}
+                                </div>
+                            `;
+                        });
+
+                        meseBlock.appendChild(wrapperDate);
+                        containerDate.appendChild(meseBlock);
+                    }
+                });
+
+                // 2. POPOLA PROSSIMI IN PARTENZA
+                const sezioneProssimi = document.getElementById('sezione-prossimi');
+                const listaProssimi = document.getElementById('lista-prossimi');
+                
+                if (sezioneProssimi && listaProssimi) {
+                    prossimiInAssoluto.sort((a,b) => a.dataObj - b.dataObj);
+                    const daMostrare = prossimiInAssoluto.slice(0, 3);
+
+                    if (daMostrare.length > 0) {
+                        sezioneProssimi.style.display = 'block';
+                        listaProssimi.innerHTML = "";
+                        
+                        const domani = new Date(oggi);
+                        domani.setDate(domani.getDate() + 1);
+
+                        const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
+                        const mesiAbbr = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
+
+                        daMostrare.forEach(item => {
+                            let etichettaData = '';
+                            let stileBadge = 'bg-slate-800 text-slate-300 text-xs font-medium';
+                            const tTime = item.dataObj.getTime();
+
+                            if (tTime === oggi.getTime()) {
+                                etichettaData = 'OGGI';
+                                stileBadge = 'bg-rose-500 text-white font-bold animate-pulse text-xs';
+                            } else if (tTime === domani.getTime()) {
+                                etichettaData = 'DOMANI';
+                                stileBadge = 'bg-amber-500 text-slate-900 font-bold text-xs';
+                            } else {
+                                etichettaData = giorniSettimana[item.dataObj.getDay()] + ' ' + item.dataObj.getDate() + ' ' + mesiAbbr[item.dataObj.getMonth()];
+                            }
+
+                            let realTimePosti = postiInTempoReale[item.id] ? postiInTempoReale[item.id].posti_disponibili : 10;
+                            let isSoldOut = (item.stato === "SOLD OUT" || item.stato === "SOLD_OUT" || item.stato === "ESAURITO" || realTimePosti <= 0);
+                            let badgeSoldOutHtml = isSoldOut ? `<span class="text-[10px] bg-rose-900/60 text-rose-300 font-bold px-1.5 py-0.5 rounded ml-1.5 uppercase">Completo</span>` : '';
+
+                            listaProssimi.innerHTML += `
+                                <div class="flex items-center justify-between bg-slate-800/40 p-3 rounded-xl border border-slate-700/30 ${isSoldOut ? 'opacity-60' : ''}">
+                                    <div class="flex flex-col min-w-0 pr-2">
+                                        <span class="text-sm font-semibold text-slate-100 truncate flex items-center">${item.nome} ${badgeSoldOutHtml}</span>
+                                        <span class="text-xs text-slate-400 mt-0.5">${item.sessione}</span>
+                                    </div>
+                                    <span class="px-2.5 py-1 rounded-md shrink-0 text-center min-w-[85px] ${stileBadge}">${etichettaData}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        sezioneProssimi.style.display = 'none';
+                    }
+                }
+
+            } catch (error) {
+                console.error("Errore caricamento Google Fogli:", error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            inizializzaCalendarioDinamico();
+            
+            const inputData = document.getElementById('search-date-input');
+            if(inputData) inputData.addEventListener('change', gestisciRicercaData);
+
+            const btnClear = document.getElementById('clear-date-btn');
+            if(btnClear) {
+                btnClear.addEventListener('click', () => {
+                    inputData.value = "";
+                    document.getElementById('search-results-container').style.display = 'none';
+                    btnClear.style.display = 'none';
+                });
+            }
+        });
     </script>
 </body>
 </html>
