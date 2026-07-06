@@ -3,125 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hike Experience - Prenotazioni</title>
+    <title>Calendario Tour E-Bike 2026 - Hike Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="bg-slate-50 text-slate-800 p-4">
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-10">
 
-    <header class="max-w-2xl mx-auto text-center py-8">
-        <h1 class="text-3xl font-bold text-emerald-700">Prenota la tua Avventura</h1>
-        <p class="text-slate-500 mt-2">Seleziona il tour e verifica la disponibilità in tempo reale.</p>
+    <header class="bg-white border-b shadow-sm py-6 text-center">
+        <h1 class="text-2xl font-bold text-emerald-700">Hike Experience 2026</h1>
     </header>
 
-    <div id="tour-container" class="max-w-2xl mx-auto space-y-4">
-        <p class="text-center">Caricamento disponibilità...</p>
-    </div>
+    <main class="max-w-2xl mx-auto p-4 space-y-6">
+        <div class="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl">
+            <h2 class="font-bold text-emerald-800">Noleggio E-Bike Libero</h2>
+            <p class="text-sm text-emerald-600 mb-4">Pedala in totale autonomia.</p>
+            <button onclick="apriPrenotazione('NOLEGGIO', 'Noleggio Libero')" class="w-full bg-emerald-600 text-white font-bold py-2 rounded-xl">Prenota Ora</button>
+        </div>
 
-    <!-- Modale Prenotazione -->
-    <div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h2 class="text-xl font-bold mb-4">Prenota Tour</h2>
-            <form id="bookingForm" onsubmit="submitForm(event)">
-                <input type="hidden" name="id_tour" id="id_tour">
-                <input type="hidden" name="escursione" id="nome_tour">
-                
-                <label class="block text-sm font-bold mb-1">Nome</label>
-                <input type="text" name="name" required class="w-full border p-2 rounded mb-3">
-                
-                <label class="block text-sm font-bold mb-1">Email</label>
-                <input type="email" name="email" required class="w-full border p-2 rounded mb-3">
-                
-                <label class="block text-sm font-bold mb-1">Telefono</label>
-                <input type="tel" name="phone" required class="w-full border p-2 rounded mb-3">
-                
-                <label class="block text-sm font-bold mb-1">Numero Bici</label>
-                <input type="number" name="numero_bici" value="1" min="1" class="w-full border p-2 rounded mb-3">
-                
-                <label class="block text-sm font-bold mb-1">Altezza (cm)</label>
-                <input type="text" name="altezza" required class="w-full border p-2 rounded mb-4">
-                
-                <button type="submit" id="btnSubmit" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl">Conferma Prenotazione</button>
-                <button type="button" onclick="closeModal()" class="w-full mt-2 text-slate-400">Annulla</button>
+        <div id="calendario-lista" class="space-y-4">
+            <p class="text-center text-slate-400">Caricamento tour...</p>
+        </div>
+    </main>
+
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm">
+            <h2 id="modal-title" class="font-bold text-xl mb-4">Prenota</h2>
+            <form id="form-prenotazione" onsubmit="inviaDati(event)">
+                <input type="hidden" name="id_tour" id="in-id">
+                <input type="hidden" name="escursione" id="in-nome">
+                <input type="text" name="name" placeholder="Nome e Cognome" required class="w-full border p-2 rounded mb-2">
+                <input type="email" name="email" placeholder="Email" required class="w-full border p-2 rounded mb-2">
+                <input type="tel" name="phone" placeholder="Telefono" required class="w-full border p-2 rounded mb-2">
+                <input type="number" name="numero_bici" placeholder="N. Bici" value="1" min="1" class="w-full border p-2 rounded mb-2">
+                <input type="text" name="altezza" placeholder="Altezza (cm)" required class="w-full border p-2 rounded mb-2">
+                <button type="submit" id="btn-invia" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl mt-2">Conferma Prenotazione</button>
+                <button type="button" onclick="chiudiModale()" class="w-full text-slate-400 mt-3 text-sm">Annulla</button>
             </form>
         </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
-        const CSV_URL = "INSERISCI_QUI_IL_LINK_CSV"; // <--- INSERISCI QUI IL TUO LINK CSV PUBBLICATO
+        const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
 
-        async function init() {
-            try {
-                // Carica contemporaneamente disponibilità (JSON) e tour (CSV)
-                const [respDisp, respCsv] = await Promise.all([
-                    fetch(SCRIPT_URL),
-                    fetch(CSV_URL)
-                ]);
-                const dispData = await respDisp.json();
-                const csvText = await respCsv.text();
-                
-                renderTour(csvText, dispData);
-            } catch(e) {
-                document.getElementById('tour-container').innerHTML = "Errore caricamento dati. Controlla il link CSV.";
-                console.error(e);
-            }
-        }
-
-        function renderTour(csvText, dispData) {
-            const rows = csvText.split('\n').slice(1); // Salta intestazione
-            const container = document.getElementById('tour-container');
-            container.innerHTML = "";
-
-            rows.forEach(row => {
-                const cols = row.split(',');
-                if(cols.length < 6) return;
-                
-                const id = cols[0];
-                const data = cols[1] + " " + cols[2];
-                const nome = cols[5];
-                const dispo = dispData[id] ? dispData[id].posti_disponibili : 0;
-
-                const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded-xl shadow-sm border flex justify-between items-center";
-                card.innerHTML = `
-                    <div>
-                        <h3 class="font-bold">${nome}</h3>
-                        <p class="text-sm text-slate-500">${data}</p>
-                        <p class="text-xs font-semibold ${dispo > 0 ? 'text-emerald-600' : 'text-red-500'}">
-                            ${dispo > 0 ? 'Posti disponibili: ' + dispo : 'ESAURITO'}
-                        </p>
-                    </div>
-                    <button ${dispo > 0 ? '' : 'disabled'} onclick="openModal('${id}', '${nome}')" 
-                    class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50">Prenota</button>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function openModal(id, nome) {
-            document.getElementById('id_tour').value = id;
-            document.getElementById('nome_tour').value = nome;
+        function apriPrenotazione(id, nome) {
+            document.getElementById('in-id').value = id;
+            document.getElementById('in-nome').value = nome;
+            document.getElementById('modal-title').innerText = "Prenota: " + nome;
             document.getElementById('modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.add('hidden');
-        }
+        function chiudiModale() { document.getElementById('modal').classList.add('hidden'); }
 
-        async function submitForm(e) {
+        async function inviaDati(e) {
             e.preventDefault();
-            const btn = document.getElementById('btnSubmit');
+            const btn = document.getElementById('btn-invia');
             btn.innerText = "Invio in corso...";
             
             const formData = new FormData(e.target);
-            await fetch(SCRIPT_URL, { method: 'POST', body: formData });
-            
-            alert("Prenotazione effettuata!");
-            closeModal();
-            location.reload(); // Ricarica per aggiornare posti
+            try {
+                const res = await fetch(URL_SCRIPT, { method: 'POST', body: formData });
+                const json = await res.json();
+                if(json.result === "success") {
+                    alert("Prenotazione effettuata con successo!");
+                    chiudiModale();
+                    location.reload();
+                }
+            } catch(err) {
+                alert("Errore nell'invio, riprova.");
+            }
+            btn.innerText = "Conferma Prenotazione";
         }
-
-        init();
     </script>
 </body>
 </html>
