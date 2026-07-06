@@ -308,7 +308,6 @@
         let databaseTourLocali = []; 
         let postiInTempoReale = {};
 
-        // Funzione per scambiare i Tab della pagina
         function switchTab(tipo) {
             const btnTour = document.getElementById('tab-tour');
             const btnNoleggio = document.getElementById('tab-noleggio');
@@ -358,12 +357,10 @@
             document.getElementById('form-id-tour').value = "NOLEGGIO_LIBERO";
             document.getElementById('form-escursione').value = tipoNoleggio;
             
-            // Mostra il campo data obbligatorio per i noleggi
             document.getElementById('campo-data-noleggio').style.display = 'block';
             document.getElementById('data_noleggio').required = true;
             document.getElementById('info-posti-realtime').style.display = 'none';
 
-            // Mostra i sottomenu in base all'offerta selezionata
             if(tipoNoleggio.includes("Mezza Giornata")) {
                 document.getElementById('campo-fascia-oraria').style.display = 'block';
             } else if(tipoNoleggio.includes("Multi-giorno")) {
@@ -423,7 +420,6 @@
                     const telefono = document.getElementById('phone').value;
                     let dettagliTour = document.getElementById('form-escursione').value;
                     
-                    // Se è un noleggio, personalizziamo la ricevuta a schermo
                     if(idTour === "NOLEGGIO_LIBERO") {
                         const dataNol = document.getElementById('data_noleggio').value;
                         if(dettagliTour.includes("Mezza Giornata")) {
@@ -587,6 +583,10 @@
                             const shortDay = giorniSettimana[d.dataObj.getDay()];
                             let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
                             let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
+                            
+                            // Logica aggiunta per visualizzare i posti rimasti
+                            let labelPosti = (realTimePosti > 0 && realTimePosti <= 5) ? `<span class="text-[10px] text-amber-600 font-bold ml-2 bg-amber-50 px-1.5 py-0.5 rounded">(${realTimePosti} rimasti)</span>` : '';
+                            
                             let btnHtml = isSoldOut 
                                 ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200">SOLD OUT</span>`
                                 : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
@@ -596,6 +596,7 @@
                                     <div class="flex items-center">
                                         <span class="font-semibold text-slate-700 min-w-[70px]">${shortDay} ${d.giorno}</span> 
                                         <span class="text-sm ml-2 text-slate-600">${d.sessione}</span>
+                                        ${labelPosti}
                                     </div>
                                     ${btnHtml}
                                 </div>
