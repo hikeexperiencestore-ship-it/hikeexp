@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario Tour E-Bike 2026 - Hike Experience</title>
+    <title>Calendario Tour E-Bike & Noleggio 2026 - Hike Experience</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -138,6 +138,68 @@
             </div>
             
         </div>
+        
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mt-8 mb-6">
+            <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <span class="text-2xl">🚲</span> Noleggio E-Bike Libero
+            </h2>
+            <form id="formNoleggio" onsubmit="handleNoleggioSubmit(event)">
+                <input type="hidden" name="tipo_richiesta" value="noleggio">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Offerta Scelta</label>
+                        <select name="offerta_scelta" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                            <option value="" disabled selected>Seleziona un'opzione...</option>
+                            <option value="Mezza Giornata">Mezza Giornata - 35€</option>
+                            <option value="Intera Giornata">Giornata Intera - 50€</option>
+                            <option value="2 Giorni">2 Giorni - 90€</option>
+                            <option value="3 Giorni">3 Giorni - 130€</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Data Inizio Noleggio</label>
+                        <input type="date" name="data_noleggio" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome</label>
+                        <input type="text" name="name" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. Mario Rossi" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
+                        <input type="email" name="email" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. mario@email.com" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Telefono</label>
+                        <input type="tel" name="phone" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. 3331234567" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero Bici</label>
+                        <input type="number" name="numero_bici" min="1" value="1" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Altezza Partecipanti (cm)</label>
+                        <input type="text" name="altezza" placeholder="es. 175, 160, 182" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                        <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-center">
+                        <label class="flex items-start space-x-3 cursor-pointer">
+                            <div class="flex items-center h-5">
+                                <input type="checkbox" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
+                                <span class="text-xs text-slate-500 mt-0.5">Altezza massima bimbo consentita: <strong>115 cm</strong>.</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 leading-relaxed">
+                    <strong>Nota bene:</strong> Riceverai un'email di riepilogo. La prenotazione per il noleggio libero verrà confermata definitivamente dal nostro team previa verifica tecnica. Pagamento in loco.
+                </div>
+                <button type="submit" id="submit-noleggio-btn" class="mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta Noleggio</button>
+            </form>
+        </div>
 
     </main>
 
@@ -146,6 +208,7 @@
             <span class="absolute top-3 right-4 text-2xl font-semibold text-slate-400 hover:text-slate-600 cursor-pointer select-none" onclick="closeModal()">&times;</span>
             
             <form id="bookingForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" name="tipo_richiesta" value="tour">
                 <input type="hidden" id="form-id-tour" name="id_tour">
                 
                 <h2 class="text-xl font-bold text-emerald-700 mb-4 pr-6">Prenota il tuo Tour</h2>
@@ -246,7 +309,6 @@
             const numBiciInput = document.getElementById('num_bici');
             const submitBtn = document.getElementById('submit-btn');
             
-            // Ripristina lo stato iniziale del bottone
             submitBtn.disabled = false;
             submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md";
             submitBtn.innerText = "Invia Richiesta";
@@ -269,21 +331,21 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
+        // ==========================================
+        // GESTIONE INVIO MODULO: TOUR GUIDATI
+        // ==========================================
         async function handleFormSubmit(event) {
             event.preventDefault();
             const form = event.target;
             const submitBtn = document.getElementById('submit-btn');
             const idTour = document.getElementById('form-id-tour').value;
             const numBici = parseInt(document.getElementById('num_bici').value, 10);
-            const infoPosti = document.getElementById('info-posti-realtime');
 
-            // Controllo client side di sicurezza prima dell'invio
             if (postiInTempoReale[idTour] && postiInTempoReale[idTour].posti_disponibili < numBici) {
                 alert(`Spiacente! Sono rimasti solo ${postiInTempoReale[idTour].posti_disponibili} posti.`);
                 return;
             }
 
-            // Cambia stato al pulsante di invio per dare feedback visivo di caricamento
             submitBtn.disabled = true;
             submitBtn.innerText = "Invio in corso...";
             submitBtn.className = "w-full bg-slate-400 text-white font-bold p-3 rounded-xl text-sm shadow-md cursor-not-allowed";
@@ -292,12 +354,10 @@
             const queryString = new URLSearchParams(formData).toString();
 
             try {
-                // Invia i dati direttamente al foglio Google
                 const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
                 const resData = await response.json();
 
                 if (resData.result === "success") {
-                    // Aggiorna la cache locale per riflettere i posti scalati senza ricaricare la pagina
                     if (postiInTempoReale[idTour]) {
                         postiInTempoReale[idTour].posti_disponibili -= numBici;
                     }
@@ -346,6 +406,52 @@
             }
         }
 
+        // ==========================================
+        // NUOVO GESTORE INVIO MODULO: NOLEGGIO E-BIKE
+        // ==========================================
+        async function handleNoleggioSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const submitBtn = document.getElementById('submit-noleggio-btn');
+
+            // Cambio grafico pulsante per indicare il caricamento
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Invio richiesta in corso...";
+            submitBtn.className = "mt-4 w-full bg-slate-400 text-white font-bold p-4 rounded-xl text-sm shadow-md cursor-not-allowed";
+
+            const formData = new FormData(form);
+            const queryString = new URLSearchParams(formData).toString();
+
+            try {
+                // Invia la richiesta al medesimo SCRIPT_URL
+                const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
+                const resData = await response.json();
+
+                if (resData.result === "success") {
+                    // Sostituisce il form con un messaggio di successo grafico
+                    form.innerHTML = `
+                        <div class="text-center p-8 bg-emerald-50 rounded-2xl border-2 border-dashed border-emerald-400 mt-4">
+                            <span class="text-4xl mb-3 block">✓</span>
+                            <h3 class="text-xl font-bold text-emerald-800 mb-2">Richiesta Ricevuta!</h3>
+                            <p class="text-sm text-emerald-700 font-medium">Abbiamo ricevuto la tua richiesta di noleggio e-bike.</p>
+                            <p class="text-xs text-slate-500 mt-3">Verificheremo la disponibilità del nostro parco bici e riceverai a brevissimo una email di conferma definitiva dal nostro team.</p>
+                        </div>
+                    `;
+                } else {
+                    alert("Si è verificato un errore: " + resData.message);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Invia Richiesta Noleggio";
+                    submitBtn.className = "mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md";
+                }
+            } catch (error) {
+                console.error("Errore invio noleggio:", error);
+                alert("Si è verificato un errore di rete. Riprova.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Invia Richiesta Noleggio";
+                submitBtn.className = "mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md";
+            }
+        }
+
         function gestisciRicercaData(event) {
             const dataSceltaString = event.target.value; 
             const containerRisultati = document.getElementById('search-results-container');
@@ -376,7 +482,6 @@
                 const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
                 const shortDay = giorniSettimana[d.dataObj.getDay()];
 
-                // Controllo se è sold out da stato CSV o da contatore posti Realtime
                 let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
                 let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
                 
@@ -421,7 +526,6 @@
 
         async function inizializzaCalendarioDinamico() {
             try {
-                // Esegui la lettura dei posti realtime in parallelo
                 await fetchPostiRealtime();
 
                 const response = await fetch(CSV_URL);
@@ -443,6 +547,9 @@
                     
                     const dataObj = new Date(anno, meseId, giorno);
                     
+                    // ==========================================
+                    // FILTRO DATE PASSATE: Qui la logica scarta i vecchi tour
+                    // ==========================================
                     if (dataObj < oggi) return; 
 
                     const infoTour = {
