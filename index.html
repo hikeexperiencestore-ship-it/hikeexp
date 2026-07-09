@@ -17,188 +17,197 @@
         </div>
     </header>
 
-    <main class="max-w-md md:max-w-6xl mx-auto mt-6 px-4 w-full space-y-6">
+    <div class="max-w-md md:max-w-3xl mx-auto w-full px-4 mt-8 flex gap-3">
+        <button id="btn-tab-tour" class="flex-1 bg-emerald-600 text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-emerald-600 text-sm md:text-base" onclick="cambiaVista('tour')">
+            🚵‍♂️ I nostri tour
+        </button>
+        <button id="btn-tab-noleggio" class="flex-1 bg-white text-slate-600 hover:bg-slate-50 font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-slate-200 text-sm md:text-base" onclick="cambiaVista('noleggio')">
+            🚲 Noleggia E-Bike
+        </button>
+    </div>
+
+    <main class="max-w-md md:max-w-6xl mx-auto mt-6 px-4 w-full flex flex-col h-full">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            
-            <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="flex h-2 w-2 relative">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">In partenza a breve</h3>
-                </div>
-                <div id="lista-prossimi" class="space-y-2 flex-1 mt-2"></div>
-            </div>
-
-            <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3 h-full flex flex-col">
-                <div class="flex items-center gap-2">
-                    <span class="text-lg">📅</span>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
-                </div>
-                <div class="flex gap-2">
-                    <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
-                    <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
-                </div>
-                <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50 flex-1">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
-                    <div id="search-results-list" class="space-y-2 mt-1"></div>
-                </div>
-            </div>
-            
-        </div>
-
-        <hr class="border-slate-200/60 my-2 hidden md:block">
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-            
-            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Da Barisciano a Fontecchio">
-                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                    <div>
-                        <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Nuovo Tour 2026</span>
-                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Da Barisciano a Fontecchio</h2>
-                        <p class="text-xs text-slate-500 font-medium italic mt-0.5">La valle dei Vestini, storia e natura</p>
-                        <span class="text-sm font-semibold text-slate-600 mt-1 block">Prezzo: 40€</span>
-                    </div>
-                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </summary>
-                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                </div>
-            </details>
-
-            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
-                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                    <div>
-                        <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">I più amati</span>
-                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Tesori d'Abruzzo - Bominaco</h2>
-                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 40€</span>
-                    </div>
-                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </summary>
-                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                </div>
-            </details>
-
-            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
-                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                    <div>
-                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Grandi Scenari</span>
-                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore e i Tre Laghi</h2>
-                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
-                    </div>
-                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </summary>
-                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                </div>
-            </details>
-
-            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
-                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                    <div>
-                        <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Alta Quota</span>
-                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore - Piccolo Tibet</h2>
-                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
-                    </div>
-                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </summary>
-                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                </div>
-            </details>
-
-            <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
-                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
-                    <div>
-                        <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Borghi e Castelli</span>
-                        <h2 class="text-lg font-bold text-slate-900 mt-1.5">Rocca Calascio</h2>
-                        <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 35€</span>
-                    </div>
-                    <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                        <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                </summary>
-                <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                </div>
-            </details>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-100 text-center shadow-sm h-full flex flex-col justify-center min-h-[140px]">
-                <h3 class="font-bold text-slate-900 mb-2">Prenotazioni & Info</h3>
-                <div class="space-y-1 text-slate-600 text-sm">
-                    <p class="flex items-center justify-center gap-2"><span>📞</span> +39 371 7743946</p>
-                    <p class="flex items-center justify-center gap-2"><span>📧</span> hike.experience.store@gmail.com</p>
-                </div>
-            </div>
-            
-        </div>
-        
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mt-8 mb-6">
-            <h2 class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <span class="text-2xl">🚲</span> Noleggio E-Bike Libero
-            </h2>
-            <form id="formNoleggio" onsubmit="handleNoleggioSubmit(event)">
-                <input type="hidden" name="tipo_richiesta" value="noleggio">
+        <div id="vista-tour" class="space-y-6 flex-1">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Offerta Scelta</label>
-                        <select name="offerta_scelta" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
-                            <option value="" disabled selected>Seleziona un'opzione...</option>
-                            <option value="Mezza Giornata">Mezza Giornata - 35€</option>
-                            <option value="Intera Giornata">Giornata Intera - 50€</option>
-                            <option value="2 Giorni">2 Giorni - 90€</option>
-                            <option value="3 Giorni">3 Giorni - 130€</option>
-                        </select>
+                <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="flex h-2 w-2 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">In partenza a breve</h3>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Data Inizio Noleggio</label>
-                        <input type="date" name="data_noleggio" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                    <div id="lista-prossimi" class="space-y-2 flex-1 mt-2"></div>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3 h-full flex flex-col">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">📅</span>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome</label>
-                        <input type="text" name="name" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. Mario Rossi" required>
+                    <div class="flex gap-2">
+                        <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
+                        <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
-                        <input type="email" name="email" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. mario@email.com" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Telefono</label>
-                        <input type="tel" name="phone" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. 3331234567" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero Bici</label>
-                        <input type="number" name="numero_bici" min="1" value="1" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Altezza Partecipanti (cm)</label>
-                        <input type="text" name="altezza" placeholder="es. 175, 160, 182" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
-                        <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
-                    </div>
-                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-center">
-                        <label class="flex items-start space-x-3 cursor-pointer">
-                            <div class="flex items-center h-5">
-                                <input type="checkbox" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
-                                <span class="text-xs text-slate-500 mt-0.5">Altezza massima bimbo consentita: <strong>115 cm</strong>.</span>
-                            </div>
-                        </label>
+                    <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50 flex-1">
+                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
+                        <div id="search-results-list" class="space-y-2 mt-1"></div>
                     </div>
                 </div>
-                <div class="mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 leading-relaxed">
-                    <strong>Nota bene:</strong> Riceverai un'email di riepilogo. La prenotazione per il noleggio libero verrà confermata definitivamente dal nostro team previa verifica tecnica. Pagamento in loco.
-                </div>
-                <button type="submit" id="submit-noleggio-btn" class="mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta Noleggio</button>
-            </form>
+                
+            </div>
+
+            <hr class="border-slate-200/60 my-2 hidden md:block">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                
+                <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Da Barisciano a Fontecchio">
+                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                        <div>
+                            <span class="bg-rose-100 text-rose-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Nuovo Tour 2026</span>
+                            <h2 class="text-lg font-bold text-slate-900 mt-1.5">Da Barisciano a Fontecchio</h2>
+                            <p class="text-xs text-slate-500 font-medium italic mt-0.5">La valle dei Vestini, storia e natura</p>
+                            <span class="text-sm font-semibold text-slate-600 mt-1 block">Prezzo: 40€</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </summary>
+                    <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+                </details>
+
+                <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Tesori d'Abruzzo - Bominaco">
+                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                        <div>
+                            <span class="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">I più amati</span>
+                            <h2 class="text-lg font-bold text-slate-900 mt-1.5">Tesori d'Abruzzo - Bominaco</h2>
+                            <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 40€</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </summary>
+                    <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+                </details>
+
+                <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore e i Tre Laghi">
+                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                        <div>
+                            <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Grandi Scenari</span>
+                            <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore e i Tre Laghi</h2>
+                            <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </summary>
+                    <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+                </details>
+
+                <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Campo Imperatore - Piccolo Tibet">
+                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                        <div>
+                            <span class="bg-amber-50 text-amber-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Alta Quota</span>
+                            <h2 class="text-lg font-bold text-slate-900 mt-1.5">Campo Imperatore - Piccolo Tibet</h2>
+                            <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 45€</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </summary>
+                    <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+                </details>
+
+                <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="Rocca Calascio">
+                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                        <div>
+                            <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">Borghi e Castelli</span>
+                            <h2 class="text-lg font-bold text-slate-900 mt-1.5">Rocca Calascio</h2>
+                            <span class="text-sm font-semibold text-slate-500 mt-1 block">Prezzo: 35€</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </summary>
+                    <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div id="vista-noleggio" class="hidden flex-1">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
+                <form id="formNoleggio" onsubmit="handleNoleggioSubmit(event)">
+                    <input type="hidden" name="tipo_richiesta" value="noleggio">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Offerta Scelta</label>
+                            <select name="offerta_scelta" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                                <option value="" disabled selected>Seleziona un'opzione...</option>
+                                <option value="Mezza Giornata">Mezza Giornata - 35€</option>
+                                <option value="Intera Giornata">Giornata Intera - 50€</option>
+                                <option value="2 Giorni">2 Giorni - 90€</option>
+                                <option value="3 Giorni">3 Giorni - 130€</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Data Inizio Noleggio</label>
+                            <input type="date" name="data_noleggio" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome</label>
+                            <input type="text" name="name" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. Mario Rossi" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
+                            <input type="email" name="email" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. mario@email.com" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Telefono</label>
+                            <input type="tel" name="phone" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. 3331234567" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero Bici</label>
+                            <input type="number" name="numero_bici" min="1" value="1" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Altezza Partecipanti (cm)</label>
+                            <input type="text" name="altezza" placeholder="es. 175, 160, 182" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                            <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-center">
+                            <label class="flex items-start space-x-3 cursor-pointer">
+                                <div class="flex items-center h-5">
+                                    <input type="checkbox" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
+                                    <span class="text-xs text-slate-500 mt-0.5">Altezza massima bimbo consentita: <strong>115 cm</strong>.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 leading-relaxed">
+                        <strong>Nota bene:</strong> Riceverai un'email di riepilogo. La prenotazione per il noleggio libero verrà confermata definitivamente dal nostro team previa verifica tecnica. Pagamento in loco.
+                    </div>
+                    <button type="submit" id="submit-noleggio-btn" class="mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta Noleggio</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="mt-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center">
+            <h3 class="font-bold text-slate-900 mb-3 text-lg">Hai bisogno di aiuto? Contattaci</h3>
+            <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-slate-700 text-base font-medium">
+                <a href="tel:+393717743946" class="flex items-center justify-center gap-2 hover:text-emerald-600 transition-colors"><span>📞</span> +39 371 7743946</a>
+                <a href="mailto:hike.experience.store@gmail.com" class="flex items-center justify-center gap-2 hover:text-emerald-600 transition-colors"><span>📧</span> hike.experience.store@gmail.com</a>
+            </div>
         </div>
 
     </main>
@@ -276,6 +285,34 @@
     </style>
 
     <script>
+        // ==========================================
+        // GESTIONE CAMBIO VISTA (TAB)
+        // ==========================================
+        function cambiaVista(vista) {
+            const vistaTour = document.getElementById('vista-tour');
+            const vistaNoleggio = document.getElementById('vista-noleggio');
+            const btnTour = document.getElementById('btn-tab-tour');
+            const btnNoleggio = document.getElementById('btn-tab-noleggio');
+
+            if (vista === 'tour') {
+                vistaTour.classList.remove('hidden');
+                vistaNoleggio.classList.add('hidden');
+                
+                // Stile pulsante attivo (Tour)
+                btnTour.className = "flex-1 bg-emerald-600 text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-emerald-600 text-sm md:text-base";
+                // Stile pulsante inattivo (Noleggio)
+                btnNoleggio.className = "flex-1 bg-white text-slate-600 hover:bg-slate-50 font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-slate-200 text-sm md:text-base";
+            } else {
+                vistaTour.classList.add('hidden');
+                vistaNoleggio.classList.remove('hidden');
+                
+                // Stile pulsante inattivo (Tour)
+                btnTour.className = "flex-1 bg-white text-slate-600 hover:bg-slate-50 font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-slate-200 text-sm md:text-base";
+                // Stile pulsante attivo (Noleggio)
+                btnNoleggio.className = "flex-1 bg-emerald-600 text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-emerald-600 text-sm md:text-base";
+            }
+        }
+
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
 
@@ -287,7 +324,6 @@
         let databaseTourLocali = []; 
         let postiInTempoReale = {};
 
-        // Carica la disponibilità dei posti in tempo reale all'apertura del sito
         async function fetchPostiRealtime() {
             try {
                 const response = await fetch(SCRIPT_URL);
@@ -331,9 +367,6 @@
             document.getElementById('bookingModal').style.display = 'none';
         }
 
-        // ==========================================
-        // GESTIONE INVIO MODULO: TOUR GUIDATI
-        // ==========================================
         async function handleFormSubmit(event) {
             event.preventDefault();
             const form = event.target;
@@ -406,15 +439,11 @@
             }
         }
 
-        // ==========================================
-        // NUOVO GESTORE INVIO MODULO: NOLEGGIO E-BIKE
-        // ==========================================
         async function handleNoleggioSubmit(event) {
             event.preventDefault();
             const form = event.target;
             const submitBtn = document.getElementById('submit-noleggio-btn');
 
-            // Cambio grafico pulsante per indicare il caricamento
             submitBtn.disabled = true;
             submitBtn.innerText = "Invio richiesta in corso...";
             submitBtn.className = "mt-4 w-full bg-slate-400 text-white font-bold p-4 rounded-xl text-sm shadow-md cursor-not-allowed";
@@ -423,12 +452,10 @@
             const queryString = new URLSearchParams(formData).toString();
 
             try {
-                // Invia la richiesta al medesimo SCRIPT_URL
                 const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
                 const resData = await response.json();
 
                 if (resData.result === "success") {
-                    // Sostituisce il form con un messaggio di successo grafico
                     form.innerHTML = `
                         <div class="text-center p-8 bg-emerald-50 rounded-2xl border-2 border-dashed border-emerald-400 mt-4">
                             <span class="text-4xl mb-3 block">✓</span>
@@ -547,9 +574,6 @@
                     
                     const dataObj = new Date(anno, meseId, giorno);
                     
-                    // ==========================================
-                    // FILTRO DATE PASSATE: Qui la logica scarta i vecchi tour
-                    // ==========================================
                     if (dataObj < oggi) return; 
 
                     const infoTour = {
@@ -572,7 +596,6 @@
                     prossimiInAssoluto.push(infoTour);
                 });
 
-                // 1. POPOLA ACCORDION DEI SINGOLI TOUR
                 document.querySelectorAll('details[data-tour-name]').forEach(detailsEl => {
                     const nomeTour = detailsEl.getAttribute('data-tour-name');
                     const containerDate = detailsEl.querySelector('.container-date');
@@ -625,7 +648,6 @@
                     }
                 });
 
-                // 2. POPOLA PROSSIMI IN PARTENZA
                 const sezioneProssimi = document.getElementById('sezione-prossimi');
                 const listaProssimi = document.getElementById('lista-prossimi');
                 
