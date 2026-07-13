@@ -1,0 +1,20 @@
+{
+  "name": "Hike Exp - Dashboard Soci",
+  "short_name": "Hike Exp",
+  "start_url": "admin.html",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#2ecc71",
+  "icons": [
+    {
+      "src": "LOGO.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "LOGO.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
