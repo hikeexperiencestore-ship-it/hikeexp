@@ -325,14 +325,51 @@
         let databaseTourLocali = []; 
         let postiInTempoReale = {};
 
-        async function fetchPostiRealtime() {
+async function fetchPostiRealtime() {
             try {
                 const response = await fetch(SCRIPT_URL);
                 if (response.ok) {
                     postiInTempoReale = await response.json();
+                    
+                    // --- NUOVO CODICE: Popolamento tendina Noleggio ---
+                    if (postiInTempoReale["CONFIG_NOLEGGI"]) {
+                        const selectOfferta = document.getElementById('select-offerta-noleggio');
+                        const boxNote = document.getElementById('box-note-noleggio');
+                        const testoNote = document.getElementById('testo-note-noleggio');
+                        
+                        // Svuota e imposta l'opzione di default
+                        selectOfferta.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta...</option>';
+                        
+                        const opzioni = postiInTempoReale["CONFIG_NOLEGGI"];
+                        
+                        // Popola le option leggendo dal foglio "Configurazione"
+                        opzioni.forEach((opz) => {
+                            const option = document.createElement('option');
+                            // Mostra il prezzo solo se presente nel foglio
+                            const testoPrezzo = opz.prezzo ? ` - €${opz.prezzo}` : '';
+                            option.value = opz.voce;
+                            option.text = `${opz.voce}${testoPrezzo}`;
+                            option.dataset.note = opz.note; // Salviamo le note di fianco
+                            selectOfferta.appendChild(option);
+                        });
+                        
+                        // Event listener per mostrare il box verde delle note quando si cambia opzione
+                        selectOfferta.addEventListener('change', function() {
+                            const selectedOption = this.options[this.selectedIndex];
+                            const nota = selectedOption.dataset.note;
+                            
+                            if (nota && nota.trim() !== "" && nota !== "undefined") {
+                                testoNote.textContent = nota;
+                                boxNote.style.display = 'flex';
+                            } else {
+                                boxNote.style.display = 'none';
+                            }
+                        });
+                    }
+                    // --- FINE NUOVO CODICE ---
                 }
             } catch (e) {
-                console.error("Impossibile caricare i posti in tempo reale:", e);
+                console.error("Impossibile caricare i dati dal server:", e);
             }
         }
 
