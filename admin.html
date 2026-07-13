@@ -171,7 +171,7 @@
         });
     }
 
-    function filtraI_Tour() {
+function filtraI_Tour() {
         const queryNome = document.getElementById("searchNome").value.toLowerCase();
         const queryData = document.getElementById("searchData").value.toLowerCase();
         const contenitore = document.getElementById("listaContenitore");
@@ -179,7 +179,9 @@
 
         const filtrati = tuttiITour.filter(t => {
             const matchNome = t.nome.toLowerCase().includes(queryNome);
-            const matchData = t.nome.toLowerCase().includes(queryData) || t.id.toLowerCase().includes(queryData);
+            // FISSAATO: Ora il filtro controlla la data reale del tour (t.data)
+            const dataTour = t.data ? String(t.data).toLowerCase() : "";
+            const matchData = dataTour.includes(queryData);
             return matchNome && matchData;
         });
 
@@ -192,8 +194,10 @@
             const item = document.createElement("div");
             item.className = "tour-item";
             item.onclick = () => apriModificaTour(t);
+            // FISSATO: Aggiunta la data in grassetto con l'icona del calendario in prima linea
             item.innerHTML = `
                 <div class="title">${t.nome}</div>
+                <div class="info" style="color: #1e293b; margin-bottom: 4px;">📅 <strong>${t.data || 'Data N.D.'}</strong></div>
                 <div class="info">ID: ${t.id} &nbsp;|&nbsp; Posti: <strong>${t.occupati}</strong> occupati su ${t.totali}</div>
                 <span class="status-badge badge-dispo">Disponibili: ${t.disponibili}</span>
             `;
@@ -204,13 +208,13 @@
     function apriModificaTour(tour) {
         tourSelezionato = { ...tour }; // Clona oggetto
         document.getElementById("editNomeTour").innerText = tourSelezionato.nome;
-        document.getElementById("editDettagli").innerText = "Codice ID: " + tourSelezionato.id + " | Posti massimi impostati: " + tourSelezionato.totali;
+        // FISSATO: Mostra la data chiaramente anche nella schermata di modifica prima di salvare
+        document.getElementById("editDettagli").innerText = "Data: " + (tourSelezionato.data || '-') + " | Codice ID: " + tourSelezionato.id + " | Posti massimi: " + tourSelezionato.totali;
         document.getElementById("displayOccupati").innerText = tourSelezionato.occupati;
         
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionModifica").classList.remove("hidden");
     }
-
     function cambiaPosti(valore) {
         let corr = parseInt(document.getElementById("displayOccupati").innerText, 10) || 0;
         corr += valore;
