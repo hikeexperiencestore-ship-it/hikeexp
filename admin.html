@@ -179,9 +179,9 @@ function filtraI_Tour() {
 
         const filtrati = tuttiITour.filter(t => {
             const matchNome = t.nome.toLowerCase().includes(queryNome);
-            // FISSAATO: Ora il filtro controlla la data reale del tour (t.data)
-            const dataTour = t.data ? String(t.data).toLowerCase() : "";
-            const matchData = dataTour.includes(queryData);
+            // Cerca la data provando sia l'italiano che l'inglese (data, date, Data, Date)
+            const dataGrezza = t.data || t.date || t.Data || t.Date || "";
+            const matchData = String(dataGrezza).toLowerCase().includes(queryData);
             return matchNome && matchData;
         });
 
@@ -194,10 +194,13 @@ function filtraI_Tour() {
             const item = document.createElement("div");
             item.className = "tour-item";
             item.onclick = () => apriModificaTour(t);
-            // FISSATO: Aggiunta la data in grassetto con l'icona del calendario in prima linea
+            
+            // Recupera il valore della data reale provando tutte le chiavi
+            const dataVisualizzata = t.data || t.date || t.Data || t.Date || 'Data N.D.';
+
             item.innerHTML = `
                 <div class="title">${t.nome}</div>
-                <div class="info" style="color: #1e293b; margin-bottom: 4px;">📅 <strong>${t.data || 'Data N.D.'}</strong></div>
+                <div class="info" style="color: #1e293b; margin-bottom: 4px;">📅 <strong>${dataVisualizzata}</strong></div>
                 <div class="info">ID: ${t.id} &nbsp;|&nbsp; Posti: <strong>${t.occupati}</strong> occupati su ${t.totali}</div>
                 <span class="status-badge badge-dispo">Disponibili: ${t.disponibili}</span>
             `;
@@ -207,9 +210,11 @@ function filtraI_Tour() {
 
     function apriModificaTour(tour) {
         tourSelezionato = { ...tour }; // Clona oggetto
+        // Recupera la data corretta anche per il box di modifica
+        const dataVisualizzata = tourSelezionato.data || tourSelezionato.date || tourSelezionato.Data || tourSelezionato.Date || '-';
+        
         document.getElementById("editNomeTour").innerText = tourSelezionato.nome;
-        // FISSATO: Mostra la data chiaramente anche nella schermata di modifica prima di salvare
-        document.getElementById("editDettagli").innerText = "Data: " + (tourSelezionato.data || '-') + " | Codice ID: " + tourSelezionato.id + " | Posti massimi: " + tourSelezionato.totali;
+        document.getElementById("editDettagli").innerText = "Data: " + dataVisualizzata + " | Codice ID: " + tourSelezionato.id + " | Posti massimi: " + tourSelezionato.totali;
         document.getElementById("displayOccupati").innerText = tourSelezionato.occupati;
         
         document.getElementById("sectionDashboard").classList.add("hidden");
