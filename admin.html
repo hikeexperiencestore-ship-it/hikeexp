@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hike Experience - Pannello Gestione Posti</title>
+
+<!-- NUOVE RIGHE PER L'ICONA -->
+    <link rel="icon" type="image/png" href="LOGO.png">
+    <link rel="apple-touch-icon" href="LOGO.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { color: #2c3e50; margin-top: 0; text-align: center; border-bottom: 2px solid #2ecc71; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; }
+        input[type="text"], input[type="password"], input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #2ecc71; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        button:hover { background-color: #27ae60; }
+        .info-box { background-color: #ecf0f1; border-left: 5px solid #3498db; padding: 15px; border-radius: 4px; margin-top: 20px; display: none; }
+        .info-box p { margin: 6px 0; font-size: 15px; }
+        .status-badge { font-weight: bold; color: #e74c3c; }
+        .status-badge.dispo { color: #27ae60; }
+        .hidden { display: none; }
+        .logout-btn { background-color: #95a5a6; margin-top: 10px; }
+        .logout-btn:hover { background-color: #7f8c8d; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hike Exp - Dashboard Soci</h2>
+    
+    <!-- Sostituisci URL_DEL_TUO_SCRIPT con il link Web App di Google Apps Script -->
+    <script>const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";</script>
+
+    <!-- Sezione 1: Login -->
+    <div id="section-login">
+        <div class="form-group">
+            <label for="admin-password">Inserisci la Password di Accesso:</label>
+            <input type="password" id="admin-password" placeholder="Password...">
+        </div>
+        <button onclick="verificaEAccedi()">Accedi al Pannello</button>
+    </div>
+
+    <!-- Sezione 2: Gestione Tour (Inizialmente Nascosta) -->
+    <div id="section-dashboard" class="hidden">
+        <div class="form-group">
+            <label for="id-tour">Codice ID TOUR:</label>
+            <input type="text" id="id-tour" placeholder="Es: T01, 2026-06-14, ecc...">
+        </div>
+        <button onclick="cercaTour()">Cerca e Verifica Posti</button>
+
+        <!-- Box Risultati Ricerca -->
+        <div id="result-box" class="info-box">
+            <p><strong>Tour:</strong> <span id="res-nome">--</span></p>
+            <p><strong>Posti Totali della Bici:</strong> <span id="res-totali">--</span></p>
+            <p><strong>Posti Attualmente Disponibili:</strong> <span id="res-disponibili" class="status-badge">--</span></p>
+            
+            <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+            
+            <div class="form-group">
+                <label for="nuovi-occupati">Modifica Posti OCCUPATI totali:</label>
+                <input type="number" id="nuovi-occupati" min="0">
+                <small style="color: #7f8c8d; display:block; margin-top:5px;">Aumentando questo numero, i posti disponibili caleranno automaticamente sul sito.</small>
+            </div>
+            <button onclick="salvaModifiche()" style="background-color: #3498db;">Salva e Aggiorna Sito</button>
+        </div>
+        
+        <button onclick="logout()" class="logout-btn">Esci</button>
+    </div>
+</div>
+
+<script>
+    let passwordSalvata = "";
+    let idTourCorrente = "";
+
+    function verificaEAccedi() {
+        const pass = document.getElementById('admin-password').value;
+        if(!pass) return alert("Inserisci una password");
+        
+        passwordSalvata = pass;
+        document.getElementById('section-login').classList.add('hidden');
+        document.getElementById('section-dashboard').classList.remove('hidden');
+    }
+
+    async function cercaTour() {
+        const idTour = document.getElementById('id-tour').value.trim();
+        if(!idTour) return alert("Inserisci l'ID del Tour");
+
+        document.getElementById('result-box').style.display = 'none';
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ password: passwordSalvata, action: 'get_tour', idTour: idTour })
+            });
+            const data = await response.json();
+
+            if(data.success) {
+                idTourCorrente = data.id;
+                document.getElementById('res-nome').textContent = data.nome;
+                document.getElementById('res-totali').textContent = data.totali;
+                
+                const dispBadge = document.getElementById('res-disponibili');
+                dispBadge.textContent = data.disponibili;
+                if(data.disponibili > 0) { dispBadge.className = "status-badge dispo"; } else { dispBadge.className = "status-badge"; }
+                
+                document.getElementById('nuovi-occupati').value = data.occupati;
+                document.getElementById('result-box').style.display = 'block';
+            } else {
+                alert("Errore: " + data.error);
+                if(data.error === "Password errata") logout();
+            }
+        } catch(e) {
+            alert("Impossibile connettersi al server.");
+        }
+    }
+
+    async function salvaModifiche() {
+        const nuoviOccupati = document.getElementById('nuovi-occupati').value;
+        if(nuoviOccupati === "") return alert("Inserisci il numero di posti occupati");
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    password: passwordSalvata, 
+                    action: 'update_tour', 
+                    idTour: idTourCorrente, 
+                    nuoviOccupati: nuoviOccupati 
+                })
+            });
+            const data = await response.json();
+
+            if(data.success) {
+                alert("Ottimo! Disponibilità aggiornata con successo.");
+                cercaTour(); // Ricarica i dati aggiornati a video
+            } else {
+                alert("Errore durante il salvataggio: " + data.error);
+            }
+        } catch(e) {
+            alert("Errore di connessione.");
+        }
+    }
+
+    function logout() {
+        passwordSalvata = "";
+        idTourCorrente = "";
+        document.getElementById('admin-password').value = "";
+        document.getElementById('result-box').style.display = 'none';
+        document.getElementById('section-dashboard').classList.add('hidden');
+        document.getElementById('section-login').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
