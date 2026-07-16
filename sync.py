@@ -99,6 +99,7 @@ def estrai_disponibilita(url, data_target):
     except Exception as e:
         print(f"❌ Errore Majellando: {e}")
         return None
+
 def aggiorna_google(id_tour, nuovi_occupati):
     payload = {
         "action": "update_tour",
