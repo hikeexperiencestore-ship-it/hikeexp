@@ -76,26 +76,30 @@ def estrai_disponibilita(url, data_target):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
+        # Usiamo un approccio diverso: cerchiamo tutti i numeri vicino alla data
         testo_pagina = soup.get_text(separator=' ')
         target_escaped = re.escape(data_target)
         
         posizioni = [m.start() for m in re.finditer(target_escaped, testo_pagina)]
         
         for pos in posizioni:
-            fetta = testo_pagina[pos : pos + 150]
+            # Prendiamo una fetta più ampia (200 caratteri)
+            fetta = testo_pagina[pos : pos + 200]
             
-            # TRUCCO MAGICO: \b impedisce di ritagliare il "26" dall'anno "2026"
-            match = re.search(r"\b(\d{1,2})\b\s*post[io]", fetta, re.IGNORECASE)
+            # Cerchiamo TUTTI i numeri di 1 o 2 cifre nella fetta
+            numeri_trovati = re.findall(r"\b(\d{1,2})\b", fetta)
             
-            if match:
-                return int(match.group(1))
-                
-            # Controllo se è tutto esaurito
-            if re.search(r"\b(completo|esaurit)\b", fetta, re.IGNORECASE):
+            # Se troviamo dei numeri, il primo che appare solitamente è quello dei posti
+            if numeri_trovati:
+                # Escludiamo eventuali numeri che fanno parte dell'anno (se presenti)
+                # e prendiamo il primo numero valido
+                for n in numeri_trovati:
+                    if n not in ["2026", "2027"]: # Ignora l'anno
+                        return int(n)
+            
+            # Controllo esaurito
+            if re.search(r"(completo|esaurit)", fetta, re.IGNORECASE):
                 return 0
-                
-            # SPIA DI SICUREZZA: se non trova nulla, stampa il testo che sta leggendo!
-            print("    [🔍 DEBUG SITO] Leggo: " + fetta.replace('\n', ' '))
                 
         return None
     except Exception as e:
