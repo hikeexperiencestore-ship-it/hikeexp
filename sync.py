@@ -67,39 +67,39 @@ def ottieni_posti_totali(id_tour):
         print(f"❌ Errore lettura posti: {e}")
         return None
 
+import json # Assicurati di aggiungere 'import json' in cima al file, se non c'è già
+
 def estrai_disponibilita(url, data_target):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
-    }
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        testo_pagina = soup.get_text(separator=' ')
-        target_escaped = re.escape(data_target)
+        # Cerchiamo il contenitore del calendario che hai isolato nello screenshot
+        calendar_div = soup.find('div', {'class': 'ds-calendar-small'})
         
-        posizioni = [m.start() for m in re.finditer(target_escaped, testo_pagina)]
-        
-        for pos in posizioni:
-            # Prendiamo una fetta di 200 caratteri dopo la data
-            fetta = testo_pagina[pos : pos + 200]
-            fetta_clean = fetta.replace(data_target, "")
+        if calendar_div and 'data-dates' in calendar_div.attrs:
+            # Trasformiamo la stringa JSON in una lista di dizionari Python
+            dati_json = json.loads(calendar_div['data-dates'])
             
-            # --- IL CECCHINO ---
-            # Cerchiamo un numero di 1 o 2 cifre CHE SIA seguito dalla parola posti/posto
-            match = re.search(r"(\d{1,2})\s*post[io]", fetta_clean, re.IGNORECASE)
+            # Convertiamo la tua data (es. 18.07.2026) nel formato del sito (2026-07-18)
+            giorno, mese, anno = data_target.split('.')
+            data_cercata = f"{anno}-{mese}-{giorno}"
             
-            if match:
-                return int(match.group(1))
-            
-            # Se arriviamo qui, non abbiamo trovato il numero vicino a "posti".
-            # Stampiamo nel log cosa legge, così capiamo cosa c'è scritto sul sito!
-            print(f"    [🔍 DEBUG] Trovata data {data_target} ma NON trovo 'posti'. Testo letto: {fetta_clean[:100]}")
-                
+            for giorno_info in dati_json:
+                if giorno_info.get('date') == data_cercata:
+                    # DEBUG: Stampiamo l'intero blocco per vedere i nomi esatti dei campi!
+                    print(f"    [🔍 DEBUG JSON] Trovata data {data_cercata}: {giorno_info}")
+                    
+                    # Qui dobbiamo capire come si chiama il campo dei posti.
+                    # Di solito è 'spots_remaining', 'remaining', 'available' o 'places'.
+                    # Prova a vedere nel log cosa stampa, io ho messo un placeholder:
+                    return int(giorno_info.get('remaining', 0)) # <--- POTREBBE SERVIRE MODIFICARE 'remaining'
+                    
         return None
     except Exception as e:
-        print(f"❌ Errore Majellando: {e}")
+        print(f"❌ Errore JSON Majellando: {e}")
         return None
 
 def aggiorna_google(id_tour, nuovi_occupati):
