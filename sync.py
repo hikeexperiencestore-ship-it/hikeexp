@@ -95,7 +95,7 @@ def estrai_disponibilita(url, data_target):
                 return 0
                 
             # SPIA DI SICUREZZA: se non trova nulla, stampa il testo che sta leggendo!
-            print(f"    [🔍 DEBUG SITO] Leggo: {fetta.replace('\n', ' ')}")
+            print("    [🔍 DEBUG SITO] Leggo: " + fetta.replace('\n', ' '))
                 
         return None
     except Exception as e:
