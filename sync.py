@@ -67,8 +67,6 @@ def ottieni_posti_totali(id_tour):
         print(f"❌ Errore lettura posti: {e}")
         return None
 
-import json # Assicurati di aggiungere 'import json' in cima al file, se non c'è già
-
 def estrai_disponibilita(url, data_target):
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     try:
@@ -76,30 +74,31 @@ def estrai_disponibilita(url, data_target):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Cerchiamo il contenitore del calendario che hai isolato nello screenshot
-        calendar_div = soup.find('div', {'class': 'ds-calendar-small'})
+        # 1. Convertiamo la tua data nel formato del sito (YYYY-MM-DD)
+        giorno, mese, anno = data_target.split('.')
+        data_cercata = f"{anno}-{mese}-{giorno}"
         
-        if calendar_div and 'data-dates' in calendar_div.attrs:
-            # Trasformiamo la stringa JSON in una lista di dizionari Python
-            dati_json = json.loads(calendar_div['data-dates'])
-            
-            # Convertiamo la tua data (es. 18.07.2026) nel formato del sito (2026-07-18)
-            giorno, mese, anno = data_target.split('.')
-            data_cercata = f"{anno}-{mese}-{giorno}"
-            
-            for giorno_info in dati_json:
-                if giorno_info.get('date') == data_cercata:
-                    # DEBUG: Stampiamo l'intero blocco per vedere i nomi esatti dei campi!
-                    print(f"    [🔍 DEBUG JSON] Trovata data {data_cercata}: {giorno_info}")
-                    
-                    # Qui dobbiamo capire come si chiama il campo dei posti.
-                    # Di solito è 'spots_remaining', 'remaining', 'available' o 'places'.
-                    # Prova a vedere nel log cosa stampa, io ho messo un placeholder:
-                    return int(giorno_info.get('remaining', 0)) # <--- POTREBBE SERVIRE MODIFICARE 'remaining'
-                    
+        # 2. Cerchiamo tutti i box delle date (ds-dateBox)
+        date_boxes = soup.find_all('div', {'class': 'ds-dateBox'})
+        
+        for box in date_boxes:
+            # 3. Verifichiamo se questo box è quello della data giusta
+            if box.get('data-date') == data_cercata:
+                # 4. Cerchiamo lo span con la classe ds-availability DENTRO questo box
+                avail_span = box.find('span', {'class': 'ds-availability'})
+                
+                if avail_span:
+                    testo = avail_span.text
+                    # 5. Estraiamo il numero dal testo (es: "12 posti disponibili")
+                    match = re.search(r"(\d+)", testo)
+                    if match:
+                        return int(match.group(1))
+                    elif "esaurit" in testo.lower() or "complet" in testo.lower():
+                        return 0
+                        
         return None
     except Exception as e:
-        print(f"❌ Errore JSON Majellando: {e}")
+        print(f"❌ Errore Majellando: {e}")
         return None
 
 def aggiorna_google(id_tour, nuovi_occupati):
