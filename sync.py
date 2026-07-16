@@ -74,33 +74,31 @@ def estrai_disponibilita(url, data_target):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Convertiamo la tua data nel formato YYYY-MM-DD
         giorno, mese, anno = data_target.split('.')
         data_cercata = f"{anno}-{mese}-{giorno}"
         
-        # Cerchiamo tutti i box delle date
         date_boxes = soup.find_all('div', {'class': 'ds-dateBox'})
         
         for box in date_boxes:
-            # Se troviamo la data cercata, estraiamo i posti
             if box.get('data-date') == data_cercata:
                 avail_span = box.find('span', {'class': 'ds-availability'})
                 if avail_span:
-                    testo = avail_span.text
+                    testo = avail_span.get_text(strip=True)
+                    # --- DEBUG: Vediamo cosa dice il sito ---
+                    print(f"    [🔍 DEBUG] Data {data_target} | Testo trovato: '{testo}'")
+                    
                     match = re.search(r"(\d+)", testo)
                     if match:
                         return int(match.group(1))
                     elif "esaurit" in testo.lower() or "complet" in testo.lower():
                         return 0
         
-        # Se arriviamo qui, la data non esiste più (è passata o non disponibile)
-        # Restituiamo 0 così il resto dello script sa che non ci sono posti
-        return 0
+        return 0 # Ritorna 0 se non trova la data
         
     except Exception as e:
         print(f"❌ Errore Majellando: {e}")
-        # In caso di errore di rete, restituiamo 0 per sicurezza
         return 0
+
 def aggiorna_google(id_tour, nuovi_occupati):
     payload = {
         "action": "update_tour",
