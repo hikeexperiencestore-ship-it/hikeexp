@@ -21,11 +21,18 @@ MESI = {
     "settembre": "09", "ottobre": "10", "novembre": "11", "dicembre": "12"
 }
 
+import datetime  # Importa la libreria per le date (da mettere in cima al file se non c'è)
+
 def formatta_data(giorno, mese, anno):
-    # Converte "4 Luglio 2026" in "04.07.2026"
     giorno_str = str(giorno).zfill(2)
     mese_str = MESI.get(str(mese).lower().strip(), "00")
-    return f"{giorno_str}.{mese_str}.{anno}"
+    
+    anno_str = str(anno).strip()
+    # Se l'anno è vuoto, prende automaticamente l'anno corrente del server (2026, 2027, etc.)
+    if not anno_str or anno_str == "None" or anno_str == "null":
+        anno_str = str(datetime.date.today().year)
+        
+    return f"{giorno_str}.{mese_str}.{anno_str}"
 
 def ottieni_calendario_attivo():
     payload = {
