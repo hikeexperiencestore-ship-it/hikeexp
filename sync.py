@@ -79,21 +79,23 @@ def estrai_disponibilita(url, data_target):
         testo_pagina = soup.get_text(separator=' ')
         target_escaped = re.escape(data_target)
         
-        # Trova tutte le posizioni in cui compare la data target nella pagina
         posizioni = [m.start() for m in re.finditer(target_escaped, testo_pagina)]
         
         for pos in posizioni:
-            # Prendiamo una "fetta" di 150 caratteri a partire dalla data trovata
             fetta = testo_pagina[pos : pos + 150]
             
-            # Cerchiamo un numero di 1 o 2 cifre seguito da "posti" o "posto"
-            match = re.search(r"(\d{1,2})\s*post[io]", fetta, re.IGNORECASE)
+            # TRUCCO MAGICO: \b impedisce di ritagliare il "26" dall'anno "2026"
+            match = re.search(r"\b(\d{1,2})\b\s*post[io]", fetta, re.IGNORECASE)
+            
             if match:
                 return int(match.group(1))
                 
-            # Se non trova i posti, controlliamo se in questa fetta c'è scritto "completo" o "esaurito"
-            if re.search(r"(completo|esaurit)", fetta, re.IGNORECASE):
+            # Controllo se è tutto esaurito
+            if re.search(r"\b(completo|esaurit)\b", fetta, re.IGNORECASE):
                 return 0
+                
+            # SPIA DI SICUREZZA: se non trova nulla, stampa il testo che sta leggendo!
+            print(f"    [🔍 DEBUG SITO] Leggo: {fetta.replace('\n', ' ')}")
                 
         return None
     except Exception as e:
