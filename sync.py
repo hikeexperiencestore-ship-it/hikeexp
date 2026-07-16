@@ -76,28 +76,25 @@ def estrai_disponibilita(url, data_target):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # Aggiungiamo uno spazio come separatore per evitare che le parole si incollino
         testo_pagina = soup.get_text(separator=' ')
-        
-        # Fissiamo il target per evitare che i punti della data confondano la ricerca
         target_escaped = re.escape(data_target)
         
-        # Cerca la data e cattura un numero di MAX 2 cifre (\d{1,2}) nei successivi 100 caratteri
-        pattern = f"{target_escaped}.{{0,100}}?(\\d{{1,2}})\\s*posti"
-        match = re.search(pattern, testo_pagina, re.IGNORECASE | re.DOTALL)
+        # \D*? forza la ricerca a fermarsi al primissimo numero che trova dopo la data
+        # \d{1,2} si assicura che peschi un numero di massimo due cifre (es: 12)
+        pattern = f"{target_escaped}\\D*?(\\d{{1,2}})\\s*posti"
+        match = re.search(pattern, testo_pagina, re.IGNORECASE)
         
         if match:
             return int(match.group(1))
         else:
-            # Se trova la data ma non i posti, controlliamo se c'è scritto "completo"
-            if re.search(f"{target_escaped}.{{0,100}}?(completo|esaurit)", testo_pagina, re.IGNORECASE | re.DOTALL):
+            # Controllo nel caso in cui il tour sia esaurito
+            if re.search(f"{target_escaped}.{{0,50}}?(completo|esaurit)", testo_pagina, re.IGNORECASE):
                 return 0
                 
         return None
     except Exception as e:
         print(f"❌ Errore Majellando: {e}")
         return None
-
 def aggiorna_google(id_tour, nuovi_occupati):
     payload = {
         "action": "update_tour",
