@@ -79,16 +79,20 @@ def estrai_disponibilita(url, data_target):
         testo_pagina = soup.get_text(separator=' ')
         target_escaped = re.escape(data_target)
         
-        # \D*? forza la ricerca a fermarsi al primissimo numero che trova dopo la data
-        # \d{1,2} si assicura che peschi un numero di massimo due cifre (es: 12)
-        pattern = f"{target_escaped}\\D*?(\\d{{1,2}})\\s*posti"
-        match = re.search(pattern, testo_pagina, re.IGNORECASE)
+        # Trova tutte le posizioni in cui compare la data target nella pagina
+        posizioni = [m.start() for m in re.finditer(target_escaped, testo_pagina)]
         
-        if match:
-            return int(match.group(1))
-        else:
-            # Controllo nel caso in cui il tour sia esaurito
-            if re.search(f"{target_escaped}.{{0,50}}?(completo|esaurit)", testo_pagina, re.IGNORECASE):
+        for pos in posizioni:
+            # Prendiamo una "fetta" di 150 caratteri a partire dalla data trovata
+            fetta = testo_pagina[pos : pos + 150]
+            
+            # Cerchiamo un numero di 1 o 2 cifre seguito da "posti" o "posto"
+            match = re.search(r"(\d{1,2})\s*post[io]", fetta, re.IGNORECASE)
+            if match:
+                return int(match.group(1))
+                
+            # Se non trova i posti, controlliamo se in questa fetta c'è scritto "completo" o "esaurito"
+            if re.search(r"(completo|esaurit)", fetta, re.IGNORECASE):
                 return 0
                 
         return None
