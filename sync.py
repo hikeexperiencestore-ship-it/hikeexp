@@ -68,13 +68,24 @@ def estrai_disponibilita(url, data_target):
         response = requests.get(url, headers=headers)
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
-        testo_pagina = soup.get_text()
         
-        pattern = f"{data_target}.*?(\\d+)\\s*posti disponibili"
+        # Aggiungiamo uno spazio come separatore per evitare che le parole si incollino
+        testo_pagina = soup.get_text(separator=' ')
+        
+        # Fissiamo il target per evitare che i punti della data confondano la ricerca
+        target_escaped = re.escape(data_target)
+        
+        # Cerca la data e cattura un numero di MAX 2 cifre (\d{1,2}) nei successivi 100 caratteri
+        pattern = f"{target_escaped}.{{0,100}}?(\\d{{1,2}})\\s*posti"
         match = re.search(pattern, testo_pagina, re.IGNORECASE | re.DOTALL)
         
         if match:
             return int(match.group(1))
+        else:
+            # Se trova la data ma non i posti, controlliamo se c'è scritto "completo"
+            if re.search(f"{target_escaped}.{{0,100}}?(completo|esaurit)", testo_pagina, re.IGNORECASE | re.DOTALL):
+                return 0
+                
         return None
     except Exception as e:
         print(f"❌ Errore Majellando: {e}")
