@@ -82,21 +82,20 @@ def estrai_disponibilita(url, data_target):
         posizioni = [m.start() for m in re.finditer(target_escaped, testo_pagina)]
         
         for pos in posizioni:
+            # Prendiamo una fetta di 200 caratteri dopo la data
             fetta = testo_pagina[pos : pos + 200]
-            
-            # --- MODIFICA: Togliamo la data dalla fetta prima di cercare ---
             fetta_clean = fetta.replace(data_target, "")
             
-            # Cerchiamo i numeri nella fetta "pulita"
-            numeri_trovati = re.findall(r"\b(\d{1,2})\b", fetta_clean)
+            # --- IL CECCHINO ---
+            # Cerchiamo un numero di 1 o 2 cifre CHE SIA seguito dalla parola posti/posto
+            match = re.search(r"(\d{1,2})\s*post[io]", fetta_clean, re.IGNORECASE)
             
-            if numeri_trovati:
-                for n in numeri_trovati:
-                    if n not in ["2026", "2027"]:
-                        return int(n)
+            if match:
+                return int(match.group(1))
             
-            if re.search(r"(completo|esaurit)", fetta, re.IGNORECASE):
-                return 0
+            # Se arriviamo qui, non abbiamo trovato il numero vicino a "posti".
+            # Stampiamo nel log cosa legge, così capiamo cosa c'è scritto sul sito!
+            print(f"    [🔍 DEBUG] Trovata data {data_target} ma NON trovo 'posti'. Testo letto: {fetta_clean[:100]}")
                 
         return None
     except Exception as e:
