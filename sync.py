@@ -74,28 +74,33 @@ def estrai_disponibilita(url, data_target):
         response.raise_for_status()
         soup = BeautifulSoup(response.text, 'html.parser')
         
-        # 1. Convertiamo la tua data nel formato del sito (YYYY-MM-DD)
+        # Cerchiamo tutti i box delle date
+        date_boxes = soup.find_all('div', {'class': 'ds-dateBox'})
+        
+        # DEBUG: Vediamo se il sito ci risponde o se è vuoto
+        if not date_boxes:
+            print(f"    [🔍 DEBUG] Non ho trovato nessun box data. Pagina vuota?")
+            return None
+        
+        # Convertiamo la tua data nel formato YYYY-MM-DD
         giorno, mese, anno = data_target.split('.')
         data_cercata = f"{anno}-{mese}-{giorno}"
         
-        # 2. Cerchiamo tutti i box delle date (ds-dateBox)
-        date_boxes = soup.find_all('div', {'class': 'ds-dateBox'})
-        
+        # DEBUG: Stampiamo le prime date che trova per vedere il formato
+        prime_date = [b.get('data-date') for b in date_boxes[:3]]
+        print(f"    [🔍 DEBUG] Trovati {len(date_boxes)} box. Prime date viste: {prime_date}")
+
         for box in date_boxes:
-            # 3. Verifichiamo se questo box è quello della data giusta
             if box.get('data-date') == data_cercata:
-                # 4. Cerchiamo lo span con la classe ds-availability DENTRO questo box
                 avail_span = box.find('span', {'class': 'ds-availability'})
-                
                 if avail_span:
                     testo = avail_span.text
-                    # 5. Estraiamo il numero dal testo (es: "12 posti disponibili")
                     match = re.search(r"(\d+)", testo)
                     if match:
                         return int(match.group(1))
                     elif "esaurit" in testo.lower() or "complet" in testo.lower():
                         return 0
-                        
+        
         return None
     except Exception as e:
         print(f"❌ Errore Majellando: {e}")
