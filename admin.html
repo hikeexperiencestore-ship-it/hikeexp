@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hike Exp - Dashboard Soci</title>
     
-<!-- Icone Schermata Home (Specifiche per Android e iOS) -->
     <link rel="icon" type="image/png" sizes="192x192" href="LOGO.png">
     <link rel="icon" type="image/png" sizes="512x512" href="LOGO.png">
     <link rel="apple-touch-icon" sizes="180x180" href="LOGO.png">
@@ -13,7 +12,6 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- Collegamento al Manifest per Android Chrome -->
     <link rel="manifest" href="manifest.json">
     <style>
         :root {
@@ -42,28 +40,28 @@
         button:hover { background: var(--primary-dark); }
         button.secondary { background: #94a3b8; margin-top: 10px; }
         
-        /* Sezioni */
         .hidden { display: none !important; }
         .search-box { background: var(--light); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         
-        /* Lista dei Tour */
-        .tour-list { max-height: 280px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; }
+        .tour-list { max-height: 400px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; }
         .tour-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; font-size: 14px; }
         .tour-item:last-child { border-bottom: none; }
         .tour-item:hover { background: #e8f5e9; }
         .tour-item .title { font-weight: bold; color: #1e293b; margin-bottom: 3px; }
-        .tour-item .info { color: #64748b; font-size: 12px; }
+        .tour-item .info { color: #64748b; font-size: 12px; margin-bottom: 4px; }
+        .tour-item .details-box { background: #f1f5f9; padding: 6px; border-radius: 6px; font-size: 11px; margin-top: 6px; color: #475569; }
 
-        /* Gestione contatore posti */
-        .counter-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 20px 0; }
-        .btn-counter { width: 60px; height: 60px; border-radius: 50%; font-size: 28px; background: #e2e8f0; color: var(--dark); display: flex; align-items: center; justify-content: center; }
+        .counter-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 10px 0; }
+        .btn-counter { width: 50px; height: 50px; border-radius: 50%; font-size: 24px; background: #e2e8f0; color: var(--dark); display: flex; align-items: center; justify-content: center; user-select: none; cursor: pointer; }
         .btn-counter:active { background: #cbd5e1; }
-        #displayOccupati { font-size: 32px; font-weight: bold; min-width: 50px; text-align: center; }
+        #displayNuoviPosti { font-size: 28px; font-weight: bold; min-width: 40px; text-align: center; }
         
         .status-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-top: 5px; }
         .badge-dispo { background: #dcfce7; color: #166534; }
+        .badge-full { background: #fee2e2; color: #991b1b; }
         
         .loading { text-align: center; color: #64748b; font-style: italic; padding: 10px; }
+        .form-box { background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -93,7 +91,7 @@
             </div>
         </div>
 
-        <label>Seleziona il tour dall'elenco filtrato:</label>
+        <label>Seleziona il tour per aggiungere prenotazioni:</label>
         <div id="loadingList" class="loading hidden">Caricamento in corso...</div>
         <div class="tour-list" id="listaContenitore">
             <!-- I tour filtrati appariranno qui dinamicamente -->
@@ -102,22 +100,39 @@
         <button class="secondary" onclick="disconnetti()">Esci / Cambia Password</button>
     </div>
 
-    <!-- 3. MODIFICA POSTI TOUR SELEZIONATO -->
+    <!-- 3. MODIFICA POSTI (NUOVO FORM PRENOTAZIONE) -->
     <div id="sectionModifica" class="hidden">
-        <div style="background: var(--light); padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid var(--primary);">
-            <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px;">-</div>
-            <div id="editDettagli" style="font-size: 13px; color: #64748b;">-</div>
+        <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
+            <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
+            <div id="editDettagli" style="font-size: 13px; color: #0f172a;">-</div>
         </div>
 
-        <label style="text-align: center; display: block; margin-top: 10px;">Posti Occupati Attuali:</label>
-        <div class="counter-container">
-            <div class="btn-counter" onclick="cambiaPosti(-1)">-</div>
-            <div id="displayOccupati">0</div>
-            <div class="btn-counter" onclick="cambiaPosti(1)">+</div>
+        <h3 style="font-size: 16px; margin-bottom: 10px; text-align: center;">Aggiungi Nuova Prenotazione</h3>
+        
+        <div class="form-box">
+            <div class="form-group">
+                <label>👤 Nominativo (Obbligatorio):</label>
+                <input type="text" id="nuovoNome" placeholder="Es: Mario Rossi">
+            </div>
+            
+            <div class="form-group">
+                <label>📞 Telefono (Facoltativo):</label>
+                <input type="text" id="nuovoTelefono" placeholder="Es: 3331234567">
+            </div>
+            
+            <div class="form-group">
+                <label>🚲 Numero Posti/Bici (Obbligatorio):</label>
+                <div class="counter-container">
+                    <div class="btn-counter" onclick="cambiaPostiNuovi(-1)">-</div>
+                    <div id="displayNuoviPosti">1</div>
+                    <div class="btn-counter" onclick="cambiaPostiNuovi(1)">+</div>
+                </div>
+                <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: -5px;">(Seleziona numero negativo per registrare una disdetta)</p>
+            </div>
         </div>
 
-        <button onclick="salvaModifiche()">Salva Modifiche</button>
-        <button class="secondary" onclick="tornaAllaLista()">Torna alla Lista</button>
+        <button onclick="salvaNuovaPrenotazione()">Salva Prenotazione</button>
+        <button class="secondary" onclick="tornaAllaLista()">Annulla e Torna alla Lista</button>
     </div>
 </div>
 
@@ -128,7 +143,6 @@
     let tuttiITour = [];
     let tourSelezionato = null;
 
-    // Controllo automatico password salvata all'avvio
     window.onload = function() {
         const savedPass = localStorage.getItem("hike_admin_pass");
         if (savedPass) {
@@ -152,7 +166,7 @@
         .then(data => {
             document.getElementById("loadingList").classList.add("hidden");
             if (data.success) {
-                localStorage.setItem("hike_admin_pass", pass); // Ricorda password
+                localStorage.setItem("hike_admin_pass", pass);
                 tuttiITour = data.tours;
                 
                 document.getElementById("sectionLogin").classList.add("hidden");
@@ -171,7 +185,7 @@
         });
     }
 
-function filtraI_Tour() {
+    function filtraI_Tour() {
         const queryNome = document.getElementById("searchNome").value.toLowerCase();
         const queryData = document.getElementById("searchData").value.toLowerCase();
         const contenitore = document.getElementById("listaContenitore");
@@ -179,7 +193,6 @@ function filtraI_Tour() {
 
         const filtrati = tuttiITour.filter(t => {
             const matchNome = t.nome.toLowerCase().includes(queryNome);
-            // Cerca la data provando sia l'italiano che l'inglese (data, date, Data, Date)
             const dataGrezza = t.data || t.date || t.Data || t.Date || "";
             const matchData = String(dataGrezza).toLowerCase().includes(queryData);
             return matchNome && matchData;
@@ -195,58 +208,86 @@ function filtraI_Tour() {
             item.className = "tour-item";
             item.onclick = () => apriModificaTour(t);
             
-            // Recupera il valore della data reale provando tutte le chiavi
             const dataVisualizzata = t.data || t.date || t.Data || t.Date || 'Data N.D.';
+            const badgeClass = t.disponibili > 0 ? "badge-dispo" : "badge-full";
 
             item.innerHTML = `
                 <div class="title">${t.nome}</div>
-                <div class="info" style="color: #1e293b; margin-bottom: 4px;">📅 <strong>${dataVisualizzata}</strong></div>
-                <div class="info">ID: ${t.id} &nbsp;|&nbsp; Posti: <strong>${t.occupati}</strong> occupati su ${t.totali}</div>
-                <span class="status-badge badge-dispo">Disponibili: ${t.disponibili}</span>
+                <div class="info" style="color: #1e293b;">📅 <strong>${dataVisualizzata}</strong> &nbsp;|&nbsp; ID: ${t.id}</div>
+                <div class="details-box">
+                    <strong>${t.occupati_totali}</strong> occupati su ${t.totali}<br>
+                    (Sito/Manuale: <strong>${t.occupati_sito}</strong> | Majellando: <strong>${t.occupati_majellando}</strong>)
+                </div>
+                <span class="status-badge ${badgeClass}">Disponibili: ${t.disponibili}</span>
             `;
             contenitore.appendChild(item);
         });
     }
 
     function apriModificaTour(tour) {
-        tourSelezionato = { ...tour }; // Clona oggetto
-        // Recupera la data corretta anche per il box di modifica
+        tourSelezionato = { ...tour }; 
         const dataVisualizzata = tourSelezionato.data || tourSelezionato.date || tourSelezionato.Data || tourSelezionato.Date || '-';
         
         document.getElementById("editNomeTour").innerText = tourSelezionato.nome;
-        document.getElementById("editDettagli").innerText = "Data: " + dataVisualizzata + " | Codice ID: " + tourSelezionato.id + " | Posti massimi: " + tourSelezionato.totali;
-        document.getElementById("displayOccupati").innerText = tourSelezionato.occupati;
+        document.getElementById("editDettagli").innerHTML = `
+            Data: <strong>${dataVisualizzata}</strong><br>
+            Posti Rimasti: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})
+        `;
+        
+        // Resetta form
+        document.getElementById("nuovoNome").value = "";
+        document.getElementById("nuovoTelefono").value = "";
+        document.getElementById("displayNuoviPosti").innerText = "1";
         
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionModifica").classList.remove("hidden");
     }
-    function cambiaPosti(valore) {
-        let corr = parseInt(document.getElementById("displayOccupati").innerText, 10) || 0;
+
+    function cambiaPostiNuovi(valore) {
+        let corr = parseInt(document.getElementById("displayNuoviPosti").innerText, 10) || 0;
         corr += valore;
-        if (corr < 0) corr = 0; // Impedisce valori negativi
-        document.getElementById("displayOccupati").innerText = corr;
+        if (corr === 0) { 
+            // Salta lo zero che non avrebbe senso come registrazione
+            corr = (valore > 0) ? 1 : -1; 
+        }
+        document.getElementById("displayNuoviPosti").innerText = corr;
     }
 
-    function salvaModifiche() {
+    function salvaNuovaPrenotazione() {
         const pass = document.getElementById("password").value;
-        const nuoviOccupati = document.getElementById("displayOccupati").innerText;
+        const nome = document.getElementById("nuovoNome").value.trim();
+        const telefono = document.getElementById("nuovoTelefono").value.trim();
+        const numBici = parseInt(document.getElementById("displayNuoviPosti").innerText, 10);
 
+        if (!nome) {
+            alert("Il Nominativo è obbligatorio!");
+            return;
+        }
         if (!tourSelezionato) return;
+
+        // Conferma extra per sicurezza
+        const testConferma = numBici > 0 
+            ? `Vuoi confermare la prenotazione di ${numBici} posti per ${nome}?` 
+            : `Stai registrando una DISDETTA di ${Math.abs(numBici)} posti per ${nome}. Confermi?`;
+            
+        if (!confirm(testConferma)) return;
 
         fetch(SCRIPT_URL, {
             method: "POST",
             body: JSON.stringify({
-                action: "update_tour",
+                action: "add_manual_booking",
                 password: pass,
                 idTour: tourSelezionato.id,
-                nuoviOccupati: nuoviOccupati
+                nome: nome,
+                telefono: telefono,
+                numBici: numBici
             })
         })
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                alert("Posti aggiornati con successo nel database!");
-                caricaTuttiITour(); // Ricarica e torna alla lista aggiornata
+                alert("Registrata con successo!");
+                caricaTuttiITour(); // Torna alla lista aggiornata
             } else {
                 alert("Errore durante il salvataggio: " + data.error);
             }
