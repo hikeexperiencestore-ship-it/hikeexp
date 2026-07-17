@@ -87,7 +87,7 @@
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label>📅 Filtra per Data:</label>
-                <input type="text" id="searchData" placeholder="Es: 14/06, luglio, 2026..." oninput="filtraI_Tour()">
+                <input type="text" id="searchData" placeholder="Es: 14/06, luglio..." oninput="filtraI_Tour()">
             </div>
         </div>
 
@@ -136,7 +136,7 @@
     </div>
 </div>
 
-<!-- INCOLLA IL TUO LINK DI GOOGLE APPS SCRIPT QUI SOTTO -->
+<!-- LINK DI GOOGLE APPS SCRIPT PRESERVATO -->
 <script>const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";</script>
 
 <script>
@@ -191,15 +191,48 @@
         const contenitore = document.getElementById("listaContenitore");
         contenitore.innerHTML = "";
 
+        // Otteniamo la data di OGGI a mezzanotte per il confronto
+        const oggi = new Date();
+        oggi.setHours(0, 0, 0, 0);
+
+        const mesi = {
+            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
+            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
+        };
+
         const filtrati = tuttiITour.filter(t => {
+            const dataGrezza = String(t.data || t.date || t.Data || t.Date || "").toLowerCase();
+            
+            // --- LOGICA ESCLUSIONE DATE PASSATE ---
+            let meseNum = -1;
+            for (let m in mesi) {
+                if (dataGrezza.includes(m)) {
+                    meseNum = mesi[m];
+                    break;
+                }
+            }
+            // Trova il primo numero nella stringa (es: "14 giugno" -> 14, "4 e 5 luglio" -> 4)
+            const matchGiorno = dataGrezza.match(/\d+/);
+            const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
+
+            if (meseNum !== -1) {
+                const dataTour = new Date(oggi.getFullYear(), meseNum, giornoNum);
+                dataTour.setHours(0, 0, 0, 0);
+                
+                // Se la data del tour è strettamente precedente a oggi, la scartiamo
+                if (dataTour < oggi) {
+                    return false;
+                }
+            }
+            // --------------------------------------
+
             const matchNome = t.nome.toLowerCase().includes(queryNome);
-            const dataGrezza = t.data || t.date || t.Data || t.Date || "";
-            const matchData = String(dataGrezza).toLowerCase().includes(queryData);
+            const matchData = dataGrezza.includes(queryData);
             return matchNome && matchData;
         });
 
         if (filtrati.length === 0) {
-            contenitore.innerHTML = '<div class="loading">Nessun tour corrisponde ai filtri</div>';
+            contenitore.innerHTML = '<div class="loading">Nessun tour in programma (o corrispondente ai filtri)</div>';
             return;
         }
 
@@ -234,7 +267,6 @@
             Posti Rimasti: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})
         `;
         
-        // Resetta form
         document.getElementById("nuovoNome").value = "";
         document.getElementById("nuovoTelefono").value = "";
         document.getElementById("displayNuoviPosti").innerText = "1";
@@ -247,7 +279,6 @@
         let corr = parseInt(document.getElementById("displayNuoviPosti").innerText, 10) || 0;
         corr += valore;
         if (corr === 0) { 
-            // Salta lo zero che non avrebbe senso come registrazione
             corr = (valore > 0) ? 1 : -1; 
         }
         document.getElementById("displayNuoviPosti").innerText = corr;
@@ -265,7 +296,6 @@
         }
         if (!tourSelezionato) return;
 
-        // Conferma extra per sicurezza
         const testConferma = numBici > 0 
             ? `Vuoi confermare la prenotazione di ${numBici} posti per ${nome}?` 
             : `Stai registrando una DISDETTA di ${Math.abs(numBici)} posti per ${nome}. Confermi?`;
@@ -287,7 +317,7 @@
         .then(data => {
             if (data.success) {
                 alert("Registrata con successo!");
-                caricaTuttiITour(); // Torna alla lista aggiornata
+                caricaTuttiITour();
             } else {
                 alert("Errore durante il salvataggio: " + data.error);
             }
