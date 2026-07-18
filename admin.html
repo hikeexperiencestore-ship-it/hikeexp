@@ -62,6 +62,14 @@
         
         .loading { text-align: center; color: #64748b; font-style: italic; padding: 10px; }
         .form-box { background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
+        
+        /* Stili per la lista prenotati */
+        .prenotazione-item { background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 14px; text-align: left; }
+        .prenotazione-item .nome { font-weight: bold; color: #0f172a; margin-bottom: 4px;}
+        .prenotazione-item .dettagli { color: #475569; font-size: 13px; }
+        .badge-bici { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+        .btn-blue { background: #3b82f6; margin-top: 15px; }
+        .btn-blue:hover { background: #2563eb; }
     </style>
 </head>
 <body>
@@ -100,7 +108,7 @@
         <button class="secondary" onclick="disconnetti()">Esci / Cambia Password</button>
     </div>
 
-    <!-- 3. MODIFICA POSTI (NUOVO FORM PRENOTAZIONE) -->
+    <!-- 3. MODIFICA POSTI E LISTA (NUOVO FORM PRENOTAZIONE) -->
     <div id="sectionModifica" class="hidden">
         <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
             <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
@@ -133,6 +141,15 @@
 
         <button onclick="salvaNuovaPrenotazione()">Salva Prenotazione</button>
         <button class="secondary" onclick="tornaAllaLista()">Annulla e Torna alla Lista</button>
+
+        <!-- Nuova Sezione Lista Prenotati -->
+        <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
+        
+        <div id="listaPrenotatiContainer" class="hidden" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 15px;">
+            <h4 style="text-align: center; margin-bottom: 15px; color: var(--dark);">Elenco Prenotazioni</h4>
+            <div id="loadingPrenotati" class="loading hidden">Recupero lista in corso...</div>
+            <div id="listaPrenotatiContent"></div>
+        </div>
     </div>
 </div>
 
@@ -273,6 +290,12 @@
         
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionModifica").classList.remove("hidden");
+        
+        // Reset della vista lista prenotati
+        const containerLista = document.getElementById("listaPrenotatiContainer");
+        if(containerLista) containerLista.classList.add("hidden");
+        const contentLista = document.getElementById("listaPrenotatiContent");
+        if(contentLista) contentLista.innerHTML = "";
     }
 
     function cambiaPostiNuovi(valore) {
@@ -335,6 +358,60 @@
         document.getElementById("password").value = "";
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionLogin").classList.remove("hidden");
+    }
+
+    function caricaListaPrenotati() {
+        if (!tourSelezionato) return;
+
+        const container = document.getElementById("listaPrenotatiContainer");
+        const content = document.getElementById("listaPrenotatiContent");
+        const loading = document.getElementById("loadingPrenotati");
+        const pass = document.getElementById("password").value;
+
+        // Mostra il contenitore e il caricamento, pulisci i vecchi dati
+        container.classList.remove("hidden");
+        content.innerHTML = "";
+        loading.classList.remove("hidden");
+
+        fetch(SCRIPT_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "get_prenotazioni",
+                password: pass,
+                idTour: tourSelezionato.id
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            loading.classList.add("hidden");
+            if (data.success) {
+                if (data.prenotazioni.length === 0) {
+                    content.innerHTML = '<div style="text-align:center; color:#64748b; font-style:italic; padding: 10px;">Nessuna prenotazione trovata per questo tour.</div>';
+                    return;
+                }
+
+                data.prenotazioni.forEach(p => {
+                    const div = document.createElement("div");
+                    div.className = "prenotazione-item";
+                    const tel = p.telefono ? p.telefono : "Nessun numero";
+                    
+                    div.innerHTML = `
+                        <div class="nome">👤 ${p.nominativo}</div>
+                        <div class="dettagli">
+                            📞 ${tel} <br>
+                            🚲 Bici prenotate: <span class="badge-bici">${p.num_bici}</span>
+                        </div>
+                    `;
+                    content.appendChild(div);
+                });
+            } else {
+                alert("Errore: " + data.error);
+            }
+        })
+        .catch(err => {
+            loading.classList.add("hidden");
+            alert("Errore durante il recupero delle prenotazioni.");
+        });
     }
 </script>
 
