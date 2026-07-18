@@ -28,10 +28,10 @@
         
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-        input[type="text"], input[type="password"], input[type="number"] {
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="email"], select {
             width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; outline: none; transition: 0.2s;
         }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
         
         button {
             width: 100%; padding: 14px; background: var(--primary); border: none; color: white; 
@@ -63,13 +63,15 @@
         .loading { text-align: center; color: #64748b; font-style: italic; padding: 10px; }
         .form-box { background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
         
-        /* Stili per la lista prenotati */
+        /* Stili per la lista prenotati e noleggi */
         .prenotazione-item { background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 14px; text-align: left; }
         .prenotazione-item .nome { font-weight: bold; color: #0f172a; margin-bottom: 4px;}
         .prenotazione-item .dettagli { color: #475569; font-size: 13px; }
         .badge-bici { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .btn-blue { background: #3b82f6; margin-top: 15px; }
         .btn-blue:hover { background: #2563eb; }
+        .btn-yellow { background: #eab308; color: white; margin-bottom: 15px;}
+        .btn-yellow:hover { background: #ca8a04; }
     </style>
 </head>
 <body>
@@ -88,6 +90,10 @@
 
     <!-- 2. MAIN DASHBOARD (RICERCA E SELEZIONE) -->
     <div id="sectionDashboard" class="hidden">
+        
+        <!-- PULSANTE NUOVO: VAI A NOLEGGI -->
+        <button class="btn-yellow" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi E-Bike</button>
+
         <div class="search-box">
             <div class="form-group" style="margin-bottom: 8px;">
                 <label>🔍 Cerca per Nome Tour:</label>
@@ -108,7 +114,7 @@
         <button class="secondary" onclick="disconnetti()">Esci / Cambia Password</button>
     </div>
 
-    <!-- 3. MODIFICA POSTI E LISTA (NUOVO FORM PRENOTAZIONE) -->
+    <!-- 3. MODIFICA POSTI E LISTA (NUOVO FORM PRENOTAZIONE TOUR) -->
     <div id="sectionModifica" class="hidden">
         <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
             <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
@@ -142,7 +148,6 @@
         <button onclick="salvaNuovaPrenotazione()">Salva Prenotazione</button>
         <button class="secondary" onclick="tornaAllaLista()">Annulla e Torna alla Lista</button>
 
-        <!-- Nuova Sezione Lista Prenotati -->
         <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
         
         <div id="listaPrenotatiContainer" class="hidden" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 15px;">
@@ -151,6 +156,48 @@
             <div id="listaPrenotatiContent"></div>
         </div>
     </div>
+
+    <!-- 4. NUOVA SEZIONE: GESTIONE NOLEGGI E-BIKE -->
+    <div id="sectionNoleggi" class="hidden">
+        <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi E-Bike</h3>
+        
+        <!-- FORM INSERIMENTO MANUALE NOLEGGIO -->
+        <div class="form-box" style="border: 1px solid #fcd34d; background: #fffbeb;">
+            <h4 style="color: #b45309; margin-bottom: 10px;">Inserisci Noleggio (Negozio/Telefono)</h4>
+            <form id="form-noleggio-manuale" onsubmit="inviaNoleggioManuale(event)">
+                <div class="form-group"><label>Data Noleggio:</label><input type="date" id="man-data" required></div>
+                <div class="form-group"><label>Nome Cliente:</label><input type="text" id="man-nome" required placeholder="Es: Luca Bianchi"></div>
+                <div class="form-group"><label>Telefono:</label><input type="text" id="man-telefono" required placeholder="Es: 3331234567"></div>
+                <div class="form-group"><label>Email (opzionale):</label><input type="email" id="man-email" placeholder="email@esempio.com"></div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 1;"><label>N. Bici:</label><input type="number" id="man-bici" min="1" value="1" required></div>
+                    <div class="form-group" style="flex: 1;"><label>Carrellino:</label>
+                        <select id="man-carrellino">
+                            <option value="No">No</option>
+                            <option value="Si">Si</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group"><label>Altezze (separate da virgola):</label><input type="text" id="man-altezze" required placeholder="Es: 170, 185"></div>
+                
+                <button type="submit" class="btn-yellow" style="margin-bottom: 0;">Registra e Conferma Noleggio</button>
+            </form>
+        </div>
+
+        <!-- INBOX RICHIESTE WEB -->
+        <div style="margin-top: 25px;">
+            <h4 style="text-align: center; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">📥 Richieste Web in Attesa</h4>
+            <div id="loadingNoleggi" class="loading hidden">Sincronizzazione richieste...</div>
+            <div id="lista-noleggi-pendenti">
+                <!-- Richieste inserite da JS -->
+            </div>
+        </div>
+
+        <button class="secondary" onclick="tornaAiTour()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
+    </div>
+
 </div>
 
 <!-- LINK DI GOOGLE APPS SCRIPT PRESERVATO -->
@@ -159,6 +206,7 @@
 <script>
     let tuttiITour = [];
     let tourSelezionato = null;
+    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [] }; // NUOVA VARIABILE
 
     window.onload = function() {
         const savedPass = localStorage.getItem("hike_admin_pass");
@@ -189,6 +237,7 @@
                 document.getElementById("sectionLogin").classList.add("hidden");
                 document.getElementById("sectionDashboard").classList.remove("hidden");
                 document.getElementById("sectionModifica").classList.add("hidden");
+                document.getElementById("sectionNoleggi").classList.add("hidden");
                 
                 filtraI_Tour();
             } else {
@@ -208,7 +257,6 @@
         const contenitore = document.getElementById("listaContenitore");
         contenitore.innerHTML = "";
 
-        // Otteniamo la data di OGGI a mezzanotte per il confronto
         const oggi = new Date();
         oggi.setHours(0, 0, 0, 0);
 
@@ -220,7 +268,6 @@
         const filtrati = tuttiITour.filter(t => {
             const dataGrezza = String(t.data || t.date || t.Data || t.Date || "").toLowerCase();
             
-            // --- LOGICA ESCLUSIONE DATE PASSATE ---
             let meseNum = -1;
             for (let m in mesi) {
                 if (dataGrezza.includes(m)) {
@@ -228,7 +275,6 @@
                     break;
                 }
             }
-            // Trova il primo numero nella stringa (es: "14 giugno" -> 14, "4 e 5 luglio" -> 4)
             const matchGiorno = dataGrezza.match(/\d+/);
             const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
 
@@ -236,12 +282,10 @@
                 const dataTour = new Date(oggi.getFullYear(), meseNum, giornoNum);
                 dataTour.setHours(0, 0, 0, 0);
                 
-                // Se la data del tour è strettamente precedente a oggi, la scartiamo
                 if (dataTour < oggi) {
                     return false;
                 }
             }
-            // --------------------------------------
 
             const matchNome = t.nome.toLowerCase().includes(queryNome);
             const matchData = dataGrezza.includes(queryData);
@@ -291,7 +335,6 @@
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionModifica").classList.remove("hidden");
         
-        // Reset della vista lista prenotati
         const containerLista = document.getElementById("listaPrenotatiContainer");
         if(containerLista) containerLista.classList.add("hidden");
         const contentLista = document.getElementById("listaPrenotatiContent");
@@ -358,6 +401,7 @@
         document.getElementById("password").value = "";
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionLogin").classList.remove("hidden");
+        document.getElementById("sectionNoleggi").classList.add("hidden");
     }
 
     function caricaListaPrenotati() {
@@ -368,7 +412,6 @@
         const loading = document.getElementById("loadingPrenotati");
         const pass = document.getElementById("password").value;
 
-        // Mostra il contenitore e il caricamento, pulisci i vecchi dati
         container.classList.remove("hidden");
         content.innerHTML = "";
         loading.classList.remove("hidden");
@@ -412,6 +455,180 @@
             loading.classList.add("hidden");
             alert("Errore durante il recupero delle prenotazioni.");
         });
+    }
+
+    // ==========================================
+    // NUOVE FUNZIONI GESTIONE NOLEGGI
+    // ==========================================
+
+    function apriPannelloNoleggi() {
+        document.getElementById("sectionDashboard").classList.add("hidden");
+        document.getElementById("sectionNoleggi").classList.remove("hidden");
+        caricaPannelloNoleggi();
+    }
+
+    function tornaAiTour() {
+        document.getElementById("sectionNoleggi").classList.add("hidden");
+        document.getElementById("sectionDashboard").classList.remove("hidden");
+    }
+
+    async function caricaPannelloNoleggi() {
+        const pass = document.getElementById("password").value;
+        const loading = document.getElementById("loadingNoleggi");
+        const container = document.getElementById("lista-noleggi-pendenti");
+        
+        loading.classList.remove("hidden");
+        container.innerHTML = "";
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "get_noleggi_pendenti", password: pass })
+            });
+            const res = await response.json();
+            loading.classList.add("hidden");
+            
+            if (res.success) {
+                datiNoleggiGlobali = res;
+                renderizzaNoleggiPendenti();
+            } else {
+                alert("Errore caricamento noleggi: " + res.error);
+            }
+        } catch (err) {
+            loading.classList.add("hidden");
+            console.error(err);
+            alert("Errore di rete durante il caricamento dei noleggi.");
+        }
+    }
+
+    function renderizzaNoleggiPendenti() {
+        const container = document.getElementById("lista-noleggi-pendenti");
+        container.innerHTML = "";
+
+        if (!datiNoleggiGlobali.pendenti || datiNoleggiGlobali.pendenti.length === 0) {
+            container.innerHTML = "<p style='text-align:center; color:#64748b; font-style:italic;'>Nessuna richiesta da gestire in questo momento.</p>";
+            return;
+        }
+
+        datiNoleggiGlobali.pendenti.forEach(nol => {
+            // Conta le bici già noleggiate confermate per quella data esatta
+            const dataNolPura = new Date(nol.dataNoleggio).toDateString();
+            let biciGiaNoleggiate = 0;
+            
+            if(datiNoleggiGlobali.confermati) {
+                datiNoleggiGlobali.confermati.forEach(conf => {
+                    if (new Date(conf.dataNoleggio).toDateString() === dataNolPura) {
+                        biciGiaNoleggiate += Number(conf.numBici || 0);
+                    }
+                });
+            }
+
+            const card = document.createElement("div");
+            card.className = "prenotazione-item";
+            card.style.position = "relative";
+            card.innerHTML = `
+                <div class="nome">👤 ${nol.nome}</div>
+                <div class="dettagli" style="margin-bottom: 8px; line-height: 1.5;">
+                    📅 <strong>Data Richiesta:</strong> <span style="color:#d97706; font-weight:bold;">${nol.dataNoleggio}</span><br>
+                    🚲 <strong>Bici:</strong> <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>
+                    👶 <strong>Carrellino Bimbi:</strong> ${nol.carrellino}<br>
+                    📞 <strong>Tel:</strong> ${nol.telefono} <br>
+                    📧 <strong>Email:</strong> ${nol.email || "N.D."}
+                </div>
+                
+                <div style="background: #fef3c7; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 12px; border-left: 4px solid #f59e0b; color: #92400e;">
+                    <strong>Controllo Disponibilità per il ${nol.dataNoleggio}:</strong><br>
+                    Bici <strong>GIÀ CONFERMATE</strong> per altri noleggi in questa data: <strong>${biciGiaNoleggiate}</strong>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button style="background: #10b981; padding: 10px; font-size: 14px;" onclick="gestisciRichiesta(${nol.riga}, 'Confermato', '${nol.email}')">✅ Conferma</button>
+                    <button style="background: #ef4444; padding: 10px; font-size: 14px;" onclick="mostraInterfacciaRifiuto(${nol.riga})">❌ Rifiuta</button>
+                </div>
+                
+                <div id="box-rifiuto-${nol.riga}" class="hidden" style="margin-top: 10px; background: #fee2e2; padding: 10px; border-radius: 6px;">
+                    <input type="text" id="motivo-${nol.riga}" placeholder="Scrivi il motivo alla base del rifiuto..." style="width:100%; padding:8px; border:1px solid #fca5a5; border-radius:4px; margin-bottom: 8px; font-size: 13px;">
+                    <button style="background: #b91c1c; font-size: 13px; padding: 10px;" onclick="inviaRifiuto(${nol.riga}, '${nol.email}')">Invia Rifiuto</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    async function gestisciRichiesta(riga, nuovoStato, email, motivazione = "") {
+        const pass = document.getElementById("password").value;
+        if (!confirm(`Vuoi davvero segnare questa richiesta come ${nuovoStato}?`)) return;
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "gestisci_noleggio",
+                    password: pass,
+                    riga: riga,
+                    nuovoStato: nuovoStato,
+                    motivazione: motivazione
+                })
+            });
+            const res = await response.json();
+            if (res.success) {
+                alert(`Richiesta elaborata. Stato aggiornato a: ${nuovoStato}`);
+                caricaPannelloNoleggi(); 
+            } else {
+                alert("Errore dal server: " + res.error);
+            }
+        } catch (e) {
+            console.error(e);
+            alert("Errore di connessione.");
+        }
+    }
+
+    function mostraInterfacciaRifiuto(riga) {
+        document.getElementById(`box-rifiuto-${riga}`).classList.remove("hidden");
+    }
+
+    function inviaRifiuto(riga, email) {
+        const motivo = document.getElementById(`motivo-${riga}`).value.trim();
+        if (!motivo) {
+            alert("Devi specificare un motivo per il rifiuto (es. Bici esaurite).");
+            return;
+        }
+        gestisciRichiesta(riga, 'Rifiutato', email, motivo);
+    }
+
+    async function inviaNoleggioManuale(e) {
+        e.preventDefault();
+        const pass = document.getElementById("password").value;
+        
+        const payload = {
+            action: "add_manual_noleggio",
+            password: pass,
+            dataNoleggio: document.getElementById("man-data").value,
+            nome: document.getElementById("man-nome").value,
+            telefono: document.getElementById("man-telefono").value,
+            email: document.getElementById("man-email").value,
+            numBici: document.getElementById("man-bici").value,
+            altezze: document.getElementById("man-altezze").value,
+            carrellino: document.getElementById("man-carrellino").value
+        };
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            const res = await response.json();
+            if (res.success) {
+                alert("Noleggio manuale registrato e confermato con successo!");
+                document.getElementById("form-noleggio-manuale").reset();
+                caricaPannelloNoleggi(); 
+            } else {
+                alert("Errore dal server: " + res.error);
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Errore di connessione durante il salvataggio.");
+        }
     }
 </script>
 
