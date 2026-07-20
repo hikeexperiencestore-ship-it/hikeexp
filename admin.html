@@ -200,13 +200,13 @@
 
 </div>
 
-<!-- LINK DI GOOGLE APPS SCRIPT PRESERVATO -->
+<!-- LINK DI GOOGLE APPS SCRIPT -->
 <script>const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";</script>
 
 <script>
     let tuttiITour = [];
     let tourSelezionato = null;
-    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [] }; // NUOVA VARIABILE
+    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [] }; 
 
     window.onload = function() {
         const savedPass = localStorage.getItem("hike_admin_pass");
@@ -436,13 +436,19 @@
                 data.prenotazioni.forEach(p => {
                     const div = document.createElement("div");
                     div.className = "prenotazione-item";
-                    const tel = p.telefono ? p.telefono : "Nessun numero";
+                    const tel = p.telefono ? p.telefono : "N.D.";
+                    
+                    // Predisposizione per mostrare altezze e carrellino (se presenti nei dati ricevuti)
+                    let extraInfo = "";
+                    if (p.altezze || p.carrellino) {
+                         extraInfo = `<br><span style="font-size:12px; color:#64748b;">📏 Altezze: ${p.altezze || '-'} | 👶 Carrellino: ${p.carrellino || '-'}</span>`;
+                    }
                     
                     div.innerHTML = `
                         <div class="nome">👤 ${p.nominativo}</div>
                         <div class="dettagli">
                             📞 ${tel} <br>
-                            🚲 Bici prenotate: <span class="badge-bici">${p.num_bici}</span>
+                            🚲 Bici prenotate: <span class="badge-bici">${p.num_bici}</span>${extraInfo}
                         </div>
                     `;
                     content.appendChild(div);
@@ -530,6 +536,7 @@
                 <div class="nome">👤 ${nol.nome}</div>
                 <div class="dettagli" style="margin-bottom: 8px; line-height: 1.5;">
                     📅 <strong>Data Richiesta:</strong> <span style="color:#d97706; font-weight:bold;">${nol.dataNoleggio}</span><br>
+                    🏷️ <strong>Formula:</strong> <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-weight:bold;">${nol.offerta || "Libero/Manuale"}</span><br>
                     🚲 <strong>Bici:</strong> <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>
                     👶 <strong>Carrellino Bimbi:</strong> ${nol.carrellino}<br>
                     📞 <strong>Tel:</strong> ${nol.telefono} <br>
