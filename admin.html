@@ -378,14 +378,16 @@
     }
 
     function popolaSelectOfferteManuali(offerte) {
-        const sel = document.getElementById("man-offerta");
-        if(sel) {
-            sel.innerHTML = `<option value="Noleggio Libero">Noleggio Libero</option>`;
-            offerte.forEach(o => {
-                sel.innerHTML += `<option value="${o.nome}">${o.nome}</option>`;
-            });
-        }
+    const sel = document.getElementById("man-offerta");
+    if(sel) {
+        // Svuotiamo completamente la select
+        sel.innerHTML = ""; 
+        // Aggiungiamo solo le offerte che arrivano dal foglio "Configurazione"
+        offerte.forEach(o => {
+            sel.innerHTML += `<option value="${o.nome}">${o.nome}</option>`;
+        });
     }
+}
 
     function renderizzaNoleggi() {
         const cont = document.getElementById("lista-noleggi-pendenti");
