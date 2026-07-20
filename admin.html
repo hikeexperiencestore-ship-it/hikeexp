@@ -24,38 +24,19 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f1f5f9; color: var(--dark); padding: 15px; }
         
-        /* Layout Base Mobile */
         .container { 
-            max-width: 500px; 
-            margin: 0 auto; 
-            background: white; 
-            padding: 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
-            transition: max-width 0.3s ease;
+            max-width: 500px; margin: 0 auto; background: white; padding: 20px; 
+            border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: max-width 0.3s ease;
         }
-        
-        /* OTTIMIZZAZIONE DESKTOP / TABLET (Schermi > 768px) */
         @media (min-width: 768px) {
             body { padding: 30px 15px; }
             .container { max-width: 900px; padding: 30px; }
-            
-            .search-box-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
+            .search-box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
             .search-box-grid .form-group { margin-bottom: 0 !important; }
-            
-            .form-grid-2 {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
+            .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         }
 
         h2 { text-align: center; margin-bottom: 20px; font-size: 22px; color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
-        
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
         input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="email"], select {
@@ -63,10 +44,7 @@
         }
         input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
         
-        button {
-            width: 100%; padding: 14px; background: var(--primary); border: none; color: white; 
-            font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s;
-        }
+        button { width: 100%; padding: 14px; background: var(--primary); border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         button:hover { background: var(--primary-dark); }
         button.secondary { background: #94a3b8; margin-top: 10px; }
         
@@ -79,29 +57,28 @@
         .tour-item:hover { background: #e8f5e9; }
         .tour-item .title { font-weight: bold; color: #1e293b; margin-bottom: 3px; }
         .tour-item .info { color: #64748b; font-size: 12px; margin-bottom: 4px; }
-        .tour-item .details-box { background: #f1f5f9; padding: 6px; border-radius: 6px; font-size: 11px; margin-top: 6px; color: #475569; }
+        .tour-item .details-box { background: #f1f5f9; padding: 6px; border-radius: 6px; font-size: 11px; margin-top: 6px; color: #475569; border-left: 3px solid var(--primary); }
 
         .counter-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 10px 0; }
         .btn-counter { width: 50px; height: 50px; border-radius: 50%; font-size: 24px; background: #e2e8f0; color: var(--dark); display: flex; align-items: center; justify-content: center; user-select: none; cursor: pointer; }
-        .btn-counter:active { background: #cbd5e1; }
-        #displayNuoviPosti { font-size: 28px; font-weight: bold; min-width: 40px; text-align: center; }
-        
         .status-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-top: 5px; }
         .badge-dispo { background: #dcfce7; color: #166534; }
         .badge-full { background: #fee2e2; color: #991b1b; }
-        
         .loading { text-align: center; color: #64748b; font-style: italic; padding: 10px; }
         .form-box { background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
         
-        /* Stili per la lista prenotati e noleggi */
         .prenotazione-item { background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 14px; text-align: left; }
         .prenotazione-item .nome { font-weight: bold; color: #0f172a; margin-bottom: 4px;}
-        .prenotazione-item .dettagli { color: #475569; font-size: 13px; }
+        .prenotazione-item .dettagli { color: #475569; font-size: 13px; margin-bottom: 8px;}
         .badge-bici { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         .btn-blue { background: #3b82f6; margin-top: 15px; }
         .btn-blue:hover { background: #2563eb; }
         .btn-yellow { background: #eab308; color: white; margin-bottom: 15px;}
         .btn-yellow:hover { background: #ca8a04; }
+        
+        .btn-storno { background: #f97316; font-size: 12px; padding: 8px; width: 100%; display: block;}
+        .btn-storno:hover { background: #ea580c; }
+        .btn-ok { background: #10b981; font-size: 12px; padding: 8px; width: 100%; cursor: default;}
     </style>
 </head>
 <body>
@@ -109,571 +86,303 @@
 <div class="container">
     <h2>Hike Exp - Dashboard Soci</h2>
 
-    <!-- 1. LOGIN SCREEN -->
+    <!-- LOGIN SCREEN -->
     <div id="sectionLogin">
-        <div class="form-group">
-            <label for="password">Inserisci la Password Admin:</label>
-            <input type="password" id="password" placeholder="Password">
-        </div>
-        <button onclick="caricaTuttiITour()">Accedi e Carica Tour</button>
+        <div class="form-group"><label>Password Admin:</label><input type="password" id="password" placeholder="Password"></div>
+        <button onclick="caricaTuttiITour()">Accedi e Carica</button>
     </div>
 
-    <!-- 2. MAIN DASHBOARD (RICERCA E SELEZIONE) -->
+    <!-- MAIN DASHBOARD -->
     <div id="sectionDashboard" class="hidden">
-        
-        <!-- PULSANTE VAI A NOLEGGI -->
         <button class="btn-yellow" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi E-Bike</button>
 
         <div class="search-box">
             <div class="search-box-grid">
-                <div class="form-group">
-                    <label>🔍 Cerca per Nome Tour:</label>
-                    <input type="text" id="searchNome" placeholder="Es: Tramonto, Campo Imperatore..." oninput="filtraI_Tour()">
-                </div>
-                <div class="form-group">
-                    <label>📅 Filtra per Data:</label>
-                    <input type="text" id="searchData" placeholder="Es: 14/06, luglio..." oninput="filtraI_Tour()">
-                </div>
+                <div class="form-group"><label>🔍 Nome Tour:</label><input type="text" id="searchNome" oninput="filtraI_Tour()"></div>
+                <div class="form-group"><label>📅 Data:</label><input type="text" id="searchData" oninput="filtraI_Tour()"></div>
             </div>
         </div>
 
         <label>Seleziona il tour per aggiungere prenotazioni:</label>
-        <div id="loadingList" class="loading hidden">Caricamento in corso...</div>
-        <div class="tour-list" id="listaContenitore">
-            <!-- I tour filtrati appariranno qui dinamicamente -->
-        </div>
-        
-        <button class="secondary" onclick="disconnetti()">Esci / Cambia Password</button>
+        <div id="loadingList" class="loading hidden">Caricamento...</div>
+        <div class="tour-list" id="listaContenitore"></div>
+        <button class="secondary" onclick="disconnetti()">Esci</button>
     </div>
 
-    <!-- 3. MODIFICA POSTI E LISTA (FORM PRENOTAZIONE TOUR) -->
+    <!-- MODIFICA E LISTA TOUR -->
     <div id="sectionModifica" class="hidden">
         <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
             <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
             <div id="editDettagli" style="font-size: 13px; color: #0f172a;">-</div>
         </div>
 
-        <h3 style="font-size: 16px; margin-bottom: 10px; text-align: center;">Aggiungi Nuova Prenotazione</h3>
-        
+        <h3 style="font-size: 16px; margin-bottom: 10px; text-align: center;">Nuova Prenotazione</h3>
         <div class="form-box">
             <div class="form-grid-2">
-                <div class="form-group">
-                    <label>👤 Nominativo (Obbligatorio):</label>
-                    <input type="text" id="nuovoNome" placeholder="Es: Mario Rossi">
-                </div>
-                
-                <div class="form-group">
-                    <label>📞 Telefono (Facoltativo):</label>
-                    <input type="text" id="nuovoTelefono" placeholder="Es: 3331234567">
-                </div>
+                <div class="form-group"><label>👤 Nominativo:</label><input type="text" id="nuovoNome"></div>
+                <div class="form-group"><label>📞 Telefono:</label><input type="text" id="nuovoTelefono"></div>
             </div>
-            
             <div class="form-group">
-                <label>🚲 Numero Posti/Bici (Obbligatorio):</label>
+                <label>🚲 Numero Bici:</label>
                 <div class="counter-container">
                     <div class="btn-counter" onclick="cambiaPostiNuovi(-1)">-</div>
-                    <div id="displayNuoviPosti">1</div>
+                    <div id="displayNuoviPosti" style="font-size:24px; font-weight:bold;">1</div>
                     <div class="btn-counter" onclick="cambiaPostiNuovi(1)">+</div>
                 </div>
-                <p style="font-size: 11px; color: #64748b; text-align: center; margin-top: -5px;">(Seleziona numero negativo per registrare una disdetta)</p>
             </div>
         </div>
-
         <button onclick="salvaNuovaPrenotazione()">Salva Prenotazione</button>
-        <button class="secondary" onclick="tornaAllaLista()">Annulla e Torna alla Lista</button>
+        <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
 
         <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
-        
         <div id="listaPrenotatiContainer" class="hidden" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 15px;">
-            <h4 style="text-align: center; margin-bottom: 15px; color: var(--dark);">Elenco Prenotazioni</h4>
-            <div id="loadingPrenotati" class="loading hidden">Recupero lista in corso...</div>
+            <div id="loadingPrenotati" class="loading hidden">Recupero in corso...</div>
             <div id="listaPrenotatiContent"></div>
         </div>
     </div>
 
-    <!-- 4. GESTIONE NOLEGGI E-BIKE -->
+    <!-- SEZIONE NOLEGGI -->
     <div id="sectionNoleggi" class="hidden">
-        <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi E-Bike</h3>
+        <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi</h3>
         
-        <!-- FORM INSERIMENTO MANUALE NOLEGGIO -->
         <div class="form-box" style="border: 1px solid #fcd34d; background: #fffbeb;">
-            <h4 style="color: #b45309; margin-bottom: 10px;">Inserisci Noleggio (Negozio/Telefono)</h4>
+            <h4 style="color: #b45309; margin-bottom: 10px;">Inserimento Manuale</h4>
             <form id="form-noleggio-manuale" onsubmit="inviaNoleggioManuale(event)">
                 <div class="form-grid-2">
-                    <div class="form-group"><label>Data Noleggio:</label><input type="date" id="man-data" required></div>
-                    <div class="form-group"><label>Nome Cliente:</label><input type="text" id="man-nome" required placeholder="Es: Luca Bianchi"></div>
+                    <div class="form-group"><label>Data:</label><input type="date" id="man-data" required></div>
+                    <div class="form-group"><label>Nome:</label><input type="text" id="man-nome" required></div>
                 </div>
                 <div class="form-grid-2">
-                    <div class="form-group"><label>Telefono:</label><input type="text" id="man-telefono" required placeholder="Es: 3331234567"></div>
-                    <div class="form-group"><label>Email (opzionale):</label><input type="email" id="man-email" placeholder="email@esempio.com"></div>
+                    <div class="form-group"><label>Tel:</label><input type="text" id="man-telefono" required></div>
+                    <div class="form-group"><label>Email:</label><input type="email" id="man-email"></div>
                 </div>
-                
                 <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;"><label>N. Bici:</label><input type="number" id="man-bici" min="1" value="1" required></div>
-                    <div class="form-group" style="flex: 1;"><label>Carrellino:</label>
-                        <select id="man-carrellino">
-                            <option value="No">No</option>
-                            <option value="Si">Si</option>
-                        </select>
-                    </div>
+                    <div class="form-group" style="flex: 1;"><label>Bici:</label><input type="number" id="man-bici" value="1" required></div>
+                    <div class="form-group" style="flex: 1;"><label>Carrello:</label><select id="man-carrellino"><option>No</option><option>Si</option></select></div>
                 </div>
-
-                <div class="form-group"><label>Altezze (separate da virgola):</label><input type="text" id="man-altezze" required placeholder="Es: 170, 185"></div>
-                
-                <button type="submit" class="btn-yellow" style="margin-bottom: 0;">Registra e Conferma Noleggio</button>
+                <div class="form-group"><label>Altezze:</label><input type="text" id="man-altezze" required></div>
+                <button type="submit" class="btn-yellow" style="margin-bottom: 0;">Registra Noleggio</button>
             </form>
         </div>
 
-        <!-- INBOX RICHIESTE WEB -->
         <div style="margin-top: 25px;">
-            <h4 style="text-align: center; margin-bottom: 15px; border-bottom: 2px solid var(--border); padding-bottom: 10px;">📥 Richieste Web in Attesa</h4>
-            <div id="loadingNoleggi" class="loading hidden">Sincronizzazione richieste...</div>
-            <div id="lista-noleggi-pendenti">
-                <!-- Richieste inserite da JS -->
-            </div>
+            <h4 style="text-align: center; margin-bottom: 15px;">📥 Richieste / Confermati</h4>
+            <div id="loadingNoleggi" class="loading hidden">Sincronizzazione...</div>
+            <div id="lista-noleggi-pendenti"></div>
         </div>
-
         <button class="secondary" onclick="tornaAiTour()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
     </div>
-
 </div>
 
-<!-- LINK DI GOOGLE APPS SCRIPT -->
 <script>const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";</script>
-
 <script>
     let tuttiITour = [];
     let tourSelezionato = null;
     let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [] }; 
 
     window.onload = function() {
-        const savedPass = localStorage.getItem("hike_admin_pass");
-        if (savedPass) {
-            document.getElementById("password").value = savedPass;
+        if (localStorage.getItem("hike_admin_pass")) {
+            document.getElementById("password").value = localStorage.getItem("hike_admin_pass");
             caricaTuttiITour();
         }
     };
 
     function caricaTuttiITour() {
         const pass = document.getElementById("password").value;
-        if (!pass) { return alert("Inserisci la password!"); }
+        if (!pass) return alert("Inserisci la password!");
 
         document.getElementById("loadingList").classList.remove("hidden");
         document.getElementById("listaContenitore").innerHTML = "";
 
-        fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({ action: "get_all_tours", password: pass })
-        })
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "get_all_tours", password: pass }) })
         .then(res => res.json())
         .then(data => {
             document.getElementById("loadingList").classList.add("hidden");
             if (data.success) {
                 localStorage.setItem("hike_admin_pass", pass);
                 tuttiITour = data.tours;
-                
                 document.getElementById("sectionLogin").classList.add("hidden");
                 document.getElementById("sectionDashboard").classList.remove("hidden");
                 document.getElementById("sectionModifica").classList.add("hidden");
                 document.getElementById("sectionNoleggi").classList.add("hidden");
-                
                 filtraI_Tour();
-            } else {
-                alert("Errore: " + data.error);
-            }
-        })
-        .catch(err => {
-            document.getElementById("loadingList").classList.add("hidden");
-            alert("Errore di connessione o URL dello script non corretto.");
-            console.error(err);
-        });
+            } else { alert("Errore: " + data.error); }
+        }).catch(err => alert("Errore di rete."));
     }
 
     function filtraI_Tour() {
-        const queryNome = document.getElementById("searchNome").value.toLowerCase();
-        const queryData = document.getElementById("searchData").value.toLowerCase();
-        const contenitore = document.getElementById("listaContenitore");
-        contenitore.innerHTML = "";
+        const qNome = document.getElementById("searchNome").value.toLowerCase();
+        const qData = document.getElementById("searchData").value.toLowerCase();
+        const cont = document.getElementById("listaContenitore");
+        cont.innerHTML = "";
 
-        const oggi = new Date();
-        oggi.setHours(0, 0, 0, 0);
+        const filtrati = tuttiITour.filter(t => t.nome.toLowerCase().includes(qNome) && (t.data||"").toLowerCase().includes(qData));
 
-        const mesi = {
-            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
-            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
-        };
-
-        const filtrati = tuttiITour.filter(t => {
-            const dataGrezza = String(t.data || t.date || t.Data || t.Date || "").toLowerCase();
-            
-            let meseNum = -1;
-            for (let m in mesi) {
-                if (dataGrezza.includes(m)) {
-                    meseNum = mesi[m];
-                    break;
-                }
-            }
-            const matchGiorno = dataGrezza.match(/\d+/);
-            const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
-
-            if (meseNum !== -1) {
-                const dataTour = new Date(oggi.getFullYear(), meseNum, giornoNum);
-                dataTour.setHours(0, 0, 0, 0);
-                
-                if (dataTour < oggi) {
-                    return false;
-                }
-            }
-
-            const matchNome = t.nome.toLowerCase().includes(queryNome);
-            const matchData = dataGrezza.includes(queryData);
-            return matchNome && matchData;
-        });
-
-        if (filtrati.length === 0) {
-            contenitore.innerHTML = '<div class="loading">Nessun tour in programma (o corrispondente ai filtri)</div>';
-            return;
-        }
+        if (filtrati.length === 0) { cont.innerHTML = '<div class="loading">Nessun tour trovato</div>'; return; }
 
         filtrati.forEach(t => {
             const item = document.createElement("div");
             item.className = "tour-item";
             item.onclick = () => apriModificaTour(t);
-            
-            const dataVisualizzata = t.data || t.date || t.Data || t.Date || 'Data N.D.';
             const badgeClass = t.disponibili > 0 ? "badge-dispo" : "badge-full";
 
             item.innerHTML = `
                 <div class="title">${t.nome}</div>
-                <div class="info" style="color: #1e293b;">📅 <strong>${dataVisualizzata}</strong> &nbsp;|&nbsp; ID: ${t.id}</div>
+                <div class="info">📅 <strong>${t.data || '-'}</strong> | ID: ${t.id}</div>
                 <div class="details-box">
-                    <strong>${t.occupati_totali}</strong> occupati su ${t.totali}<br>
-                    (Sito/Manuale: <strong>${t.occupati_sito}</strong> | Majellando: <strong>${t.occupati_majellando}</strong>)
+                    <strong>Riepilogo Assegnazioni:</strong><br>
+                    - Sito/Manuale: <strong>${t.occupati_sito}</strong><br>
+                    - Noleggi Sovrapposti: <strong>${t.noleggi}</strong><br>
+                    - Majellando: <strong>${t.occupati_majellando}</strong> (di cui <strong>${t.ritiri_hike}</strong> ritiri hike)
                 </div>
-                <span class="status-badge ${badgeClass}">Disponibili: ${t.disponibili}</span>
+                <span class="status-badge ${badgeClass}">Disponibili: ${t.disponibili} su ${t.totali}</span>
             `;
-            contenitore.appendChild(item);
+            cont.appendChild(item);
         });
     }
 
     function apriModificaTour(tour) {
         tourSelezionato = { ...tour }; 
-        const dataVisualizzata = tourSelezionato.data || tourSelezionato.date || tourSelezionato.Data || tourSelezionato.Date || '-';
-        
         document.getElementById("editNomeTour").innerText = tourSelezionato.nome;
-        document.getElementById("editDettagli").innerHTML = `
-            Data: <strong>${dataVisualizzata}</strong><br>
-            Posti Rimasti: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})
-        `;
-        
+        document.getElementById("editDettagli").innerHTML = `Data: <strong>${tourSelezionato.data||'-'}</strong><br>Disponibili: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})`;
         document.getElementById("nuovoNome").value = "";
         document.getElementById("nuovoTelefono").value = "";
         document.getElementById("displayNuoviPosti").innerText = "1";
         
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionModifica").classList.remove("hidden");
-        
-        const containerLista = document.getElementById("listaPrenotatiContainer");
-        if(containerLista) containerLista.classList.add("hidden");
-        const contentLista = document.getElementById("listaPrenotatiContent");
-        if(contentLista) contentLista.innerHTML = "";
+        document.getElementById("listaPrenotatiContainer").classList.add("hidden");
     }
 
-    function cambiaPostiNuovi(valore) {
-        let corr = parseInt(document.getElementById("displayNuoviPosti").innerText, 10) || 0;
-        corr += valore;
-        if (corr === 0) { 
-            corr = (valore > 0) ? 1 : -1; 
-        }
+    function cambiaPostiNuovi(val) {
+        let corr = (parseInt(document.getElementById("displayNuoviPosti").innerText)||0) + val;
+        if(corr === 0) corr = val > 0 ? 1 : -1;
         document.getElementById("displayNuoviPosti").innerText = corr;
     }
 
     function salvaNuovaPrenotazione() {
-        const pass = document.getElementById("password").value;
-        const nome = document.getElementById("nuovoNome").value.trim();
-        const telefono = document.getElementById("nuovoTelefono").value.trim();
-        const numBici = parseInt(document.getElementById("displayNuoviPosti").innerText, 10);
+        const p = document.getElementById("password").value;
+        const n = document.getElementById("nuovoNome").value.trim();
+        const t = document.getElementById("nuovoTelefono").value.trim();
+        const b = parseInt(document.getElementById("displayNuoviPosti").innerText);
+        
+        if(!n) return alert("Nominativo obbligatorio!");
+        if(!confirm(b>0 ? `Confermi ${b} posti per ${n}?` : `DISDETTA ${Math.abs(b)} posti per ${n}?`)) return;
 
-        if (!nome) {
-            alert("Il Nominativo è obbligatorio!");
-            return;
-        }
-        if (!tourSelezionato) return;
-
-        const testConferma = numBici > 0 
-            ? `Vuoi confermare la prenotazione di ${numBici} posti per ${nome}?` 
-            : `Stai registrando una DISDETTA di ${Math.abs(numBici)} posti per ${nome}. Confermi?`;
-            
-        if (!confirm(testConferma)) return;
-
-        fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                action: "add_manual_booking",
-                password: pass,
-                idTour: tourSelezionato.id,
-                nome: nome,
-                telefono: telefono,
-                numBici: numBici
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                alert("Registrata con successo!");
-                caricaTuttiITour();
-            } else {
-                alert("Errore durante il salvataggio: " + data.error);
-            }
-        })
-        .catch(err => alert("Errore di rete. Riprova."));
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "add_manual_booking", password: p, idTour: tourSelezionato.id, nome: n, telefono: t, numBici: b}) })
+        .then(res => res.json()).then(d => { if(d.success){ alert("Ok!"); caricaTuttiITour(); } else alert("Errore"); });
     }
 
-    function tornaAllaLista() {
-        document.getElementById("sectionModifica").classList.add("hidden");
-        document.getElementById("sectionDashboard").classList.remove("hidden");
-    }
-
-    function disconnetti() {
-        localStorage.removeItem("hike_admin_pass");
-        document.getElementById("password").value = "";
-        document.getElementById("sectionDashboard").classList.add("hidden");
-        document.getElementById("sectionLogin").classList.remove("hidden");
-        document.getElementById("sectionNoleggi").classList.add("hidden");
-    }
+    function tornaAllaLista() { document.getElementById("sectionModifica").classList.add("hidden"); document.getElementById("sectionDashboard").classList.remove("hidden"); }
+    function disconnetti() { localStorage.removeItem("hike_admin_pass"); location.reload(); }
 
     function caricaListaPrenotati() {
-        if (!tourSelezionato) return;
+        document.getElementById("listaPrenotatiContainer").classList.remove("hidden");
+        document.getElementById("loadingPrenotati").classList.remove("hidden");
+        const cont = document.getElementById("listaPrenotatiContent");
+        cont.innerHTML = "";
 
-        const container = document.getElementById("listaPrenotatiContainer");
-        const content = document.getElementById("listaPrenotatiContent");
-        const loading = document.getElementById("loadingPrenotati");
-        const pass = document.getElementById("password").value;
-
-        container.classList.remove("hidden");
-        content.innerHTML = "";
-        loading.classList.remove("hidden");
-
-        fetch(SCRIPT_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                action: "get_prenotazioni",
-                password: pass,
-                idTour: tourSelezionato.id
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            loading.classList.add("hidden");
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_prenotazioni", password: document.getElementById("password").value, idTour: tourSelezionato.id}) })
+        .then(res => res.json()).then(data => {
+            document.getElementById("loadingPrenotati").classList.add("hidden");
             if (data.success) {
-                if (data.prenotazioni.length === 0) {
-                    content.innerHTML = '<div style="text-align:center; color:#64748b; font-style:italic; padding: 10px;">Nessuna prenotazione trovata per questo tour.</div>';
-                    return;
-                }
-
+                if(data.prenotazioni.length===0) return cont.innerHTML = "Nessuna prenotazione.";
                 data.prenotazioni.forEach(p => {
                     const div = document.createElement("div");
                     div.className = "prenotazione-item";
-                    const tel = p.telefono ? p.telefono : "N.D.";
-                    
-                    let extraInfo = "";
-                    if (p.altezze || p.carrellino) {
-                         extraInfo = `<br><span style="font-size:12px; color:#64748b;">📏 Altezze: ${p.altezze || '-'} | 👶 Carrellino: ${p.carrellino || '-'}</span>`;
-                    }
+                    let btnHTML = p.stornato === "SI" 
+                        ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
+                        : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
                     
                     div.innerHTML = `
                         <div class="nome">👤 ${p.nominativo}</div>
-                        <div class="dettagli">
-                            📞 ${tel} <br>
-                            🚲 Bici prenotate: <span class="badge-bici">${p.num_bici}</span>${extraInfo}
-                        </div>
+                        <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
+                        ${btnHTML}
                     `;
-                    content.appendChild(div);
+                    cont.appendChild(div);
                 });
-            } else {
-                alert("Errore: " + data.error);
             }
-        })
-        .catch(err => {
-            loading.classList.add("hidden");
-            alert("Errore durante il recupero delle prenotazioni.");
         });
     }
 
-    // ==========================================
-    // NUOVE FUNZIONI GESTIONE NOLEGGI
-    // ==========================================
+    function flagStornato(riga) {
+        if(!confirm("Hai già rimosso fisicamente questi posti da Majellando? Il sistema riequilibrerà la disponibilità.")) return;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "flag_stornato_tour", password: document.getElementById("password").value, riga: riga}) })
+        .then(res => res.json()).then(d => { if(d.success){ alert("Storno registrato!"); caricaListaPrenotati(); caricaTuttiITour(); } });
+    }
 
+    // --- NOLEGGI ---
     function apriPannelloNoleggi() {
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionNoleggi").classList.remove("hidden");
         caricaPannelloNoleggi();
     }
-
-    function tornaAiTour() {
-        document.getElementById("sectionNoleggi").classList.add("hidden");
-        document.getElementById("sectionDashboard").classList.remove("hidden");
-    }
+    function tornaAiTour() { document.getElementById("sectionNoleggi").classList.add("hidden"); document.getElementById("sectionDashboard").classList.remove("hidden"); }
 
     async function caricaPannelloNoleggi() {
-        const pass = document.getElementById("password").value;
-        const loading = document.getElementById("loadingNoleggi");
-        const container = document.getElementById("lista-noleggi-pendenti");
-        
-        loading.classList.remove("hidden");
-        container.innerHTML = "";
-
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({ action: "get_noleggi_pendenti", password: pass })
-            });
-            const res = await response.json();
-            loading.classList.add("hidden");
-            
-            if (res.success) {
-                datiNoleggiGlobali = res;
-                renderizzaNoleggiPendenti();
-            } else {
-                alert("Errore caricamento noleggi: " + res.error);
-            }
-        } catch (err) {
-            loading.classList.add("hidden");
-            console.error(err);
-            alert("Errore di rete durante il caricamento dei noleggi.");
-        }
+        document.getElementById("loadingNoleggi").classList.remove("hidden");
+        document.getElementById("lista-noleggi-pendenti").innerHTML = "";
+        const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
+        document.getElementById("loadingNoleggi").classList.add("hidden");
+        if(res.success){ datiNoleggiGlobali = res; renderizzaNoleggi(); }
     }
 
-    function renderizzaNoleggiPendenti() {
-        const container = document.getElementById("lista-noleggi-pendenti");
-        container.innerHTML = "";
-
-        if (!datiNoleggiGlobali.pendenti || datiNoleggiGlobali.pendenti.length === 0) {
-            container.innerHTML = "<p style='text-align:center; color:#64748b; font-style:italic;'>Nessuna richiesta da gestire in questo momento.</p>";
-            return;
-        }
-
-        datiNoleggiGlobali.pendenti.forEach(nol => {
-            const dataNolPura = nol.dataNoleggio;
-            let biciGiaNoleggiate = 0;
+    function renderizzaNoleggi() {
+        const cont = document.getElementById("lista-noleggi-pendenti");
+        cont.innerHTML = "";
+        const listaCompleta = [...datiNoleggiGlobali.pendenti, ...datiNoleggiGlobali.confermati];
+        
+        listaCompleta.forEach(nol => {
+            const div = document.createElement("div");
+            div.className = "prenotazione-item";
             
-            if(datiNoleggiGlobali.confermati) {
-                datiNoleggiGlobali.confermati.forEach(conf => {
-                    if (conf.dataNoleggio === dataNolPura) {
-                        biciGiaNoleggiate += Number(conf.numBici || 0);
-                    }
-                });
+            // Creazione Dropdown Tour
+            let optionsTours = datiNoleggiGlobali.tours.map(t => `<option value="${t.id}">${t.nome} (${t.data})</option>`).join("");
+            let bloccoStorno = nol.tour_collegato 
+                ? `<div style="background:#dcfce7; color:#166534; padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">✅ Scalato dal Tour ID: ${nol.tour_collegato}</div>`
+                : ` <div style="background:#f1f5f9; padding:8px; border-radius:6px; font-size:12px; margin-top:10px;">
+                        <strong>🔗 Collega e Storna da un Tour:</strong><br>
+                        <select id="sel-tour-${nol.riga}" style="margin:5px 0; padding:8px; width:100%; font-size:12px;"><option value="">Seleziona Tour...</option>${optionsTours}</select>
+                        <button class="btn-storno" onclick="collegaNoleggioTour(${nol.riga})">Storna posti da Majellando</button>
+                    </div>`;
+
+            let azioniHTML = "";
+            if (!datiNoleggiGlobali.confermati.find(c => c.riga === nol.riga)) {
+                azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;"><button style="background:#10b981; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button><button style="background:#ef4444; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button></div>`;
             }
 
-            const card = document.createElement("div");
-            card.className = "prenotazione-item";
-            card.style.position = "relative";
-            card.innerHTML = `
-                <div class="nome">👤 ${nol.nome}</div>
-                <div class="dettagli" style="margin-bottom: 8px; line-height: 1.5;">
-                    📅 <strong>Data Richiesta:</strong> <span style="color:#d97706; font-weight:bold;">${nol.dataNoleggio}</span><br>
-                    🏷️ <strong>Formula:</strong> <span style="background:#dcfce7; color:#166534; padding:2px 6px; border-radius:4px; font-weight:bold;">${nol.offerta || "Libero/Manuale"}</span><br>
-                    🚲 <strong>Bici:</strong> <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>
-                    👶 <strong>Carrellino Bimbi:</strong> ${nol.carrellino}<br>
-                    📞 <strong>Tel:</strong> ${nol.telefono} <br>
-                    📧 <strong>Email:</strong> ${nol.email || "N.D."}
+            div.innerHTML = `
+                <div class="nome">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio}]</span></div>
+                <div class="dettagli" style="margin-bottom:0;">
+                    🏷️ Formula: <strong>${nol.offerta}</strong><br>
+                    🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
                 </div>
-                
-                <div style="background: #fef3c7; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 12px; border-left: 4px solid #f59e0b; color: #92400e;">
-                    <strong>Controllo Disponibilità per il ${nol.dataNoleggio}:</strong><br>
-                    Bici <strong>GIÀ CONFERMATE</strong> per altri noleggi in questa data: <strong>${biciGiaNoleggiate}</strong>
-                </div>
-
-                <div style="display: flex; gap: 10px;">
-                    <button style="background: #10b981; padding: 10px; font-size: 14px;" onclick="gestisciRichiesta(${nol.riga}, 'Confermato', '${nol.email}')">✅ Conferma</button>
-                    <button style="background: #ef4444; padding: 10px; font-size: 14px;" onclick="mostraInterfacciaRifiuto(${nol.riga})">❌ Rifiuta</button>
-                </div>
-                
-                <div id="box-rifiuto-${nol.riga}" class="hidden" style="margin-top: 10px; background: #fee2e2; padding: 10px; border-radius: 6px;">
-                    <input type="text" id="motivo-${nol.riga}" placeholder="Scrivi il motivo alla base del rifiuto..." style="width:100%; padding:8px; border:1px solid #fca5a5; border-radius:4px; margin-bottom: 8px; font-size: 13px;">
-                    <button style="background: #b91c1c; font-size: 13px; padding: 10px;" onclick="inviaRifiuto(${nol.riga}, '${nol.email}')">Invia Rifiuto</button>
-                </div>
+                ${azioniHTML}
+                ${bloccoStorno}
             `;
-            container.appendChild(card);
+            cont.appendChild(div);
         });
     }
 
-    async function gestisciRichiesta(riga, nuovoStato, email, motivazione = "") {
-        const pass = document.getElementById("password").value;
-        if (!confirm(`Vuoi davvero segnare questa richiesta come ${nuovoStato}?`)) return;
-
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify({
-                    action: "gestisci_noleggio",
-                    password: pass,
-                    riga: riga,
-                    nuovoStato: nuovoStato,
-                    motivazione: motivazione
-                })
-            });
-            const res = await response.json();
-            if (res.success) {
-                alert(`Richiesta elaborata. Stato aggiornato a: ${nuovoStato}`);
-                caricaPannelloNoleggi(); 
-            } else {
-                alert("Errore dal server: " + res.error);
-            }
-        } catch (e) {
-            console.error(e);
-            alert("Errore di connessione.");
-        }
-    }
-
-    function mostraInterfacciaRifiuto(riga) {
-        document.getElementById(`box-rifiuto-${riga}`).classList.remove("hidden");
-    }
-
-    function inviaRifiuto(riga, email) {
-        const motivo = document.getElementById(`motivo-${riga}`).value.trim();
-        if (!motivo) {
-            alert("Devi specificare un motivo per il rifiuto (es. Bici esaurite).");
-            return;
-        }
-        gestisciRichiesta(riga, 'Rifiutato', email, motivo);
-    }
-
-    async function inviaNoleggioManuale(e) {
-        e.preventDefault();
-        const pass = document.getElementById("password").value;
+    function collegaNoleggioTour(rigaNol) {
+        const sel = document.getElementById(`sel-tour-${rigaNol}`).value;
+        if(!sel) return alert("Seleziona prima il Tour dal menu a tendina!");
+        if(!confirm("Confermi di aver bloccato fisicamente questi posti su Majellando per il Tour selezionato?")) return;
         
-        const payload = {
-            action: "add_manual_noleggio",
-            password: pass,
-            dataNoleggio: document.getElementById("man-data").value,
-            nome: document.getElementById("man-nome").value,
-            telefono: document.getElementById("man-telefono").value,
-            email: document.getElementById("man-email").value,
-            numBici: document.getElementById("man-bici").value,
-            altezze: document.getElementById("man-altezze").value,
-            carrellino: document.getElementById("man-carrellino").value
-        };
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "collega_noleggio_tour", password: document.getElementById("password").value, riga: rigaNol, idTour: sel}) })
+        .then(res => res.json()).then(d => { if(d.success){ alert("Collegamento effettuato!"); caricaPannelloNoleggi(); } });
+    }
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            });
-            const res = await response.json();
-            if (res.success) {
-                alert("Noleggio manuale registrato e confermato con successo!");
-                document.getElementById("form-noleggio-manuale").reset();
-                caricaPannelloNoleggi(); 
-            } else {
-                alert("Errore dal server: " + res.error);
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Errore di connessione durante il salvataggio.");
-        }
+    function gestisciNol(riga, stato) {
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "gestisci_noleggio", password: document.getElementById("password").value, riga: riga, nuovoStato: stato}) })
+        .then(res => res.json()).then(d => { if(d.success){ caricaPannelloNoleggi(); } });
+    }
+    
+    function inviaNoleggioManuale(e) {
+        e.preventDefault();
+        const p = { action: "add_manual_noleggio", password: document.getElementById("password").value, dataNoleggio: document.getElementById("man-data").value, nome: document.getElementById("man-nome").value, telefono: document.getElementById("man-telefono").value, email: document.getElementById("man-email").value, numBici: document.getElementById("man-bici").value, altezze: document.getElementById("man-altezze").value, carrellino: document.getElementById("man-carrellino").value };
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); caricaPannelloNoleggi(); } });
     }
 </script>
-
 </body>
 </html>
