@@ -6,13 +6,10 @@
     <title>Hike Exp - Dashboard Soci</title>
     
     <link rel="icon" type="image/png" sizes="192x192" href="LOGO.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="LOGO.png">
     <link rel="apple-touch-icon" sizes="180x180" href="LOGO.png">
-    <link rel="icon" type="image/png" href="LOGO.png">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
     <style>
         :root {
             --primary: #2ecc71;
@@ -76,9 +73,9 @@
         .btn-yellow { background: #eab308; color: white; margin-bottom: 15px;}
         .btn-yellow:hover { background: #ca8a04; }
         
-        .btn-storno { background: #f97316; font-size: 12px; padding: 8px; width: 100%; display: block;}
+        .btn-storno { background: #f97316; font-size: 12px; padding: 8px; width: 100%; display: block; border-radius:6px; font-weight:bold; color:white; border:none; cursor:pointer;}
         .btn-storno:hover { background: #ea580c; }
-        .btn-ok { background: #10b981; font-size: 12px; padding: 8px; width: 100%; cursor: default;}
+        .btn-ok { background: #10b981; font-size: 12px; padding: 8px; width: 100%; cursor: default; border-radius:6px; font-weight:bold; color:white; border:none;}
     </style>
 </head>
 <body>
@@ -145,6 +142,7 @@
     <div id="sectionNoleggi" class="hidden">
         <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi</h3>
         
+        <!-- INSERIMENTO MANUALE NOLEGGIO -->
         <div class="form-box" style="border: 1px solid #fcd34d; background: #fffbeb;">
             <h4 style="color: #b45309; margin-bottom: 10px;">Inserimento Manuale</h4>
             <form id="form-noleggio-manuale" onsubmit="inviaNoleggioManuale(event)">
@@ -156,25 +154,22 @@
                     <div class="form-group"><label>Tel:</label><input type="text" id="man-telefono" required></div>
                     <div class="form-group"><label>Email:</label><input type="email" id="man-email"></div>
                 </div>
+                <div class="form-grid-2">
+                    <div class="form-group"><label>Offerta:</label>
+                        <select id="man-offerta" required>
+                            <option value="Noleggio Libero">Noleggio Libero</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Note / Richieste:</label>
+                        <input type="text" id="man-note" placeholder="Eventuali note...">
+                    </div>
+                </div>
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex: 1;"><label>Bici:</label><input type="number" id="man-bici" value="1" required></div>
                     <div class="form-group" style="flex: 1;"><label>Carrello:</label><select id="man-carrellino"><option>No</option><option>Si</option></select></div>
                 </div>
                 <div class="form-group"><label>Altezze:</label><input type="text" id="man-altezze" required></div>
                 
-                <div class="form-grid-2">
-                    <div class="form-group">
-                        <label>Offerta:</label>
-                        <select id="man-offerta" required>
-                            <option value="">Caricamento...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Note / Richieste:</label>
-                        <input type="text" id="man-note" placeholder="Eventuali note...">
-                    </div>
-                </div>
-
                 <button type="submit" class="btn-yellow" style="margin-bottom: 0;">Registra Noleggio</button>
             </form>
         </div>
@@ -188,11 +183,13 @@
     </div>
 </div>
 
-<script>const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";</script>
 <script>
+    // URL ORIGINALE INSERITO QUI
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
+
     let tuttiITour = [];
     let tourSelezionato = null;
-    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [], config_noleggi: [] }; 
+    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [], CONFIG_NOLEGGI: [] }; 
 
     window.onload = function() {
         if (localStorage.getItem("hike_admin_pass")) {
@@ -243,30 +240,21 @@
             
             let meseNum = -1;
             for (let m in mesi) {
-                if (dataGrezza.includes(m)) {
-                    meseNum = mesi[m];
-                    break;
-                }
+                if (dataGrezza.includes(m)) { meseNum = mesi[m]; break; }
             }
-            
             const matchGiorno = dataGrezza.match(/\d+/);
             const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
-            
             const matchAnno = dataGrezza.match(/\b(20\d{2})\b/);
             const annoNum = matchAnno ? parseInt(matchAnno[1], 10) : oggi.getFullYear();
 
             if (meseNum !== -1) {
                 const dataTour = new Date(annoNum, meseNum, giornoNum);
                 dataTour.setHours(0, 0, 0, 0);
-                
-                if (dataTour < oggi) {
-                    return false; 
-                }
+                if (dataTour < oggi) { return false; }
             }
 
             const matchTestoNome = t.nome.toLowerCase().includes(qNome);
             const matchTestoData = dataGrezza.includes(qData);
-            
             return matchTestoNome && matchTestoData;
         });
 
@@ -346,12 +334,13 @@
                         ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
                         : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
                     
-                    let noteHTML = p.richieste ? `<br><span style="font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</span>` : "";
-
+                    let noteHTML = p.richieste ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` : "";
+                    
                     div.innerHTML = `
                         <div class="nome">👤 ${p.nominativo}</div>
-                        <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span>${noteHTML}</div>
-                        ${btnHTML}
+                        <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
+                        ${noteHTML}
+                        <div style="margin-top:8px;">${btnHTML}</div>
                     `;
                     cont.appendChild(div);
                 });
@@ -365,33 +354,47 @@
         .then(res => res.json()).then(d => { if(d.success){ alert("Storno registrato!"); caricaListaPrenotati(); caricaTuttiITour(); } });
     }
 
-    // --- NOLEGGI ---
-    function apriPannelloNoleggi() {
+    // ==========================================
+    // SEZIONE NOLEGGI
+    // ==========================================
+
+    async function apriPannelloNoleggi() {
         document.getElementById("sectionDashboard").classList.add("hidden");
         document.getElementById("sectionNoleggi").classList.remove("hidden");
-        caricaPannelloNoleggi();
+        await caricaPannelloNoleggi();
     }
-    function tornaAiTour() { document.getElementById("sectionNoleggi").classList.add("hidden"); document.getElementById("sectionDashboard").classList.remove("hidden"); }
+    
+    function tornaAiTour() { 
+        document.getElementById("sectionNoleggi").classList.add("hidden"); 
+        document.getElementById("sectionDashboard").classList.remove("hidden"); 
+    }
 
     async function caricaPannelloNoleggi() {
         document.getElementById("loadingNoleggi").classList.remove("hidden");
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
-        const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
+        
+        const resNoleggi = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
+        
+        const resOfferte = await fetch(SCRIPT_URL).then(r=>r.json());
+        
         document.getElementById("loadingNoleggi").classList.add("hidden");
         
-        if(res.success){ 
-            datiNoleggiGlobali = res; 
-            
-            // Popolamento select manuale
-            const selOfferta = document.getElementById("man-offerta");
-            selOfferta.innerHTML = '<option value="">Seleziona...</option>';
-            if(datiNoleggiGlobali.config_noleggi) {
-                datiNoleggiGlobali.config_noleggi.forEach(off => {
-                    selOfferta.innerHTML += `<option value="${off}">${off}</option>`;
-                });
+        if(resNoleggi.success){ 
+            datiNoleggiGlobali = resNoleggi; 
+            if(resOfferte && resOfferte.CONFIG_NOLEGGI) {
+                popolaSelectOfferteManuali(resOfferte.CONFIG_NOLEGGI);
             }
-
             renderizzaNoleggi(); 
+        }
+    }
+
+    function popolaSelectOfferteManuali(offerte) {
+        const sel = document.getElementById("man-offerta");
+        if(sel) {
+            sel.innerHTML = `<option value="Noleggio Libero">Noleggio Libero</option>`;
+            offerte.forEach(o => {
+                sel.innerHTML += `<option value="${o.nome}">${o.nome}</option>`;
+            });
         }
     }
 
@@ -399,42 +402,42 @@
         const cont = document.getElementById("lista-noleggi-pendenti");
         cont.innerHTML = "";
         const listaCompleta = [...datiNoleggiGlobali.pendenti, ...datiNoleggiGlobali.confermati];
-        
         const mesiNomi = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
 
         listaCompleta.forEach(nol => {
             const div = document.createElement("div");
             div.className = "prenotazione-item";
             
-            // --- LOGICA CHECKBOX CON FILTRO DATE ---
             let checkboxesTours = "";
-            try {
-                let [giorno, mese, anno] = nol.dataNoleggio.split('-');
-                let meseNome = mesiNomi[parseInt(mese, 10) - 1]; 
-                let giornoNum = parseInt(giorno, 10).toString(); 
-                
+            let [gg, mm, aaaa] = ["", "", ""];
+            let dataStringa = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "";
+            
+            let matchITA = dataStringa.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+            let matchISO = dataStringa.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+
+            if (matchITA) { gg = parseInt(matchITA[1],10); mm = parseInt(matchITA[2],10); }
+            else if (matchISO) { gg = parseInt(matchISO[3],10); mm = parseInt(matchISO[2],10); }
+
+            if (gg && mm) {
+                let meseNome = mesiNomi[mm - 1];
                 let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
                     if (!t.data) return false;
                     let dt = t.data.toLowerCase();
-                    return new RegExp(`\\b${giornoNum}\\b`).test(dt) && dt.includes(meseNome);
+                    return new RegExp(`\\b${gg}\\b`).test(dt) && dt.includes(meseNome);
                 });
                 
-                let listaDaMostrare = tourFiltrati.length > 0 ? tourFiltrati : datiNoleggiGlobali.tours;
-                
-                checkboxesTours = listaDaMostrare.map(t => 
-                    `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
-                        <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
-                        <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
-                    </label>`
-                ).join("");
-                
-            } catch (e) {
-                checkboxesTours = datiNoleggiGlobali.tours.map(t => 
-                    `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
-                        <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
-                        <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
-                    </label>`
-                ).join("");
+                if (tourFiltrati.length > 0) {
+                    checkboxesTours = tourFiltrati.map(t => 
+                        `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
+                            <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
+                            <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
+                        </label>`
+                    ).join("");
+                } else {
+                    checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questa data.</div>`;
+                }
+            } else {
+                checkboxesTours = `<div style="padding:8px; color:#ef4444; font-size:12px;">Data in formato non riconosciuto.</div>`;
             }
 
             let bloccoStorno = "";
@@ -458,13 +461,13 @@
 
             let azioniHTML = "";
             if (!datiNoleggiGlobali.confermati.find(c => c.riga === nol.riga)) {
-                azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;"><button style="background:#10b981; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button><button style="background:#ef4444; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button></div>`;
+                azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;"><button style="background:#10b981; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button><button style="background:#ef4444; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button></div>`;
             }
 
-            let noteHTML = nol.note ? `<div style="margin-top:6px; font-size:12px; color:#b45309; background:#fffbeb; padding:6px; border-radius:4px;">📝 Note: ${nol.note}</div>` : "";
+            let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note/Richieste:</strong> ${nol.note}</div>` : "";
 
             div.innerHTML = `
-                <div class="nome">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio}]</span></div>
+                <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio}]</span></div>
                 <div class="dettagli" style="margin-bottom:0;">
                     🏷️ Offerta: <strong>${nol.offerta}</strong><br>
                     🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
@@ -477,57 +480,26 @@
         });
     }
 
-    function collegaNoleggioTour(rigaNol) {
-        // Recupera tutte le caselle spuntate per questa specifica richiesta
-        const checkboxes = document.querySelectorAll(`.chk-tour-${rigaNol}:checked`);
-        const selIds = Array.from(checkboxes).map(chk => chk.value);
-        
-        if (selIds.length === 0) return alert("Devi spuntare almeno un Tour dalla lista!");
-        
-        const messaggio = selIds.length > 1 
-            ? `Confermi di bloccare fisicamente questi posti su Majellando per i ${selIds.length} Tour selezionati?`
-            : `Confermi di bloccare fisicamente questi posti su Majellando per il Tour selezionato?`;
-            
-        if (!confirm(messaggio)) return;
-        
-        fetch(SCRIPT_URL, { 
-            method: "POST", 
-            body: JSON.stringify({
-                action: "collega_noleggio_tour", 
-                password: document.getElementById("password").value, 
-                riga: rigaNol, 
-                idTours: selIds // Invia la lista degli ID
-            }) 
-        })
+    function segnaNoleggioEsterno(rigaNol) {
+        if(!confirm("Confermi di usare BICI PARTNER / ESTERNE per questo noleggio?\n\nNon verranno scalati posti dai tuoi Tour su Majellando.")) return;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "segna_noleggio_esterno", password: document.getElementById("password").value, riga: rigaNol}) })
         .then(res => res.json()).then(d => { 
-            if(d.success){ alert("Storno multiplo effettuato con successo!"); caricaPannelloNoleggi(); } 
+            if(d.success){ alert("Noleggio contrassegnato con successo (Bici Partner)!"); caricaPannelloNoleggi(); } 
+            else { alert("Errore di rete."); }
         });
     }
 
-// --- FUNZIONE PER GESTIONE BICI PARTNER ---
-    function segnaNoleggioEsterno(rigaNol) {
-        if(!confirm("Confermi di usare BICI PARTNER / ESTERNE per questo noleggio?\n\nNon verranno scalati posti dai tuoi Tour su Majellando.")) return;
+    function collegaNoleggioTour(rigaNol) {
+        const checkboxes = document.querySelectorAll(`.chk-tour-${rigaNol}:checked`);
+        const selIds = Array.from(checkboxes).map(chk => chk.value);
+        if (selIds.length === 0) return alert("Devi spuntare almeno un Tour dalla lista!");
+        const msg = selIds.length > 1 ? `Confermi di bloccare questi posti per i ${selIds.length} Tour selezionati?` : `Confermi di bloccare questi posti per il Tour selezionato?`;
+        if (!confirm(msg)) return;
         
-        fetch(SCRIPT_URL, { 
-            method: "POST", 
-            body: JSON.stringify({
-                action: "segna_noleggio_esterno", 
-                password: document.getElementById("password").value, 
-                riga: rigaNol
-            }) 
-        })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                alert("Noleggio contrassegnato con successo (Bici Partner)!"); 
-                caricaPannelloNoleggi(); 
-            } else {
-                alert("Errore durante il salvataggio.");
-            }
-        }).catch(e => {
-            alert("Errore di connessione al server.");
-        });
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "collega_noleggio_tour", password: document.getElementById("password").value, riga: rigaNol, idTours: selIds}) })
+        .then(res => res.json()).then(d => { if(d.success){ alert("Storno effettuato!"); caricaPannelloNoleggi(); } });
     }
-    
+
     function gestisciNol(riga, stato) {
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "gestisci_noleggio", password: document.getElementById("password").value, riga: riga, nuovoStato: stato}) })
         .then(res => res.json()).then(d => { if(d.success){ caricaPannelloNoleggi(); } });
@@ -545,15 +517,11 @@
             numBici: document.getElementById("man-bici").value, 
             altezze: document.getElementById("man-altezze").value, 
             carrellino: document.getElementById("man-carrellino").value,
-            offerta: document.getElementById("man-offerta").value,
-            note: document.getElementById("man-note").value
+            offerta: document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "Noleggio Libero",
+            note: document.getElementById("man-note") ? document.getElementById("man-note").value : ""
         };
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { 
-            if(d.success){ 
-                alert("Noleggio inserito!"); 
-                document.getElementById("form-noleggio-manuale").reset(); 
-                caricaPannelloNoleggi(); 
-            } 
+            if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); caricaPannelloNoleggi(); } 
         });
     }
 </script>
