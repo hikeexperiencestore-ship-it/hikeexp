@@ -61,7 +61,6 @@
 
             <hr class="border-slate-200/60 my-2 hidden md:block">
 
-            <!-- CONTENITORE TOUR GENERATI DINAMICAMENTE -->
             <div id="tour-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 <div class="col-span-full text-center py-10">
                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mb-2"></div>
@@ -119,10 +118,17 @@
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
-                                    <span class="text-xs text-slate-500 mt-0.5">Altezza massima bimbo consentita: <strong>115 cm</strong>.</span>
+                                    <span class="text-xs text-slate-500 mt-0.5">Altezza max bimbo: <strong>115 cm</strong>.</span>
                                 </div>
                             </label>
                         </div>
+
+                        <!-- NUOVO CAMPO NOTE NOLEGGIO -->
+                        <div class="col-span-full md:col-span-2">
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Richieste particolari (Note)</label>
+                            <textarea name="richieste" rows="2" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Scrivi qui eventuali necessità, intolleranze o domande..."></textarea>
+                        </div>
+
                     </div>
                     <div class="mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 leading-relaxed">
                         <strong>Nota bene:</strong> Riceverai un'email di riepilogo. La prenotazione per il noleggio libero verrà confermata definitivamente dal nostro team previa verifica tecnica. Pagamento in loco.
@@ -191,9 +197,15 @@
                         </div>
                         <div class="flex flex-col">
                             <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
-                            <span class="text-xs text-slate-500 mt-0.5">Disponiamo di carrellini biposto per bambini. Altezza massima consentita: <strong>115 cm</strong>.</span>
+                            <span class="text-xs text-slate-500 mt-0.5">Altezza massima consentita: <strong>115 cm</strong>.</span>
                         </div>
                     </label>
+                </div>
+
+                <!-- NUOVO CAMPO NOTE TOUR -->
+                <div class="mb-4">
+                    <label for="richieste" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Richieste particolari (Note)</label>
+                    <textarea id="richieste" name="richieste" rows="2" placeholder="Intolleranze alimentari, note o domande..." class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none"></textarea>
                 </div>
 
                 <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 mb-4 leading-relaxed">
@@ -256,7 +268,6 @@
                 if (response.ok) {
                     postiInTempoReale = await response.json();
                     
-                    // --- 1. POPOLAMENTO DINAMICO MENU NOLEGGIO ---
                     if (postiInTempoReale["CONFIG_NOLEGGI"]) {
                         const selectOfferta = document.getElementById('select-offerta-noleggio');
                         const boxNote = document.getElementById('box-note-noleggio');
@@ -269,7 +280,6 @@
                         opzioni.forEach((opz) => {
                             const option = document.createElement('option');
                             const testoPrezzo = opz.prezzo ? ` - €${opz.prezzo}` : '';
-                            // Usa opz.nome dal nuovo foglio Configurazione
                             option.value = opz.nome;
                             option.text = `${opz.nome}${testoPrezzo}`;
                             option.dataset.desc = opz.descrizione || ""; 
@@ -289,12 +299,10 @@
                         });
                     }
 
-                    // --- 2. GENERAZIONE DINAMICA SCHEDE TOUR ---
                     if (postiInTempoReale["CONFIG_TOUR"]) {
                         const tourContainer = document.getElementById('tour-list-container');
-                        tourContainer.innerHTML = ''; // Rimuove la scritta di caricamento
+                        tourContainer.innerHTML = ''; 
                         
-                        // Array di temi per dare un colore diverso a ciascuna etichetta del tour
                         const colorThemes = [
                             "bg-emerald-50 text-emerald-700",
                             "bg-blue-50 text-blue-700",
@@ -417,6 +425,8 @@
                     const altezza = document.getElementById('custom_altezza').value;
                     const dettagliTour = document.getElementById('form-escursione').value;
                     const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
+                    const noteInserite = document.getElementById('richieste').value;
+                    const boxNoteSummary = noteInserite ? `<p><strong>Note:</strong> ${noteInserite}</p>` : '';
 
                     const screenshotHTML = `
                         <div id="screenshotBox" class="text-center p-4 border-2 border-dashed border-emerald-500 bg-emerald-50/50 rounded-2xl">
@@ -432,6 +442,7 @@
                                 <p><strong>Numero Bici:</strong> ${biciScelte}</p>
                                 <p><strong>Altezze:</strong> ${altezza} cm</p>
                                 <p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
+                                ${boxNoteSummary}
                                 <p class="text-center text-amber-600 font-bold text-xs uppercase tracking-wider pt-2 mt-2 border-t border-slate-100">• Pagamento alla partenza •</p>
                             </div>
                             <div class="text-xs font-bold tracking-wider uppercase text-emerald-700">Hike Experience</div>
@@ -567,10 +578,8 @@
 
         async function inizializzaCalendarioDinamico() {
             try {
-                // Prima di tutto genera la struttura HTML dei tour dal nuovo Apps Script
                 await fetchPostiRealtime();
 
-                // Ora che i contenitori dei tour esistono, legge il CSV con le date e le smista
                 const response = await fetch(CSV_URL);
                 const csvText = await response.text();
                 const tuttiITour = parseCSV(csvText);
@@ -612,7 +621,6 @@
                     prossimiInAssoluto.push(infoTour);
                 });
 
-                // Inserisce le date nei container dei tour appena generati
                 document.querySelectorAll('details[data-tour-name]').forEach(detailsEl => {
                     const nomeTour = detailsEl.getAttribute('data-tour-name');
                     const containerDate = detailsEl.querySelector('.container-date');
@@ -665,7 +673,6 @@
                     }
                 });
 
-                // Gestione widget "In partenza a breve"
                 const sezioneProssimi = document.getElementById('sezione-prossimi');
                 const listaProssimi = document.getElementById('lista-prossimi');
                 
