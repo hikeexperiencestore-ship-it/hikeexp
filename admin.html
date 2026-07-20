@@ -400,33 +400,76 @@
         cont.innerHTML = "";
         const listaCompleta = [...datiNoleggiGlobali.pendenti, ...datiNoleggiGlobali.confermati];
         
+        const mesiNomi = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
+
         listaCompleta.forEach(nol => {
             const div = document.createElement("div");
             div.className = "prenotazione-item";
             
-            let optionsTours = datiNoleggiGlobali.tours.map(t => `<option value="${t.id}">${t.nome} (${t.data})</option>`).join("");
-            let bloccoStorno = nol.tour_collegato 
-                ? `<div style="background:#dcfce7; color:#166534; padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">✅ Scalato dal Tour ID: ${nol.tour_collegato}</div>`
-                : ` <div style="background:#f1f5f9; padding:8px; border-radius:6px; font-size:12px; margin-top:10px;">
-                        <strong>🔗 Collega e Storna da un Tour:</strong><br>
-                        <select id="sel-tour-${nol.riga}" style="margin:5px 0; padding:8px; width:100%; font-size:12px;"><option value="">Seleziona Tour...</option>${optionsTours}</select>
-                        <button class="btn-storno" onclick="collegaNoleggioTour(${nol.riga})">Storna posti da Majellando</button>
+            // --- LOGICA CHECKBOX CON FILTRO DATE ---
+            let checkboxesTours = "";
+            try {
+                let [giorno, mese, anno] = nol.dataNoleggio.split('-');
+                let meseNome = mesiNomi[parseInt(mese, 10) - 1]; 
+                let giornoNum = parseInt(giorno, 10).toString(); 
+                
+                let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
+                    if (!t.data) return false;
+                    let dt = t.data.toLowerCase();
+                    return new RegExp(`\\b${giornoNum}\\b`).test(dt) && dt.includes(meseNome);
+                });
+                
+                let listaDaMostrare = tourFiltrati.length > 0 ? tourFiltrati : datiNoleggiGlobali.tours;
+                
+                checkboxesTours = listaDaMostrare.map(t => 
+                    `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
+                        <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
+                        <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
+                    </label>`
+                ).join("");
+                
+            } catch (e) {
+                checkboxesTours = datiNoleggiGlobali.tours.map(t => 
+                    `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
+                        <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
+                        <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
+                    </label>`
+                ).join("");
+            }
+
+            let bloccoStorno = "";
+            if (nol.tour_collegato === "BICI_PARTNER") {
+                bloccoStorno = `<div style="background:#f3e8ff; border-left:4px solid #a855f7; color:#7e22ce; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">🤝 Bici Partner: Nessun posto stornato.</div>`;
+            } else if (nol.tour_collegato) {
+                bloccoStorno = `<div style="background:#dcfce7; border-left:4px solid #22c55e; color:#166534; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">✅ Scalato dai Tour ID: ${nol.tour_collegato}</div>`;
+            } else {
+                bloccoStorno = `
+                    <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
+                        <strong style="display:block; margin-bottom:8px; color:var(--dark);">🔗 Seleziona i Tour da cui stornare i posti:</strong>
+                        <div style="margin-bottom:12px; max-height:140px; overflow-y:auto; padding-right:5px;">
+                            ${checkboxesTours}
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn-storno" style="flex:1; border-radius:6px; padding:10px;" onclick="collegaNoleggioTour(${nol.riga})">📉 Storna Selezionati</button>
+                            <button style="flex:1; background:#8b5cf6; color:white; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; padding:10px;" onclick="segnaNoleggioEsterno(${nol.riga})">🤝 Usa Bici Partner</button>
+                        </div>
                     </div>`;
+            }
 
             let azioniHTML = "";
             if (!datiNoleggiGlobali.confermati.find(c => c.riga === nol.riga)) {
                 azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;"><button style="background:#10b981; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button><button style="background:#ef4444; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button></div>`;
             }
 
-            let noteSection = nol.note ? `<div style="margin-top:5px; font-size:12px; color:#b45309; background:#fffbeb; padding:5px; border-radius:4px; border:1px dashed #fcd34d;">📝 <strong>Note:</strong> ${nol.note}</div>` : "";
+            let noteHTML = nol.note ? `<div style="margin-top:6px; font-size:12px; color:#b45309; background:#fffbeb; padding:6px; border-radius:4px;">📝 Note: ${nol.note}</div>` : "";
 
             div.innerHTML = `
                 <div class="nome">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio}]</span></div>
                 <div class="dettagli" style="margin-bottom:0;">
-                    🏷️ Formula: <strong>${nol.offerta}</strong><br>
+                    🏷️ Offerta: <strong>${nol.offerta}</strong><br>
                     🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
                 </div>
-                ${noteSection}
+                ${noteHTML}
                 ${azioniHTML}
                 ${bloccoStorno}
             `;
@@ -435,12 +478,30 @@
     }
 
     function collegaNoleggioTour(rigaNol) {
-        const sel = document.getElementById(`sel-tour-${rigaNol}`).value;
-        if(!sel) return alert("Seleziona prima il Tour dal menu a tendina!");
-        if(!confirm("Confermi di aver bloccato fisicamente questi posti su Majellando per il Tour selezionato?")) return;
+        // Recupera tutte le caselle spuntate per questa specifica richiesta
+        const checkboxes = document.querySelectorAll(`.chk-tour-${rigaNol}:checked`);
+        const selIds = Array.from(checkboxes).map(chk => chk.value);
         
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "collega_noleggio_tour", password: document.getElementById("password").value, riga: rigaNol, idTour: sel}) })
-        .then(res => res.json()).then(d => { if(d.success){ alert("Collegamento effettuato!"); caricaPannelloNoleggi(); } });
+        if (selIds.length === 0) return alert("Devi spuntare almeno un Tour dalla lista!");
+        
+        const messaggio = selIds.length > 1 
+            ? `Confermi di bloccare fisicamente questi posti su Majellando per i ${selIds.length} Tour selezionati?`
+            : `Confermi di bloccare fisicamente questi posti su Majellando per il Tour selezionato?`;
+            
+        if (!confirm(messaggio)) return;
+        
+        fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({
+                action: "collega_noleggio_tour", 
+                password: document.getElementById("password").value, 
+                riga: rigaNol, 
+                idTours: selIds // Invia la lista degli ID
+            }) 
+        })
+        .then(res => res.json()).then(d => { 
+            if(d.success){ alert("Storno multiplo effettuato con successo!"); caricaPannelloNoleggi(); } 
+        });
     }
 
     function gestisciNol(riga, stato) {
