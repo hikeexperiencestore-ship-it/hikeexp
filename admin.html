@@ -161,6 +161,20 @@
                     <div class="form-group" style="flex: 1;"><label>Carrello:</label><select id="man-carrellino"><option>No</option><option>Si</option></select></div>
                 </div>
                 <div class="form-group"><label>Altezze:</label><input type="text" id="man-altezze" required></div>
+                
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Offerta:</label>
+                        <select id="man-offerta" required>
+                            <option value="">Caricamento...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Note / Richieste:</label>
+                        <input type="text" id="man-note" placeholder="Eventuali note...">
+                    </div>
+                </div>
+
                 <button type="submit" class="btn-yellow" style="margin-bottom: 0;">Registra Noleggio</button>
             </form>
         </div>
@@ -178,7 +192,7 @@
 <script>
     let tuttiITour = [];
     let tourSelezionato = null;
-    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [] }; 
+    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [], config_noleggi: [] }; 
 
     window.onload = function() {
         if (localStorage.getItem("hike_admin_pass")) {
@@ -227,7 +241,6 @@
         const filtrati = tuttiITour.filter(t => {
             const dataGrezza = String(t.data || "").toLowerCase();
             
-            // 1. Controllo per nascondere le date passate
             let meseNum = -1;
             for (let m in mesi) {
                 if (dataGrezza.includes(m)) {
@@ -251,7 +264,6 @@
                 }
             }
 
-            // 2. Filtro Testuale
             const matchTestoNome = t.nome.toLowerCase().includes(qNome);
             const matchTestoData = dataGrezza.includes(qData);
             
@@ -334,9 +346,11 @@
                         ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
                         : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
                     
+                    let noteHTML = p.richieste ? `<br><span style="font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</span>` : "";
+
                     div.innerHTML = `
                         <div class="nome">👤 ${p.nominativo}</div>
-                        <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
+                        <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span>${noteHTML}</div>
                         ${btnHTML}
                     `;
                     cont.appendChild(div);
@@ -364,7 +378,21 @@
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
         const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
         document.getElementById("loadingNoleggi").classList.add("hidden");
-        if(res.success){ datiNoleggiGlobali = res; renderizzaNoleggi(); }
+        
+        if(res.success){ 
+            datiNoleggiGlobali = res; 
+            
+            // Popolamento select manuale
+            const selOfferta = document.getElementById("man-offerta");
+            selOfferta.innerHTML = '<option value="">Seleziona...</option>';
+            if(datiNoleggiGlobali.config_noleggi) {
+                datiNoleggiGlobali.config_noleggi.forEach(off => {
+                    selOfferta.innerHTML += `<option value="${off}">${off}</option>`;
+                });
+            }
+
+            renderizzaNoleggi(); 
+        }
     }
 
     function renderizzaNoleggi() {
@@ -376,7 +404,6 @@
             const div = document.createElement("div");
             div.className = "prenotazione-item";
             
-            // Creazione Dropdown Tour
             let optionsTours = datiNoleggiGlobali.tours.map(t => `<option value="${t.id}">${t.nome} (${t.data})</option>`).join("");
             let bloccoStorno = nol.tour_collegato 
                 ? `<div style="background:#dcfce7; color:#166534; padding:8px; border-radius:6px; font-size:12px; font-weight:bold;">✅ Scalato dal Tour ID: ${nol.tour_collegato}</div>`
@@ -391,12 +418,15 @@
                 azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;"><button style="background:#10b981; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button><button style="background:#ef4444; font-size:13px; padding:10px;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button></div>`;
             }
 
+            let noteSection = nol.note ? `<div style="margin-top:5px; font-size:12px; color:#b45309; background:#fffbeb; padding:5px; border-radius:4px; border:1px dashed #fcd34d;">📝 <strong>Note:</strong> ${nol.note}</div>` : "";
+
             div.innerHTML = `
                 <div class="nome">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio}]</span></div>
                 <div class="dettagli" style="margin-bottom:0;">
                     🏷️ Formula: <strong>${nol.offerta}</strong><br>
                     🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
                 </div>
+                ${noteSection}
                 ${azioniHTML}
                 ${bloccoStorno}
             `;
@@ -420,8 +450,26 @@
     
     function inviaNoleggioManuale(e) {
         e.preventDefault();
-        const p = { action: "add_manual_noleggio", password: document.getElementById("password").value, dataNoleggio: document.getElementById("man-data").value, nome: document.getElementById("man-nome").value, telefono: document.getElementById("man-telefono").value, email: document.getElementById("man-email").value, numBici: document.getElementById("man-bici").value, altezze: document.getElementById("man-altezze").value, carrellino: document.getElementById("man-carrellino").value };
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); caricaPannelloNoleggi(); } });
+        const p = { 
+            action: "add_manual_noleggio", 
+            password: document.getElementById("password").value, 
+            dataNoleggio: document.getElementById("man-data").value, 
+            nome: document.getElementById("man-nome").value, 
+            telefono: document.getElementById("man-telefono").value, 
+            email: document.getElementById("man-email").value, 
+            numBici: document.getElementById("man-bici").value, 
+            altezze: document.getElementById("man-altezze").value, 
+            carrellino: document.getElementById("man-carrellino").value,
+            offerta: document.getElementById("man-offerta").value,
+            note: document.getElementById("man-note").value
+        };
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { 
+            if(d.success){ 
+                alert("Noleggio inserito!"); 
+                document.getElementById("form-noleggio-manuale").reset(); 
+                caricaPannelloNoleggi(); 
+            } 
+        });
     }
 </script>
 </body>
