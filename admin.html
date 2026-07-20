@@ -216,7 +216,47 @@
         const cont = document.getElementById("listaContenitore");
         cont.innerHTML = "";
 
-        const filtrati = tuttiITour.filter(t => t.nome.toLowerCase().includes(qNome) && (t.data||"").toLowerCase().includes(qData));
+        const oggi = new Date();
+        oggi.setHours(0, 0, 0, 0);
+
+        const mesi = {
+            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
+            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
+        };
+
+        const filtrati = tuttiITour.filter(t => {
+            const dataGrezza = String(t.data || "").toLowerCase();
+            
+            // 1. Controllo per nascondere le date passate
+            let meseNum = -1;
+            for (let m in mesi) {
+                if (dataGrezza.includes(m)) {
+                    meseNum = mesi[m];
+                    break;
+                }
+            }
+            
+            const matchGiorno = dataGrezza.match(/\d+/);
+            const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
+            
+            const matchAnno = dataGrezza.match(/\b(20\d{2})\b/);
+            const annoNum = matchAnno ? parseInt(matchAnno[1], 10) : oggi.getFullYear();
+
+            if (meseNum !== -1) {
+                const dataTour = new Date(annoNum, meseNum, giornoNum);
+                dataTour.setHours(0, 0, 0, 0);
+                
+                if (dataTour < oggi) {
+                    return false; 
+                }
+            }
+
+            // 2. Filtro Testuale
+            const matchTestoNome = t.nome.toLowerCase().includes(qNome);
+            const matchTestoData = dataGrezza.includes(qData);
+            
+            return matchTestoNome && matchTestoData;
+        });
 
         if (filtrati.length === 0) { cont.innerHTML = '<div class="loading">Nessun tour trovato</div>'; return; }
 
