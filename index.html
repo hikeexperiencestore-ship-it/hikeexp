@@ -90,6 +90,38 @@
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Data Inizio Noleggio</label>
                             <input type="date" name="data_noleggio" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
                         </div>
+                        
+                        <!-- NUOVO CAMPO ORARIO -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orario Ritiro Previsto</label>
+                            <select name="orario_ritiro" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                                <option value="" disabled selected>Seleziona orario...</option>
+                                <option value="08:30">08:30</option>
+                                <option value="09:00">09:00</option>
+                                <option value="09:30">09:30</option>
+                                <option value="10:00">10:00</option>
+                                <option value="10:30">10:30</option>
+                                <option value="11:00">11:00</option>
+                                <option value="11:30">11:30</option>
+                                <option value="12:00">12:00</option>
+                                <option value="12:30">12:30</option>
+                                <option value="13:00">13:00</option>
+                                <option value="13:30">13:30</option>
+                                <option value="14:00">14:00</option>
+                                <option value="14:30">14:30</option>
+                                <option value="15:00">15:00</option>
+                                <option value="15:30">15:30</option>
+                                <option value="16:00">16:00</option>
+                                <option value="16:30">16:30</option>
+                                <option value="17:00">17:00</option>
+                                <option value="17:30">17:30</option>
+                                <option value="18:00">18:00</option>
+                                <option value="18:30">18:30</option>
+                                <option value="19:00">19:00</option>
+                                <option value="19:30">19:30</option>
+                            </select>
+                        </div>
+                        
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome</label>
                             <input type="text" name="name" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. Mario Rossi" required>
@@ -123,7 +155,6 @@
                             </label>
                         </div>
 
-                        <!-- NUOVO CAMPO NOTE NOLEGGIO -->
                         <div class="col-span-full md:col-span-2">
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Richieste particolari (Note)</label>
                             <textarea name="richieste" rows="2" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Scrivi qui eventuali necessità, intolleranze o domande..."></textarea>
@@ -202,7 +233,6 @@
                     </label>
                 </div>
 
-                <!-- NUOVO CAMPO NOTE TOUR -->
                 <div class="mb-4">
                     <label for="richieste" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Richieste particolari (Note)</label>
                     <textarea id="richieste" name="richieste" rows="2" placeholder="Intolleranze alimentari, note o domande..." class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none"></textarea>
@@ -227,9 +257,6 @@
     </style>
 
     <script>
-        // ==========================================
-        // GESTIONE CAMBIO VISTA (TAB)
-        // ==========================================
         function cambiaVista(vista) {
             const vistaTour = document.getElementById('vista-tour');
             const vistaNoleggio = document.getElementById('vista-noleggio');
@@ -468,12 +495,18 @@
             event.preventDefault();
             const form = event.target;
             const submitBtn = document.getElementById('submit-noleggio-btn');
+            
+            const formData = new FormData(form);
+            const orarioSelezionato = formData.get('orario_ritiro');
+            if (!orarioSelezionato) {
+                alert("Per favore, seleziona un Orario di Ritiro Previsto.");
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.innerText = "Invio richiesta in corso...";
             submitBtn.className = "mt-4 w-full bg-slate-400 text-white font-bold p-4 rounded-xl text-sm shadow-md cursor-not-allowed";
 
-            const formData = new FormData(form);
             const queryString = new URLSearchParams(formData).toString();
 
             try {
