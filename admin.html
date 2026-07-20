@@ -23,7 +23,37 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f1f5f9; color: var(--dark); padding: 15px; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        
+        /* Layout Base Mobile */
+        .container { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            transition: max-width 0.3s ease;
+        }
+        
+        /* OTTIMIZZAZIONE DESKTOP / TABLET (Schermi > 768px) */
+        @media (min-width: 768px) {
+            body { padding: 30px 15px; }
+            .container { max-width: 900px; padding: 30px; }
+            
+            .search-box-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            .search-box-grid .form-group { margin-bottom: 0 !important; }
+            
+            .form-grid-2 {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+        }
+
         h2 { text-align: center; margin-bottom: 20px; font-size: 22px; color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
         
         .form-group { margin-bottom: 15px; }
@@ -41,9 +71,9 @@
         button.secondary { background: #94a3b8; margin-top: 10px; }
         
         .hidden { display: none !important; }
-        .search-box { background: var(--light); padding: 12px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .search-box { background: var(--light); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         
-        .tour-list { max-height: 400px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; }
+        .tour-list { max-height: 450px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; }
         .tour-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; font-size: 14px; }
         .tour-item:last-child { border-bottom: none; }
         .tour-item:hover { background: #e8f5e9; }
@@ -91,17 +121,19 @@
     <!-- 2. MAIN DASHBOARD (RICERCA E SELEZIONE) -->
     <div id="sectionDashboard" class="hidden">
         
-        <!-- PULSANTE NUOVO: VAI A NOLEGGI -->
+        <!-- PULSANTE VAI A NOLEGGI -->
         <button class="btn-yellow" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi E-Bike</button>
 
         <div class="search-box">
-            <div class="form-group" style="margin-bottom: 8px;">
-                <label>🔍 Cerca per Nome Tour:</label>
-                <input type="text" id="searchNome" placeholder="Es: Tramonto, Campo Imperatore..." oninput="filtraI_Tour()">
-            </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label>📅 Filtra per Data:</label>
-                <input type="text" id="searchData" placeholder="Es: 14/06, luglio..." oninput="filtraI_Tour()">
+            <div class="search-box-grid">
+                <div class="form-group">
+                    <label>🔍 Cerca per Nome Tour:</label>
+                    <input type="text" id="searchNome" placeholder="Es: Tramonto, Campo Imperatore..." oninput="filtraI_Tour()">
+                </div>
+                <div class="form-group">
+                    <label>📅 Filtra per Data:</label>
+                    <input type="text" id="searchData" placeholder="Es: 14/06, luglio..." oninput="filtraI_Tour()">
+                </div>
             </div>
         </div>
 
@@ -114,7 +146,7 @@
         <button class="secondary" onclick="disconnetti()">Esci / Cambia Password</button>
     </div>
 
-    <!-- 3. MODIFICA POSTI E LISTA (NUOVO FORM PRENOTAZIONE TOUR) -->
+    <!-- 3. MODIFICA POSTI E LISTA (FORM PRENOTAZIONE TOUR) -->
     <div id="sectionModifica" class="hidden">
         <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
             <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
@@ -124,14 +156,16 @@
         <h3 style="font-size: 16px; margin-bottom: 10px; text-align: center;">Aggiungi Nuova Prenotazione</h3>
         
         <div class="form-box">
-            <div class="form-group">
-                <label>👤 Nominativo (Obbligatorio):</label>
-                <input type="text" id="nuovoNome" placeholder="Es: Mario Rossi">
-            </div>
-            
-            <div class="form-group">
-                <label>📞 Telefono (Facoltativo):</label>
-                <input type="text" id="nuovoTelefono" placeholder="Es: 3331234567">
+            <div class="form-grid-2">
+                <div class="form-group">
+                    <label>👤 Nominativo (Obbligatorio):</label>
+                    <input type="text" id="nuovoNome" placeholder="Es: Mario Rossi">
+                </div>
+                
+                <div class="form-group">
+                    <label>📞 Telefono (Facoltativo):</label>
+                    <input type="text" id="nuovoTelefono" placeholder="Es: 3331234567">
+                </div>
             </div>
             
             <div class="form-group">
@@ -157,7 +191,7 @@
         </div>
     </div>
 
-    <!-- 4. NUOVA SEZIONE: GESTIONE NOLEGGI E-BIKE -->
+    <!-- 4. GESTIONE NOLEGGI E-BIKE -->
     <div id="sectionNoleggi" class="hidden">
         <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi E-Bike</h3>
         
@@ -165,10 +199,14 @@
         <div class="form-box" style="border: 1px solid #fcd34d; background: #fffbeb;">
             <h4 style="color: #b45309; margin-bottom: 10px;">Inserisci Noleggio (Negozio/Telefono)</h4>
             <form id="form-noleggio-manuale" onsubmit="inviaNoleggioManuale(event)">
-                <div class="form-group"><label>Data Noleggio:</label><input type="date" id="man-data" required></div>
-                <div class="form-group"><label>Nome Cliente:</label><input type="text" id="man-nome" required placeholder="Es: Luca Bianchi"></div>
-                <div class="form-group"><label>Telefono:</label><input type="text" id="man-telefono" required placeholder="Es: 3331234567"></div>
-                <div class="form-group"><label>Email (opzionale):</label><input type="email" id="man-email" placeholder="email@esempio.com"></div>
+                <div class="form-grid-2">
+                    <div class="form-group"><label>Data Noleggio:</label><input type="date" id="man-data" required></div>
+                    <div class="form-group"><label>Nome Cliente:</label><input type="text" id="man-nome" required placeholder="Es: Luca Bianchi"></div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group"><label>Telefono:</label><input type="text" id="man-telefono" required placeholder="Es: 3331234567"></div>
+                    <div class="form-group"><label>Email (opzionale):</label><input type="email" id="man-email" placeholder="email@esempio.com"></div>
+                </div>
                 
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex: 1;"><label>N. Bici:</label><input type="number" id="man-bici" min="1" value="1" required></div>
@@ -438,7 +476,6 @@
                     div.className = "prenotazione-item";
                     const tel = p.telefono ? p.telefono : "N.D.";
                     
-                    // Predisposizione per mostrare altezze e carrellino (se presenti nei dati ricevuti)
                     let extraInfo = "";
                     if (p.altezze || p.carrellino) {
                          extraInfo = `<br><span style="font-size:12px; color:#64748b;">📏 Altezze: ${p.altezze || '-'} | 👶 Carrellino: ${p.carrellino || '-'}</span>`;
@@ -517,13 +554,12 @@
         }
 
         datiNoleggiGlobali.pendenti.forEach(nol => {
-            // Conta le bici già noleggiate confermate per quella data esatta
-            const dataNolPura = new Date(nol.dataNoleggio).toDateString();
+            const dataNolPura = nol.dataNoleggio;
             let biciGiaNoleggiate = 0;
             
             if(datiNoleggiGlobali.confermati) {
                 datiNoleggiGlobali.confermati.forEach(conf => {
-                    if (new Date(conf.dataNoleggio).toDateString() === dataNolPura) {
+                    if (conf.dataNoleggio === dataNolPura) {
                         biciGiaNoleggiate += Number(conf.numBici || 0);
                     }
                 });
