@@ -504,6 +504,30 @@
         });
     }
 
+// --- FUNZIONE PER GESTIONE BICI PARTNER ---
+    function segnaNoleggioEsterno(rigaNol) {
+        if(!confirm("Confermi di usare BICI PARTNER / ESTERNE per questo noleggio?\n\nNon verranno scalati posti dai tuoi Tour su Majellando.")) return;
+        
+        fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({
+                action: "segna_noleggio_esterno", 
+                password: document.getElementById("password").value, 
+                riga: rigaNol
+            }) 
+        })
+        .then(res => res.json()).then(d => { 
+            if(d.success){ 
+                alert("Noleggio contrassegnato con successo (Bici Partner)!"); 
+                caricaPannelloNoleggi(); 
+            } else {
+                alert("Errore durante il salvataggio.");
+            }
+        }).catch(e => {
+            alert("Errore di connessione al server.");
+        });
+    }
+    
     function gestisciNol(riga, stato) {
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "gestisci_noleggio", password: document.getElementById("password").value, riga: riga, nuovoStato: stato}) })
         .then(res => res.json()).then(d => { if(d.success){ caricaPannelloNoleggi(); } });
