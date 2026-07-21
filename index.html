@@ -4,16 +4,50 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Tour E-Bike & Noleggio 2026 - Hike Experience</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col pb-8 bg-slate-50">
 
-    <header class="bg-white border-b border-slate-100 shadow-sm pt-6 pb-6 text-center px-4">
-        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
-            <img src="https://www.instagram.com/p/C-j4opIiK2u/media/?size=l" alt="HiKe Logo" class="h-20 w-auto object-contain mb-2">
-            <p class="text-emerald-600 font-semibold text-xs tracking-wider uppercase mt-1">Calendario Ufficiale Tour E-Bike 2026</p>
-            <h1 class="text-xl md:text-2xl font-bold text-slate-900 mt-0.5">Scegli la tua prossima avventura</h1>
+    <header class="relative overflow-hidden bg-white border-b border-slate-200 shadow-sm pt-8 pb-10 text-center px-4">
+        <!-- SVG Sfondo Orografia Gran Sasso d'Italia -->
+        <div class="absolute inset-0 pointer-events-none flex items-end justify-center opacity-80">
+            <svg class="w-full h-full min-w-[1200px] object-cover" viewBox="0 0 1200 300" preserveAspectRatio="xMidYMax slice" fill="none" xmlns="http://www.w3.org/2000/svg">
+                
+                <!-- Easter Egg: Nomi delle Vette Topografiche -->
+                <text x="120" y="115" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" opacity="0.7" text-anchor="middle" letter-spacing="1">PIZZO CEFALONE</text>
+                <text x="200" y="140" font-family="'Inter', sans-serif" font-size="10" font-weight="600" fill="#94a3b8" opacity="0.6" text-anchor="middle" letter-spacing="1">V. WOITIVA</text>
+                <text x="430" y="75" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" opacity="0.7" text-anchor="middle" letter-spacing="1">CORNO PICCOLO</text>
+                <text x="535" y="25" font-family="'Inter', sans-serif" font-size="14" font-weight="800" fill="#64748b" opacity="0.9" text-anchor="middle" letter-spacing="2">CORNO GRANDE</text>
+                <text x="680" y="85" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" opacity="0.7" text-anchor="middle" letter-spacing="1">MONTE AQUILA</text>
+                <text x="890" y="95" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" opacity="0.7" text-anchor="middle" letter-spacing="1">MONTE PRENA</text>
+                <text x="1110" y="75" font-family="'Inter', sans-serif" font-size="11" font-weight="600" fill="#94a3b8" opacity="0.7" text-anchor="middle" letter-spacing="1">MONTE CAMICIA</text>
+
+                <!-- Layer Sfondo Base (Colline / Campo Imperatore) -->
+                <path d="M0,300 L0,250 L 200,230 L 400,260 L 600,220 L 800,250 L 1000,210 L 1200,240 L 1200,300 Z" fill="#059669" opacity="0.04"/>
+                
+                <!-- Layer Profilo Montuoso Esatto -->
+                <path d="M0,300 L0,220 
+                         L 80,180 L 120,130 L 150,170 
+                         L 200,150 L 300,210 L 380,190 
+                         L 430,90 L 450,110 L 470,120 
+                         L 510,70 L 535,40 L 560,70 
+                         L 620,140 L 680,100 L 730,130 
+                         L 820,160 L 870,130 L 890,110 L 920,120 
+                         L 1020,170 L 1080,120 L 1110,90 L 1130,150 
+                         L 1200,200 L 1200,300 Z" 
+                      fill="#0f172a" opacity="0.06"/>
+                
+                <!-- Linea di demarcazione del crinale (Effetto Disegno Tecnico) -->
+                <path d="M0,220 L 80,180 L 120,130 L 150,170 L 200,150 L 300,210 L 380,190 L 430,90 L 450,110 L 470,120 L 510,70 L 535,40 L 560,70 L 620,140 L 680,100 L 730,130 L 820,160 L 870,130 L 890,110 L 920,120 L 1020,170 L 1080,120 L 1110,90 L 1130,150 L 1200,200" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.2"/>
+            </svg>
+        </div>
+
+        <!-- Contenuto Header In Primo Piano -->
+        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center relative z-10">
+            <img src="https://www.instagram.com/p/C-j4opIiK2u/media/?size=l" alt="HiKe Logo" class="h-24 w-auto object-contain mb-2 drop-shadow-md">
+            <p class="text-emerald-700 font-bold text-xs tracking-wider uppercase mt-1 bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-emerald-100 shadow-sm">Calendario Ufficiale Tour E-Bike 2026</p>
+            <h1 class="text-xl md:text-2xl font-extrabold text-slate-900 mt-3 bg-white/60 backdrop-blur-sm px-5 py-1.5 rounded-xl shadow-sm border border-white/50">Scegli la tua prossima avventura</h1>
         </div>
     </header>
 
@@ -91,7 +125,6 @@
                             <input type="date" name="data_noleggio" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
                         </div>
                         
-                        <!-- NUOVO CAMPO ORARIO -->
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orario Ritiro Previsto</label>
                             <select name="orario_ritiro" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
