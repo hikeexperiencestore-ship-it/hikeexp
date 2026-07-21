@@ -89,7 +89,11 @@
     </div>
 
     <div id="sectionDashboard" class="hidden">
-        <button class="btn-yellow" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi E-Bike</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-yellow" style="flex:1;" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi</button>
+            <button class="btn-yellow" style="flex:1; background: #8b5cf6;" onclick="apriCalendario()">📅 Calendario Noleggi</button>
+        </div>
+
         <div class="search-box">
             <div class="search-box-grid">
                 <div class="form-group"><label>🔍 Nome Tour:</label><input type="text" id="searchNome" oninput="filtraI_Tour()"></div>
@@ -151,7 +155,7 @@
                     <div class="form-group"><label>Email:</label><input type="email" id="man-email"></div>
                     <div class="form-group"><label>Offerta:</label>
                         <select id="man-offerta" required>
-                            <option value="Noleggio Libero">Noleggio Libero</option>
+                            <option value="" disabled selected>Caricamento offerte...</option>
                         </select>
                     </div>
                 </div>
@@ -177,12 +181,41 @@
     </div>
 </div>
 
+<!-- MODALE CALENDARIO INTERATTIVO -->
+<div id="modalCalendario" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; padding:15px; display:flex; justify-content:center; align-items:center;">
+    <div style="background:white; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; padding:20px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
+        <div style="display:flex; justify-content:between; align-items:center; margin-bottom:15px; border-bottom:2px solid var(--border); padding-bottom:10px;">
+            <h3 style="font-size:18px; color:var(--dark);">📅 Calendario Noleggi</h3>
+            <button onclick="chiudiCalendario()" style="width:auto; padding:6px 12px; background:#ef4444; font-size:12px;">✕ Chiudi</button>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <button onclick="cambiaMeseCalendario(-1)" style="width:auto; padding:8px 12px; font-size:14px; background:#64748b;">◀ Mese Prec</button>
+            <h4 id="titoloMeseAnno" style="font-size:16px; font-weight:bold; color:var(--dark);"></h4>
+            <button onclick="cambiaMeseCalendario(1)" style="width:auto; padding:8px 12px; font-size:14px; background:#64748b;">Mese Succ ▶</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(7, 1fr); text-align:center; font-weight:bold; font-size:12px; color:#64748b; margin-bottom:5px;">
+            <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
+        </div>
+        
+        <div id="grid-calendario" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; margin-bottom:20px;"></div>
+        
+        <div id="dettaglio-giorno-container" style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid var(--border);">
+            <h4 id="dataSelezionataTitolo" style="font-size:14px; color:#0f172a; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Seleziona un giorno verde nel calendario</h4>
+            <div id="lista-noleggi-giorno"></div>
+        </div>
+    </div>
+</div>
+
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
 
     let tuttiITour = [];
     let tourSelezionato = null;
     let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [], CONFIG_NOLEGGI: [] }; 
+    let calendarioNoleggiCache = [];
+    let dataCorrenteCalendario = new Date();
 
     window.onload = function() {
         if (localStorage.getItem("hike_admin_pass")) {
@@ -363,7 +396,6 @@
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
         
         const resNoleggi = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
-        
         const resOfferte = await fetch(SCRIPT_URL).then(r=>r.json());
         
         document.getElementById("loadingNoleggi").classList.add("hidden");
@@ -377,17 +409,16 @@
         }
     }
 
+    // FIX: Popola la select solo con le offerte configurate (senza forzare Noleggio Libero se non presente)
     function popolaSelectOfferteManuali(offerte) {
-    const sel = document.getElementById("man-offerta");
-    if(sel) {
-        // Svuotiamo completamente la select
-        sel.innerHTML = ""; 
-        // Aggiungiamo solo le offerte che arrivano dal foglio "Configurazione"
-        offerte.forEach(o => {
-            sel.innerHTML += `<option value="${o.nome}">${o.nome}</option>`;
-        });
+        const sel = document.getElementById("man-offerta");
+        if(sel) {
+            sel.innerHTML = "";
+            offerte.forEach(o => {
+                sel.innerHTML += `<option value="${o.nome}">${o.nome} (${o.prezzo ? '€'+o.prezzo : ''})</option>`;
+            });
+        }
     }
-}
 
     function renderizzaNoleggi() {
         const cont = document.getElementById("lista-noleggi-pendenti");
@@ -456,8 +487,6 @@
             }
 
             let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
-            
-            // LOGICA ORARIO (se manca mostra N/D)
             let testoOrario = nol.orario ? `⏰ ${nol.orario}` : `⏰ N/D`;
 
             div.innerHTML = `
@@ -511,13 +540,134 @@
             numBici: document.getElementById("man-bici").value, 
             altezze: document.getElementById("man-altezze").value, 
             carrellino: document.getElementById("man-carrellino").value,
-            offerta: document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "Noleggio Libero",
+            offerta: document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "",
             note: document.getElementById("man-note") ? document.getElementById("man-note").value : "",
             orario: document.getElementById("man-orario") ? document.getElementById("man-orario").value : ""
         };
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { 
             if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); caricaPannelloNoleggi(); } 
         });
+    }
+
+    // ==========================================
+    // LOGICA CALENDARIO INTERATTIVO NOLEGGI
+    // ==========================================
+    async function apriCalendario() {
+        document.getElementById("modalCalendario").classList.remove("hidden");
+        const pass = document.getElementById("password").value;
+        
+        const res = await fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "get_noleggi_calendario", password: pass }) 
+        }).then(r => r.json());
+        
+        if (res.success) {
+            calendarioNoleggiCache = res.noleggi;
+            disegnaMeseCalendario();
+        } else {
+            alert("Errore caricamento calendario.");
+        }
+    }
+
+    function chiudiCalendario() {
+        document.getElementById("modalCalendario").classList.add("hidden");
+    }
+
+    function cambiaMeseCalendario(direzione) {
+        dataCorrenteCalendario.setMonth(dataCorrenteCalendario.getMonth() + direzione);
+        disegnaMeseCalendario();
+    }
+
+    function disegnaMeseCalendario() {
+        const anno = dataCorrenteCalendario.getFullYear();
+        const mese = dataCorrenteCalendario.getMonth();
+        
+        const nomiMesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
+        document.getElementById("titoloMeseAnno").innerText = `${nomiMesi[mese]} ${anno}`;
+        
+        const grid = document.getElementById("grid-calendario");
+        grid.innerHTML = "";
+        
+        // Primo giorno del mese e totale giorni
+        const primoGiornoIndex = new Date(anno, mese, 1).getDay();
+        // Adattamento lunedì come primo giorno (0 = lunedì, 6 = domenica)
+        const offset = (primoGiornoIndex === 0) ? 6 : primoGiornoIndex - 1;
+        
+        const ultimoGiorno = new Date(anno, mese + 1, 0).getDate();
+        
+        // Celle vuote iniziali
+        for (let i = 0; i < offset; i++) {
+            let emptyCell = document.createElement("div");
+            grid.appendChild(emptyCell);
+        }
+        
+        // Giorni del mese
+        for (let giorno = 1; giorno <= ultimoGiorno; giorno++) {
+            let mFormatted = String(mese + 1).padStart(2, '0');
+            let gFormatted = String(giorno).padStart(2, '0');
+            let dateStr = `${anno}-${mFormatted}-${gFormatted}`;
+            
+            // Verifica se ci sono noleggi in questa data
+            const noleggiGiorno = calendarioNoleggiCache.filter(n => n.data === dateStr);
+            const haNoleggi = noleggiGiorno.length > 0;
+            
+            let cell = document.createElement("div");
+            cell.style = `
+                padding: 10px 4px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: bold;
+                cursor: pointer; border: 1px solid #e2e8f0;
+                background: ${haNoleggi ? '#dcfce7' : '#ffffff'};
+                color: ${haNoleggi ? '#166534' : '#64748b'};
+            `;
+            cell.innerHTML = `${giorno}${haNoleggi ? '<div style="font-size:10px; margin-top:2px;">🚲'+noleggiGiorno.reduce((acc, curr)=>acc+Number(curr.numBici), 0)+'</div>' : ''}`;
+            
+            cell.onclick = () => mostraDettaglioGiorno(dateStr, noleggiGiorno);
+            grid.appendChild(cell);
+        }
+    }
+
+    function mostraDettaglioGiorno(dateStr, noleggi) {
+        document.getElementById("dataSelezionataTitolo").innerText = `📅 Dettaglio Noleggi del ${dateStr.split('-').reverse().join('/')}`;
+        const container = document.getElementById("lista-noleggi-giorno");
+        container.innerHTML = "";
+        
+        if (noleggi.length === 0) {
+            container.innerHTML = `<p style="font-size:13px; color:#64748b; font-style:italic; text-align:center; padding:10px;">Nessun noleggio registrato in questa data.</p>`;
+            return;
+        }
+        
+        // Suddivisione per categorie richieste
+        const categorie = [
+            "Mezza giornata mattina",
+            "Mezza giornata pomeriggio",
+            "Giornata Intera"
+        ];
+        
+        // Raccogliamo anche eventuali varianti se presenti
+        let htmlContent = "";
+        
+        categorie.forEach(cat => {
+            const elementiCat = noleggi.filter(n => n.categoria === cat);
+            if (elementiCat.length > 0) {
+                htmlContent += `<div style="font-weight:bold; font-size:13px; color:var(--primary-dark); margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🔹 ${cat}</div>`;
+                
+                elementiCat.forEach(n => {
+                    let infoDurata = n.infoGiorno ? ` (Giorno ${n.infoGiorno})` : '';
+                    htmlContent += `
+                        <div style="background:white; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #e2e8f0; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <strong>👤 ${n.nome}</strong>${infoDurata} <br>
+                                <small style="color:#64748b;">📞 ${n.telefono} | ⏰ Ritiro: <strong>${n.orario}</strong></small>
+                            </div>
+                            <div style="text-align:right;">
+                                <span class="badge-bici">🚲 ${n.numBici} bici</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        });
+        
+        container.innerHTML = htmlContent;
     }
 </script>
 </body>
