@@ -181,10 +181,9 @@
     </div>
 </div>
 
-<!-- MODALE CALENDARIO INTERATTIVO -->
 <div id="modalCalendario" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; padding:15px; display:flex; justify-content:center; align-items:center;">
     <div style="background:white; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; padding:20px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-        <div style="display:flex; justify-content:between; align-items:center; margin-bottom:15px; border-bottom:2px solid var(--border); padding-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid var(--border); padding-bottom:10px;">
             <h3 style="font-size:18px; color:var(--dark);">📅 Calendario Noleggi</h3>
             <button onclick="chiudiCalendario()" style="width:auto; padding:6px 12px; background:#ef4444; font-size:12px;">✕ Chiudi</button>
         </div>
@@ -409,7 +408,6 @@
         }
     }
 
-    // FIX: Popola la select solo con le offerte configurate (senza forzare Noleggio Libero se non presente)
     function popolaSelectOfferteManuali(offerte) {
         const sel = document.getElementById("man-offerta");
         if(sel) {
@@ -489,6 +487,13 @@
             let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
             let testoOrario = nol.orario ? `⏰ ${nol.orario}` : `⏰ N/D`;
 
+            // WhatsApp Logic
+            let waPhone = nol.telefono ? String(nol.telefono).replace(/[^0-9]/g, '') : "";
+            if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
+            let textWA = encodeURIComponent(`Ciao ${nol.nome}, ti ricordiamo la tua prenotazione E-Bike con Hike Experience per domani alle ore ${nol.orario || 'N/D'} (${nol.numBici} bici). Ti aspettiamo presso il nostro Hike Point! Per qualsiasi info rispondi a questo messaggio.`);
+            
+            let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('https://wa.me/${waPhone}?text=${textWA}', '_blank')">💬 Invia Promemoria WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono per WhatsApp</div>`;
+
             div.innerHTML = `
                 <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio} - ${testoOrario}]</span></div>
                 <div class="dettagli" style="margin-bottom:0;">
@@ -498,6 +503,7 @@
                 ${noteHTML}
                 ${azioniHTML}
                 ${bloccoStorno}
+                ${btnWA}
             `;
             cont.appendChild(div);
         });
@@ -549,9 +555,6 @@
         });
     }
 
-    // ==========================================
-    // LOGICA CALENDARIO INTERATTIVO NOLEGGI
-    // ==========================================
     async function apriCalendario() {
         document.getElementById("modalCalendario").classList.remove("hidden");
         const pass = document.getElementById("password").value;
@@ -588,26 +591,20 @@
         const grid = document.getElementById("grid-calendario");
         grid.innerHTML = "";
         
-        // Primo giorno del mese e totale giorni
         const primoGiornoIndex = new Date(anno, mese, 1).getDay();
-        // Adattamento lunedì come primo giorno (0 = lunedì, 6 = domenica)
         const offset = (primoGiornoIndex === 0) ? 6 : primoGiornoIndex - 1;
-        
         const ultimoGiorno = new Date(anno, mese + 1, 0).getDate();
         
-        // Celle vuote iniziali
         for (let i = 0; i < offset; i++) {
             let emptyCell = document.createElement("div");
             grid.appendChild(emptyCell);
         }
         
-        // Giorni del mese
         for (let giorno = 1; giorno <= ultimoGiorno; giorno++) {
             let mFormatted = String(mese + 1).padStart(2, '0');
             let gFormatted = String(giorno).padStart(2, '0');
             let dateStr = `${anno}-${mFormatted}-${gFormatted}`;
             
-            // Verifica se ci sono noleggi in questa data
             const noleggiGiorno = calendarioNoleggiCache.filter(n => n.data === dateStr);
             const haNoleggi = noleggiGiorno.length > 0;
             
@@ -635,14 +632,7 @@
             return;
         }
         
-        // Suddivisione per categorie richieste
-        const categorie = [
-            "Mezza giornata mattina",
-            "Mezza giornata pomeriggio",
-            "Giornata Intera"
-        ];
-        
-        // Raccogliamo anche eventuali varianti se presenti
+        const categorie = ["Mezza giornata mattina", "Mezza giornata pomeriggio", "Giornata Intera"];
         let htmlContent = "";
         
         categorie.forEach(cat => {
