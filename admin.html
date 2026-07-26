@@ -36,10 +36,10 @@
         h2 { text-align: center; margin-bottom: 20px; font-size: 22px; color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
-        input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], input[type="email"], select {
+        input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], input[type="email"], select, textarea {
             width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; outline: none; transition: 0.2s;
         }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
         
         button { width: 100%; padding: 14px; background: var(--primary); border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         button:hover { background: var(--primary-dark); }
@@ -173,7 +173,7 @@
         </div>
 
         <div style="margin-top: 25px;">
-            <h4 style="text-align: center; margin-bottom: 15px;">📥 Richieste / Confermati</h4>
+            <h4 style="text-align: center; margin-bottom: 15px;">📥 Richieste / Confermati (Da Oggi in Poi)</h4>
             <div id="loadingNoleggi" class="loading hidden">Sincronizzazione...</div>
             <div id="lista-noleggi-pendenti"></div>
         </div>
@@ -203,6 +203,27 @@
         <div id="dettaglio-giorno-container" style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid var(--border);">
             <h4 id="dataSelezionataTitolo" style="font-size:14px; color:#0f172a; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Seleziona un giorno verde nel calendario</h4>
             <div id="lista-noleggi-giorno"></div>
+        </div>
+    </div>
+</div>
+
+<!-- NUOVO MODAL PER MODIFICA DAL CALENDARIO -->
+<div id="modalEditNolCal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; padding:15px; display:flex; justify-content:center; align-items:center;">
+    <div style="background:white; max-width:400px; width:100%; padding:20px; border-radius:16px;">
+        <h3 style="font-size:16px; margin-bottom:15px; color:var(--dark); text-align:center;">✏️ Modifica Info Noleggio</h3>
+        <input type="hidden" id="edit-nol-riga">
+        <div class="form-group"><label>Nome:</label><input type="text" id="edit-nol-nome"></div>
+        <div class="form-group"><label>Telefono:</label><input type="text" id="edit-nol-tel"></div>
+        <div class="form-group"><label>Orario Ritiro:</label><input type="time" id="edit-nol-orario"></div>
+        <div style="display:flex; gap:10px;">
+            <div class="form-group" style="flex:1;"><label>N. Bici:</label><input type="number" id="edit-nol-bici"></div>
+            <div class="form-group" style="flex:2;"><label>Altezze:</label><input type="text" id="edit-nol-altezze"></div>
+        </div>
+        <div class="form-group"><label>Note:</label><textarea id="edit-nol-note" rows="2"></textarea></div>
+        
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button style="flex:1; background:#10b981;" onclick="salvaEditNolCal()">Salva</button>
+            <button style="flex:1; background:#ef4444;" onclick="chiudiEditNolCal()">Annulla</button>
         </div>
     </div>
 </div>
@@ -418,28 +439,69 @@
         }
     }
 
+    // Helper per leggere la data nei due formati
+    function parseDataNoleggio(dataStringa) {
+        let matchITA = dataStringa.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+        if (matchITA) return new Date(matchITA[3], parseInt(matchITA[2],10)-1, matchITA[1]);
+        
+        let matchISO = dataStringa.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (matchISO) return new Date(matchISO[1], parseInt(matchISO[2],10)-1, matchISO[3]);
+        
+        return new Date(0); // fallback
+    }
+
     function renderizzaNoleggi() {
         const cont = document.getElementById("lista-noleggi-pendenti");
         cont.innerHTML = "";
-        const listaCompleta = [...datiNoleggiGlobali.pendenti, ...datiNoleggiGlobali.confermati];
+        let listaCompleta = [...datiNoleggiGlobali.pendenti, ...datiNoleggiGlobali.confermati];
         const mesiNomi = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
 
+        const oggi = new Date();
+        oggi.setHours(0,0,0,0);
+
+        // FILTRO: Nasconde noleggi passati (ma tiene quelli non validi come sicurezza)
+        listaCompleta = listaCompleta.filter(nol => {
+            let dataGrezza = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "";
+            let dataParsed = parseDataNoleggio(dataGrezza);
+            return (dataParsed.getTime() === 0) || (dataParsed >= oggi);
+        });
+
+        // ORDINAMENTO Cronomogico
+        listaCompleta.sort((a, b) => {
+            let dA = parseDataNoleggio(a.dataNoleggio ? a.dataNoleggio.toString().trim() : "");
+            let dB = parseDataNoleggio(b.dataNoleggio ? b.dataNoleggio.toString().trim() : "");
+            return dA - dB;
+        });
+
+        if (listaCompleta.length === 0) {
+            cont.innerHTML = "<div class='loading'>Nessun noleggio futuro.</div>";
+            return;
+        }
+
+        let gruppoCorrente = "";
+
         listaCompleta.forEach(nol => {
+            let dataStringa = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "Data Sconosciuta";
+            
+            // TITOLO RAGGRUPPAMENTO
+            if (dataStringa !== gruppoCorrente) {
+                const header = document.createElement("h4");
+                header.style = "background:var(--primary); color:white; padding:10px 12px; border-radius:8px; margin-top:20px; margin-bottom:10px; font-size:15px;";
+                header.innerHTML = `📅 Data: ${dataStringa}`;
+                cont.appendChild(header);
+                gruppoCorrente = dataStringa;
+            }
+
             const div = document.createElement("div");
             div.className = "prenotazione-item";
             
             let checkboxesTours = "";
-            let [gg, mm, aaaa] = ["", "", ""];
-            let dataStringa = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "";
+            let dParsed = parseDataNoleggio(dataStringa);
             
-            let matchITA = dataStringa.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
-            let matchISO = dataStringa.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-
-            if (matchITA) { gg = parseInt(matchITA[1],10); mm = parseInt(matchITA[2],10); }
-            else if (matchISO) { gg = parseInt(matchISO[3],10); mm = parseInt(matchISO[2],10); }
-
-            if (gg && mm) {
-                let meseNome = mesiNomi[mm - 1];
+            if (dParsed.getTime() > 0) {
+                let gg = dParsed.getDate();
+                let meseNome = mesiNomi[dParsed.getMonth()];
+                
                 let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
                     if (!t.data) return false;
                     let dt = t.data.toLowerCase();
@@ -456,8 +518,6 @@
                 } else {
                     checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questa data.</div>`;
                 }
-            } else {
-                checkboxesTours = `<div style="padding:8px; color:#ef4444; font-size:12px;">Data in formato non riconosciuto.</div>`;
             }
 
             let bloccoStorno = "";
@@ -479,9 +539,18 @@
                     </div>`;
             }
 
+            // PULSANTI PRINCIPALI (Conferma, Rifiuta e ELIMINA)
             let azioniHTML = "";
+            let btnElimina = `<button style="background:#dc2626; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="eliminaNol(${nol.riga})">🗑️ Elimina</button>`;
+            
             if (!datiNoleggiGlobali.confermati.find(c => c.riga === nol.riga)) {
-                azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;"><button style="background:#10b981; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button><button style="background:#ef4444; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button></div>`;
+                azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;">
+                                <button style="flex:1; background:#10b981; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button>
+                                <button style="flex:1; background:#f97316; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button>
+                                ${btnElimina}
+                              </div>`;
+            } else {
+                 azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px; justify-content: flex-end;">${btnElimina}</div>`;
             }
 
             let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
@@ -495,7 +564,7 @@
             let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('https://wa.me/${waPhone}?text=${textWA}', '_blank')">💬 Invia Promemoria WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono per WhatsApp</div>`;
 
             div.innerHTML = `
-                <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${nol.dataNoleggio} - ${testoOrario}]</span></div>
+                <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${testoOrario}]</span></div>
                 <div class="dettagli" style="margin-bottom:0;">
                     🏷️ Offerta: <strong>${nol.offerta}</strong><br>
                     🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
@@ -506,6 +575,14 @@
                 ${btnWA}
             `;
             cont.appendChild(div);
+        });
+    }
+
+    function eliminaNol(riga) {
+        if(!confirm("ATTENZIONE! Vuoi ELIMINARE definitivamente questo noleggio dal database? (Azione irreversibile)")) return;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_noleggio", password: document.getElementById("password").value, riga: riga}) })
+        .then(res => res.json()).then(d => { 
+            if(d.success){ caricaPannelloNoleggi(); } 
         });
     }
 
@@ -642,8 +719,9 @@
                 
                 elementiCat.forEach(n => {
                     let infoDurata = n.infoGiorno ? ` (Giorno ${n.infoGiorno})` : '';
+                    let objPassato = JSON.stringify(n).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
                     htmlContent += `
-                        <div style="background:white; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #e2e8f0; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+                        <div onclick='apriEditNolCal(${objPassato})' style="background:white; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #e2e8f0; font-size:13px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
                             <div>
                                 <strong>👤 ${n.nome}</strong>${infoDurata} <br>
                                 <small style="color:#64748b;">📞 ${n.telefono} | ⏰ Ritiro: <strong>${n.orario}</strong></small>
@@ -659,6 +737,58 @@
         
         container.innerHTML = htmlContent;
     }
+
+    // --- LOGICA MODAL MODIFICA DA CALENDARIO ---
+    function apriEditNolCal(noleggio) {
+        document.getElementById("modalEditNolCal").classList.remove("hidden");
+        document.getElementById("edit-nol-riga").value = noleggio.riga;
+        document.getElementById("edit-nol-nome").value = noleggio.nome || "";
+        document.getElementById("edit-nol-tel").value = noleggio.telefono || "";
+        document.getElementById("edit-nol-orario").value = (noleggio.orario === "N/D" || !noleggio.orario) ? "" : noleggio.orario;
+        document.getElementById("edit-nol-bici").value = noleggio.numBici || 1;
+        document.getElementById("edit-nol-altezze").value = noleggio.altezze || "";
+        document.getElementById("edit-nol-note").value = noleggio.note || "";
+    }
+
+    function chiudiEditNolCal() {
+        document.getElementById("modalEditNolCal").classList.add("hidden");
+    }
+
+    function salvaEditNolCal() {
+        const payload = {
+            action: "update_noleggio_info",
+            password: document.getElementById("password").value,
+            riga: document.getElementById("edit-nol-riga").value,
+            nome: document.getElementById("edit-nol-nome").value,
+            telefono: document.getElementById("edit-nol-tel").value,
+            orario: document.getElementById("edit-nol-orario").value,
+            numBici: document.getElementById("edit-nol-bici").value,
+            altezze: document.getElementById("edit-nol-altezze").value,
+            note: document.getElementById("edit-nol-note").value
+        };
+
+        const btn = event.target;
+        btn.innerText = "Salvataggio...";
+        btn.disabled = true;
+
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) })
+        .then(r => r.json()).then(d => {
+            btn.innerText = "Salva";
+            btn.disabled = false;
+            if(d.success){
+                chiudiEditNolCal();
+                // Ricarichiamo silenziosamente il calendario per aggiornare i dati esplosi
+                apriCalendario(); 
+            } else {
+                alert("Errore durante il salvataggio.");
+            }
+        }).catch(err => {
+            btn.innerText = "Salva";
+            btn.disabled = false;
+            alert("Errore di rete.");
+        });
+    }
+
 </script>
 </body>
 </html>
