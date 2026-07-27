@@ -76,6 +76,9 @@
         .btn-storno { background: #f97316; font-size: 12px; padding: 8px; width: 100%; display: block; border-radius:6px; font-weight:bold; color:white; border:none; cursor:pointer;}
         .btn-storno:hover { background: #ea580c; }
         .btn-ok { background: #10b981; font-size: 12px; padding: 8px; width: 100%; cursor: default; border-radius:6px; font-weight:bold; color:white; border:none;}
+        
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body>
@@ -89,9 +92,13 @@
     </div>
 
     <div id="sectionDashboard" class="hidden">
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; margin-bottom:15px;">
             <button class="btn-yellow" style="flex:1;" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi</button>
             <button class="btn-yellow" style="flex:1; background: #8b5cf6;" onclick="apriCalendario()">📅 Calendario Noleggi</button>
+        </div>
+
+        <div style="background:#e0f2fe; border:1px solid #bae6fd; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#0369a1; display:flex; gap:8px;">
+            <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico ogni 15 minuti.</div>
         </div>
 
         <div class="search-box">
@@ -173,7 +180,6 @@
         </div>
 
         <div style="margin-top: 25px;">
-            <h4 style="text-align: center; margin-bottom: 15px;">📥 Richieste / Confermati (Da Oggi in Poi)</h4>
             <div id="loadingNoleggi" class="loading hidden">Sincronizzazione...</div>
             <div id="lista-noleggi-pendenti"></div>
         </div>
@@ -207,7 +213,6 @@
     </div>
 </div>
 
-<!-- NUOVO MODAL PER MODIFICA DAL CALENDARIO -->
 <div id="modalEditNolCal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; padding:15px; display:flex; justify-content:center; align-items:center;">
     <div style="background:white; max-width:400px; width:100%; padding:20px; border-radius:16px;">
         <h3 style="font-size:16px; margin-bottom:15px; color:var(--dark); text-align:center;">✏️ Modifica Info Noleggio</h3>
@@ -376,21 +381,37 @@
                 data.prenotazioni.forEach(p => {
                     const div = document.createElement("div");
                     div.className = "prenotazione-item";
+                    
                     let btnHTML = p.stornato === "SI" 
                         ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
                         : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
                     
                     let noteHTML = p.richieste ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` : "";
                     
+                    let btnElimina = `<button style="background:#dc2626; font-size:12px; padding:8px 12px; border-radius:6px; color:white; font-weight:bold; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici})">🗑️ Elimina</button>`;
+                    
                     div.innerHTML = `
-                        <div class="nome">👤 ${p.nominativo}</div>
-                        <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
-                        ${noteHTML}
+                        <div style="display:flex; justify-content:space-between; align-items:start;">
+                            <div>
+                                <div class="nome">👤 ${p.nominativo}</div>
+                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
+                                ${noteHTML}
+                            </div>
+                            <div>${btnElimina}</div>
+                        </div>
                         <div style="margin-top:8px;">${btnHTML}</div>
                     `;
                     cont.appendChild(div);
                 });
             }
+        });
+    }
+
+    function eliminaPrenotazioneTour(riga, idTour, numBici) {
+        if(!confirm("ATTENZIONE! Vuoi davvero eliminare questa prenotazione? Verranno liberati " + numBici + " posti sul tuo tabellone.")) return;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_prenotazione_tour", password: document.getElementById("password").value, riga: riga, idTour: idTour, numBici: numBici}) })
+        .then(res => res.json()).then(d => { 
+            if(d.success){ caricaListaPrenotati(); caricaTuttiITour(); } 
         });
     }
 
@@ -439,7 +460,6 @@
         }
     }
 
-    // Helper per leggere la data nei due formati
     function parseDataNoleggio(dataStringa) {
         let matchITA = dataStringa.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
         if (matchITA) return new Date(matchITA[3], parseInt(matchITA[2],10)-1, matchITA[1]);
@@ -447,135 +467,172 @@
         let matchISO = dataStringa.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
         if (matchISO) return new Date(matchISO[1], parseInt(matchISO[2],10)-1, matchISO[3]);
         
-        return new Date(0); // fallback
+        return new Date(0); 
     }
 
-    function renderizzaNoleggi() {
-        const cont = document.getElementById("lista-noleggi-pendenti");
-        cont.innerHTML = "";
-        let listaCompleta = [...datiNoleggiGlobali.pendenti, ...datiNoleggiGlobali.confermati];
+    // Costruisce la UI di un singolo Noleggio (sia Pendente che Confermato)
+    function creaCardNoleggio(nol, isPendente) {
+        const div = document.createElement("div");
+        div.className = "prenotazione-item";
+        if(isPendente) { div.style.boxShadow = "0 4px 6px -1px rgba(0,0,0,0.1)"; div.style.border = "1px solid #fca5a5"; }
+        
         const mesiNomi = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
-
-        const oggi = new Date();
-        oggi.setHours(0,0,0,0);
-
-        // FILTRO: Nasconde noleggi passati (ma tiene quelli non validi come sicurezza)
-        listaCompleta = listaCompleta.filter(nol => {
-            let dataGrezza = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "";
-            let dataParsed = parseDataNoleggio(dataGrezza);
-            return (dataParsed.getTime() === 0) || (dataParsed >= oggi);
-        });
-
-        // ORDINAMENTO Cronomogico
-        listaCompleta.sort((a, b) => {
-            let dA = parseDataNoleggio(a.dataNoleggio ? a.dataNoleggio.toString().trim() : "");
-            let dB = parseDataNoleggio(b.dataNoleggio ? b.dataNoleggio.toString().trim() : "");
-            return dA - dB;
-        });
-
-        if (listaCompleta.length === 0) {
-            cont.innerHTML = "<div class='loading'>Nessun noleggio futuro.</div>";
-            return;
+        let checkboxesTours = "";
+        let haTourSovrapposti = false;
+        
+        let dataStringa = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "";
+        let dParsed = parseDataNoleggio(dataStringa);
+        
+        if (dParsed.getTime() > 0) {
+            let gg = dParsed.getDate();
+            let meseNome = mesiNomi[dParsed.getMonth()];
+            
+            let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
+                if (!t.data) return false;
+                let dt = t.data.toLowerCase();
+                return new RegExp(`\\b${gg}\\b`).test(dt) && dt.includes(meseNome);
+            });
+            
+            if (tourFiltrati.length > 0) {
+                haTourSovrapposti = true;
+                checkboxesTours = tourFiltrati.map(t => 
+                    `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
+                        <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
+                        <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
+                    </label>`
+                ).join("");
+            } else {
+                checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questa data.</div>`;
+            }
         }
 
-        let gruppoCorrente = "";
-
-        listaCompleta.forEach(nol => {
-            let dataStringa = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "Data Sconosciuta";
-            
-            // TITOLO RAGGRUPPAMENTO
-            if (dataStringa !== gruppoCorrente) {
-                const header = document.createElement("h4");
-                header.style = "background:var(--primary); color:white; padding:10px 12px; border-radius:8px; margin-top:20px; margin-bottom:10px; font-size:15px;";
-                header.innerHTML = `📅 Data: ${dataStringa}`;
-                cont.appendChild(header);
-                gruppoCorrente = dataStringa;
-            }
-
-            const div = document.createElement("div");
-            div.className = "prenotazione-item";
-            
-            let checkboxesTours = "";
-            let dParsed = parseDataNoleggio(dataStringa);
-            
-            if (dParsed.getTime() > 0) {
-                let gg = dParsed.getDate();
-                let meseNome = mesiNomi[dParsed.getMonth()];
-                
-                let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
-                    if (!t.data) return false;
-                    let dt = t.data.toLowerCase();
-                    return new RegExp(`\\b${gg}\\b`).test(dt) && dt.includes(meseNome);
-                });
-                
-                if (tourFiltrati.length > 0) {
-                    checkboxesTours = tourFiltrati.map(t => 
-                        `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
-                            <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
-                            <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
-                        </label>`
-                    ).join("");
-                } else {
-                    checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questa data.</div>`;
-                }
-            }
-
-            let bloccoStorno = "";
-            if (nol.tour_collegato === "BICI_PARTNER") {
-                bloccoStorno = `<div style="background:#f3e8ff; border-left:4px solid #a855f7; color:#7e22ce; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">🤝 Bici Partner: Nessun posto stornato.</div>`;
-            } else if (nol.tour_collegato) {
-                bloccoStorno = `<div style="background:#dcfce7; border-left:4px solid #22c55e; color:#166534; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">✅ Scalato dai Tour ID: ${nol.tour_collegato}</div>`;
-            } else {
+        let bloccoStorno = "";
+        if (nol.tour_collegato === "BICI_PARTNER") {
+            bloccoStorno = `<div style="background:#f3e8ff; border-left:4px solid #a855f7; color:#7e22ce; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">🤝 Bici Partner: Nessun posto stornato.</div>`;
+        } else if (nol.tour_collegato) {
+            bloccoStorno = `<div style="background:#dcfce7; border-left:4px solid #22c55e; color:#166534; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">✅ Scalato dai Tour ID: ${nol.tour_collegato}</div>`;
+        } else {
+            // Se ci sono tour mostro Checkbox + Tasto Storno + Tasto Bici Partner
+            if (haTourSovrapposti) {
                 bloccoStorno = `
                     <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
                         <strong style="display:block; margin-bottom:8px; color:var(--dark);">🔗 Seleziona i Tour da cui stornare i posti:</strong>
-                        <div style="margin-bottom:12px; max-height:140px; overflow-y:auto; padding-right:5px;">
-                            ${checkboxesTours}
-                        </div>
+                        <div style="margin-bottom:12px; max-height:140px; overflow-y:auto; padding-right:5px;">${checkboxesTours}</div>
                         <div style="display:flex; gap:8px;">
                             <button class="btn-storno" style="flex:1; border-radius:6px; padding:10px;" onclick="collegaNoleggioTour(${nol.riga})">📉 Storna Selezionati</button>
                             <button style="flex:1; background:#8b5cf6; color:white; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; padding:10px;" onclick="segnaNoleggioEsterno(${nol.riga})">🤝 Usa Bici Partner</button>
                         </div>
                     </div>`;
-            }
-
-            // PULSANTI PRINCIPALI (Conferma, Rifiuta e ELIMINA)
-            let azioniHTML = "";
-            let btnElimina = `<button style="background:#dc2626; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="eliminaNol(${nol.riga})">🗑️ Elimina</button>`;
-            
-            if (!datiNoleggiGlobali.confermati.find(c => c.riga === nol.riga)) {
-                azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;">
-                                <button style="flex:1; background:#10b981; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button>
-                                <button style="flex:1; background:#f97316; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button>
-                                ${btnElimina}
-                              </div>`;
             } else {
-                 azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px; justify-content: flex-end;">${btnElimina}</div>`;
+                // Se NON ci sono tour, niente checkbox, niente tasto Storno
+                bloccoStorno = `
+                    <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
+                        ${checkboxesTours}
+                        <button style="width:100%; background:#8b5cf6; color:white; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; padding:10px;" onclick="segnaNoleggioEsterno(${nol.riga})">🤝 Usa Bici Partner</button>
+                    </div>`;
             }
+        }
 
-            let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
-            let testoOrario = nol.orario ? `⏰ ${nol.orario}` : `⏰ N/D`;
+        let azioniHTML = "";
+        let btnElimina = `<button style="background:#dc2626; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="eliminaNol(${nol.riga})">🗑️ Elimina</button>`;
+        
+        if (isPendente) {
+            azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;">
+                            <button style="flex:1; background:#10b981; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button>
+                            <button style="flex:1; background:#f97316; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button>
+                            ${btnElimina}
+                          </div>`;
+        } else {
+             azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px; justify-content: flex-end;">${btnElimina}</div>`;
+        }
 
-            // WhatsApp Logic
-            let waPhone = nol.telefono ? String(nol.telefono).replace(/[^0-9]/g, '') : "";
-            if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
-            let textWA = encodeURIComponent(`Ciao ${nol.nome}, ti ricordiamo la tua prenotazione E-Bike con Hike Experience per domani alle ore ${nol.orario || 'N/D'} (${nol.numBici} bici). Ti aspettiamo presso il nostro Hike Point! Per qualsiasi info rispondi a questo messaggio.`);
+        let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
+        let testoOrario = nol.orario ? `⏰ ${nol.orario}` : `⏰ N/D`;
+
+        let waPhone = nol.telefono ? String(nol.telefono).replace(/[^0-9]/g, '') : "";
+        if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
+        let textWA = encodeURIComponent(`Ciao ${nol.nome}, ti ricordiamo la tua prenotazione E-Bike con Hike Experience per domani alle ore ${nol.orario || 'N/D'} (${nol.numBici} bici). Ti aspettiamo presso il nostro Hike Point! Per qualsiasi info rispondi a questo messaggio.`);
+        
+        let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('https://wa.me/${waPhone}?text=${textWA}', '_blank')">💬 Invia Promemoria WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono per WhatsApp</div>`;
+
+        let dataLabelPendente = isPendente ? `<span style="font-size:12px; color:#ef4444; font-weight:bold; float:right;">Da gestire per il: ${dataStringa}</span>` : `<span style="float:right; font-size:12px; color:#64748b;">[${testoOrario}]</span>`;
+
+        div.innerHTML = `
+            <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} ${dataLabelPendente}</div>
+            <div class="dettagli" style="margin-bottom:0;">
+                🏷️ Offerta: <strong>${nol.offerta}</strong><br>
+                🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
+            </div>
+            ${noteHTML}
+            ${azioniHTML}
+            ${bloccoStorno}
+            ${btnWA}
+        `;
+        return div;
+    }
+
+    function renderizzaNoleggi() {
+        const cont = document.getElementById("lista-noleggi-pendenti");
+        cont.innerHTML = "";
+        
+        let pendenti = datiNoleggiGlobali.pendenti;
+        let confermati = datiNoleggiGlobali.confermati;
+        const oggi = new Date(); oggi.setHours(0,0,0,0);
+
+        pendenti = pendenti.filter(nol => parseDataNoleggio(nol.dataNoleggio ? nol.dataNoleggio.toString() : "") >= oggi || parseDataNoleggio(nol.dataNoleggio).getTime() === 0);
+        confermati = confermati.filter(nol => parseDataNoleggio(nol.dataNoleggio ? nol.dataNoleggio.toString() : "") >= oggi || parseDataNoleggio(nol.dataNoleggio).getTime() === 0);
+
+        pendenti.sort((a,b) => parseDataNoleggio(a.dataNoleggio) - parseDataNoleggio(b.dataNoleggio));
+        confermati.sort((a,b) => parseDataNoleggio(a.dataNoleggio) - parseDataNoleggio(b.dataNoleggio));
+
+        // 1. STAMPA PENDENTI (NON ESPLOSI) IN CIMA
+        if (pendenti.length > 0) {
+            const headerPen = document.createElement("h4");
+            headerPen.style = "background:#ef4444; color:white; padding:10px 12px; border-radius:8px; margin-bottom:10px; font-size:15px; box-shadow:0 4px 6px -1px rgba(239, 68, 68, 0.2);";
+            headerPen.innerText = `🚨 Nuove Richieste da Gestire (${pendenti.length})`;
+            cont.appendChild(headerPen);
             
-            let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('https://wa.me/${waPhone}?text=${textWA}', '_blank')">💬 Invia Promemoria WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono per WhatsApp</div>`;
+            pendenti.forEach(nol => cont.appendChild(creaCardNoleggio(nol, true)));
+        }
 
-            div.innerHTML = `
-                <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} <span style="float:right; font-size:12px; color:#64748b;">[${testoOrario}]</span></div>
-                <div class="dettagli" style="margin-bottom:0;">
-                    🏷️ Offerta: <strong>${nol.offerta}</strong><br>
-                    🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
-                </div>
-                ${noteHTML}
-                ${azioniHTML}
-                ${bloccoStorno}
-                ${btnWA}
-            `;
-            cont.appendChild(div);
-        });
+        // 2. STAMPA CONFERMATI (ESPLODIBILI PER DATA) SOTTO
+        if (confermati.length > 0) {
+            const headerConf = document.createElement("h4");
+            headerConf.style = "background:#10b981; color:white; padding:10px 12px; border-radius:8px; margin-top:25px; margin-bottom:15px; font-size:15px;";
+            headerConf.innerText = `✅ Noleggi Confermati`;
+            cont.appendChild(headerConf);
+
+            let gruppi = {};
+            confermati.forEach(nol => {
+                let dataStr = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "Data Sconosciuta";
+                if(!gruppi[dataStr]) gruppi[dataStr] = [];
+                gruppi[dataStr].push(nol);
+            });
+
+            for(let d in gruppi) {
+                let details = document.createElement("details");
+                details.style = "background:white; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:10px; overflow:hidden;";
+                
+                let numBiciGiorno = gruppi[d].reduce((acc, n) => acc + Number(n.numBici), 0);
+                
+                let summary = document.createElement("summary");
+                summary.style = "background:#f8fafc; padding:14px; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0;";
+                summary.innerHTML = `<span>📅 ${d}</span> <span class="badge-bici" style="background:#dcfce7; color:#166534;">🚲 ${numBiciGiorno} Bici Tot.</span>`;
+                
+                details.appendChild(summary);
+                
+                let wrapper = document.createElement("div");
+                wrapper.style = "padding:12px; background:#f1f5f9;";
+                gruppi[d].forEach(nol => wrapper.appendChild(creaCardNoleggio(nol, false)));
+                
+                details.appendChild(wrapper);
+                cont.appendChild(details);
+            }
+        }
+
+        if (pendenti.length === 0 && confermati.length === 0) {
+            cont.innerHTML = "<div class='loading'>Nessun noleggio futuro.</div>";
+        }
     }
 
     function eliminaNol(riga) {
@@ -738,7 +795,6 @@
         container.innerHTML = htmlContent;
     }
 
-    // --- LOGICA MODAL MODIFICA DA CALENDARIO ---
     function apriEditNolCal(noleggio) {
         document.getElementById("modalEditNolCal").classList.remove("hidden");
         document.getElementById("edit-nol-riga").value = noleggio.riga;
@@ -777,7 +833,6 @@
             btn.disabled = false;
             if(d.success){
                 chiudiEditNolCal();
-                // Ricarichiamo silenziosamente il calendario per aggiornare i dati esplosi
                 apriCalendario(); 
             } else {
                 alert("Errore durante il salvataggio.");
@@ -788,7 +843,6 @@
             alert("Errore di rete.");
         });
     }
-
 </script>
 </body>
 </html>
