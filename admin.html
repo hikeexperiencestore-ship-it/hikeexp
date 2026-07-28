@@ -271,8 +271,7 @@
             } else { alert("Errore: " + data.error); }
         }).catch(err => alert("Errore di rete."));
     }
-
-    function filtraI_Tour() {
+function filtraI_Tour() {
         const qNome = document.getElementById("searchNome").value.toLowerCase();
         const qData = document.getElementById("searchData").value.toLowerCase();
         const cont = document.getElementById("listaContenitore");
@@ -309,6 +308,29 @@
             return matchTestoNome && matchTestoData;
         });
 
+        // NUOVO BLOCCO: Ordinamento dell'array 'filtrati' in ordine cronologico
+        filtrati.sort((a, b) => {
+            const estraiDataInfo = (dataStr) => {
+                const stringa = String(dataStr || "").toLowerCase();
+                let meseNum = -1;
+                for (let m in mesi) {
+                    if (stringa.includes(m)) { meseNum = mesi[m]; break; }
+                }
+                if (meseNum === -1) return 0; // Se non c'è una data riconoscibile, lo mettiamo in cima
+                
+                const matchGiorno = stringa.match(/\d+/);
+                const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
+                
+                const matchAnno = stringa.match(/\b(20\d{2})\b/);
+                const annoNum = matchAnno ? parseInt(matchAnno[1], 10) : oggi.getFullYear();
+                
+                return new Date(annoNum, meseNum, giornoNum).getTime();
+            };
+            
+            // Sottraendo i millisecondi otteniamo un ordine crescente (dal più vicino al più lontano)
+            return estraiDataInfo(a.data) - estraiDataInfo(b.data);
+        });
+
         if (filtrati.length === 0) { cont.innerHTML = '<div class="loading">Nessun tour trovato</div>'; return; }
 
         filtrati.forEach(t => {
@@ -331,7 +353,7 @@
             cont.appendChild(item);
         });
     }
-
+   
     function apriModificaTour(tour) {
         tourSelezionato = { ...tour }; 
         document.getElementById("editNomeTour").innerText = tourSelezionato.nome;
