@@ -2,8 +2,8 @@ name: Run Majellando Sync
 
 on:
   schedule:
-    # Esegue il controllo alle 09:00, 14:00 e 19:00 UTC (11:00, 16:00 e 21:00 italiane)
-    - cron: '0 9,14,19 * * *'
+    # Esegue il controllo automaticamente ogni 20 minuti
+    - cron: '*/20 * * * *'
   workflow_dispatch: # Permette di avviarlo a mano con un click!
 
 jobs:
