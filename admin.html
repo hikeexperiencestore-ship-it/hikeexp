@@ -714,11 +714,25 @@
         }
     }
 
+    // MODIFICA: Funzione aggiornata con avvisi visivi di successo/errore e caricamento
     function eliminaNol(riga) {
         if(!confirm("ATTENZIONE! Vuoi ELIMINARE definitivamente questo noleggio dal database? (Azione irreversibile)")) return;
+        
+        document.getElementById("loadingNoleggi").innerText = "Eliminazione in corso...";
+        document.getElementById("loadingNoleggi").classList.remove("hidden");
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_noleggio", password: document.getElementById("password").value, riga: riga}) })
         .then(res => res.json()).then(d => { 
-            if(d.success){ caricaPannelloNoleggi(); } 
+            if(d.success){ 
+                alert("🗑️ Noleggio eliminato con successo!");
+                caricaPannelloNoleggi(); 
+            } else {
+                alert("Errore durante l'eliminazione.");
+                document.getElementById("loadingNoleggi").classList.add("hidden");
+            }
+        }).catch(e => {
+            alert("Errore di rete durante l'eliminazione.");
+            document.getElementById("loadingNoleggi").classList.add("hidden");
         });
     }
 
@@ -742,9 +756,24 @@
         .then(res => res.json()).then(d => { if(d.success){ alert("Storno effettuato!"); caricaPannelloNoleggi(); } });
     }
 
+    // MODIFICA: Funzione aggiornata con avvisi visivi di successo/errore e caricamento
     function gestisciNol(riga, stato) {
+        document.getElementById("loadingNoleggi").innerText = "Aggiornamento in corso...";
+        document.getElementById("loadingNoleggi").classList.remove("hidden");
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "gestisci_noleggio", password: document.getElementById("password").value, riga: riga, nuovoStato: stato}) })
-        .then(res => res.json()).then(d => { if(d.success){ caricaPannelloNoleggi(); } });
+        .then(res => res.json()).then(d => { 
+            if(d.success){ 
+                alert("✅ Noleggio aggiornato come: " + stato);
+                caricaPannelloNoleggi(); 
+            } else {
+                alert("Errore durante l'aggiornamento.");
+                document.getElementById("loadingNoleggi").classList.add("hidden");
+            }
+        }).catch(e => {
+            alert("Errore di rete durante l'aggiornamento.");
+            document.getElementById("loadingNoleggi").classList.add("hidden");
+        });
     }
     
     function inviaNoleggioManuale(e) {
