@@ -35,7 +35,6 @@
 
         h2 { text-align: center; margin-bottom: 20px; font-size: 22px; color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
         
-        /* NUOVO STILE LOGO TRASPARENTE */
         .logo-login {
             display: block;
             margin: 0 auto 20px auto;
@@ -96,7 +95,6 @@
     <h2>Hike Exp - Dashboard Soci</h2>
 
     <div id="sectionLogin">
-        <!-- LOGO AGGIUNTO -->
         <img src="LOGO.png" class="logo-login" alt="Logo">
         <div class="form-group"><label>Password Admin:</label><input type="password" id="password" placeholder="Password"></div>
         <button onclick="caricaTuttiITour()">Accedi e Carica</button>
@@ -109,7 +107,7 @@
         </div>
 
         <div style="background:#e0f2fe; border:1px solid #bae6fd; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#0369a1; display:flex; gap:8px;">
-            <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico ogni 20 minuti.</div>
+            <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico alle 09.00, alle 14,00 ed alle 19.00.</div>
         </div>
 
         <div class="search-box">
@@ -149,7 +147,6 @@
         <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
 
         <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
-        <!-- NUOVO TASTO ELIMINA INTERO TOUR -->
         <button style="background: #dc2626; margin-top: 15px;" onclick="eliminaTourIntero()">🗑️ Elimina Tour Definitivamente</button>
 
         <div id="listaPrenotatiContainer" class="hidden" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 15px;">
@@ -162,10 +159,10 @@
         <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi</h3>
         
         <div class="form-box" style="border: 1px solid #fcd34d; background: #fffbeb;">
-            <h4 style="color: #b45309; margin-bottom: 10px;">Inserimento Manuale</h4>
+            <h4 style="color: #b45309; margin-bottom: 10px;">Inserimento Manuale (Personalizzato)</h4>
             <form id="form-noleggio-manuale" onsubmit="inviaNoleggioManuale(event)">
                 <div class="form-grid-2">
-                    <div class="form-group"><label>Data:</label><input type="date" id="man-data" required></div>
+                    <div class="form-group"><label>Data Inizio:</label><input type="date" id="man-data" required></div>
                     <div class="form-group"><label>Ore Ritiro:</label><input type="time" id="man-orario" value="09:00" required></div>
                 </div>
                 <div class="form-grid-2">
@@ -174,18 +171,21 @@
                 </div>
                 <div class="form-grid-2">
                     <div class="form-group"><label>Email:</label><input type="email" id="man-email"></div>
-                    <div class="form-group"><label>Offerta:</label>
+                    <div class="form-group"><label>Offerta / Tipo:</label>
                         <select id="man-offerta" required>
                             <option value="" disabled selected>Caricamento offerte...</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group"><label>Durata (Giorni):</label><input type="number" id="man-durata" value="1" min="1" required></div>
+                    <div class="form-group"><label>Carrello:</label><select id="man-carrellino"><option>No</option><option>Si</option></select></div>
                 </div>
                 <div class="form-group"><label>Note / Richieste:</label>
                     <input type="text" id="man-note" placeholder="Eventuali note...">
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex: 1;"><label>Bici:</label><input type="number" id="man-bici" value="1" required></div>
-                    <div class="form-group" style="flex: 1;"><label>Carrello:</label><select id="man-carrellino"><option>No</option><option>Si</option></select></div>
                 </div>
                 <div class="form-group"><label>Altezze:</label><input type="text" id="man-altezze" required></div>
                 
@@ -456,7 +456,6 @@
         .then(res => res.json()).then(d => { if(d.success){ alert("Storno registrato!"); caricaListaPrenotati(); caricaTuttiITour(); } });
     }
     
-    // NUOVA FUNZIONE: Elimina l'intero tour
     function eliminaTourIntero() {
         if(!confirm("ATTENZIONE CRITICA! Vuoi ELIMINARE definitivamente questo intero TOUR e i suoi posti dal database? (Azione irreversibile)")) return;
         
@@ -486,7 +485,6 @@
         document.getElementById("sectionDashboard").classList.remove("hidden"); 
     }
 
-    // MODIFICA: Caricamento Parallelo per velocizzare il pannello admin
     async function caricaPannelloNoleggi() {
         document.getElementById("loadingNoleggi").classList.remove("hidden");
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
@@ -531,6 +529,15 @@
         return new Date(0); 
     }
 
+    function estraiDurataNoleggio(offertaStr) {
+        let off = (offertaStr || "").toLowerCase();
+        let match = off.match(/(\d+)\s*giorn/);
+        if (match) return parseInt(match[1], 10);
+        if (off.includes("2 giorni") || off.includes("due giorni")) return 2;
+        if (off.includes("3 giorni") || off.includes("tre giorni")) return 3;
+        return 1;
+    }
+
     function creaCardNoleggio(nol, isPendente) {
         const div = document.createElement("div");
         div.className = "prenotazione-item";
@@ -544,17 +551,28 @@
         let dParsed = parseDataNoleggio(dataStringa);
         
         if (dParsed.getTime() > 0) {
-            let gg = dParsed.getDate();
-            let meseNome = mesiNomi[dParsed.getMonth()];
+            let durata = estraiDurataNoleggio(nol.offerta);
             
-            // MODIFICA: Corretto bug regex sovrapposizione estraendo solo il primo numero della stringa (il giorno effettivo)
+            // Crea un array con tutte le date (oggetti Date a mezzanotte) coperte dal noleggio
+            let dateNoleggioIntervallo = [];
+            for (let i = 0; i < durata; i++) {
+                let dCopia = new Date(dParsed);
+                dCopia.setDate(dParsed.getDate() + i);
+                dateNoleggioIntervallo.push({
+                    giorno: dCopia.getDate(),
+                    mese: dCopia.getMonth()
+                });
+            }
+            
+            // Trova tutti i tour che si sovrappongono a QUALSIASI giorno del noleggio multi-giorno
             let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
                 if (!t.data) return false;
                 let dt = t.data.toLowerCase();
                 let matchGiorno = dt.match(/\d+/);
                 let giornoTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
                 
-                return (giornoTour === gg) && dt.includes(meseNome);
+                // Controlla se il tour cade in uno qualsiasi dei giorni del noleggio
+                return dateNoleggioIntervallo.some(dInt => (giornoTour === dInt.giorno) && dt.includes(mesiNomi[dInt.mese]));
             });
             
             if (tourFiltrati.length > 0) {
@@ -566,7 +584,7 @@
                     </label>`
                 ).join("");
             } else {
-                checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questa data.</div>`;
+                checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questo periodo.</div>`;
             }
         }
 
@@ -730,6 +748,12 @@
     
     function inviaNoleggioManuale(e) {
         e.preventDefault();
+        const durataGiorni = parseInt(document.getElementById("man-durata").value || "1", 10);
+        let nomeOffertaBase = document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "Noleggio Personalizzato";
+        
+        // Se la durata è maggiore di 1, incorporiamo la durata nel testo dell'offerta salvata
+        let offertaFinale = durataGiorni > 1 ? `${nomeOffertaBase} (${durataGiorni} giorni)` : nomeOffertaBase;
+
         const p = { 
             action: "add_manual_noleggio", 
             password: document.getElementById("password").value, 
@@ -740,12 +764,12 @@
             numBici: document.getElementById("man-bici").value, 
             altezze: document.getElementById("man-altezze").value, 
             carrellino: document.getElementById("man-carrellino").value,
-            offerta: document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "",
+            offerta: offertaFinale,
             note: document.getElementById("man-note") ? document.getElementById("man-note").value : "",
             orario: document.getElementById("man-orario") ? document.getElementById("man-orario").value : ""
         };
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { 
-            if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); caricaPannelloNoleggi(); } 
+            if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); document.getElementById("man-durata").value = "1"; caricaPannelloNoleggi(); } 
         });
     }
 
@@ -829,7 +853,10 @@
         const categorie = ["Mezza giornata mattina", "Mezza giornata pomeriggio", "Giornata Intera"];
         let htmlContent = "";
         
-        categorie.forEach(cat => {
+        // Categorie dinamiche per noleggi custom
+        let categoriePresenti = [...new Set(noleggi.map(n => n.categoria))];
+        
+        categoriePresenti.forEach(cat => {
             const elementiCat = noleggi.filter(n => n.categoria === cat);
             if (elementiCat.length > 0) {
                 htmlContent += `<div style="font-weight:bold; font-size:13px; color:var(--primary-dark); margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🔹 ${cat}</div>`;
