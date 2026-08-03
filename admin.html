@@ -34,6 +34,15 @@
         }
 
         h2 { text-align: center; margin-bottom: 20px; font-size: 22px; color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
+        
+        /* NUOVO STILE LOGO TRASPARENTE */
+        .logo-login {
+            display: block;
+            margin: 0 auto 20px auto;
+            max-width: 150px;
+            mix-blend-mode: multiply;
+        }
+
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
         input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], input[type="email"], select, textarea {
@@ -87,6 +96,8 @@
     <h2>Hike Exp - Dashboard Soci</h2>
 
     <div id="sectionLogin">
+        <!-- LOGO AGGIUNTO -->
+        <img src="LOGO.png" class="logo-login" alt="Logo">
         <div class="form-group"><label>Password Admin:</label><input type="password" id="password" placeholder="Password"></div>
         <button onclick="caricaTuttiITour()">Accedi e Carica</button>
     </div>
@@ -138,6 +149,9 @@
         <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
 
         <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
+        <!-- NUOVO TASTO ELIMINA INTERO TOUR -->
+        <button style="background: #dc2626; margin-top: 15px;" onclick="eliminaTourIntero()">🗑️ Elimina Tour Definitivamente</button>
+
         <div id="listaPrenotatiContainer" class="hidden" style="margin-top: 20px; border-top: 2px dashed var(--border); padding-top: 15px;">
             <div id="loadingPrenotati" class="loading hidden">Recupero in corso...</div>
             <div id="listaPrenotatiContent"></div>
@@ -271,7 +285,8 @@
             } else { alert("Errore: " + data.error); }
         }).catch(err => alert("Errore di rete."));
     }
-function filtraI_Tour() {
+
+    function filtraI_Tour() {
         const qNome = document.getElementById("searchNome").value.toLowerCase();
         const qData = document.getElementById("searchData").value.toLowerCase();
         const cont = document.getElementById("listaContenitore");
@@ -308,7 +323,6 @@ function filtraI_Tour() {
             return matchTestoNome && matchTestoData;
         });
 
-        // NUOVO BLOCCO: Ordinamento dell'array 'filtrati' in ordine cronologico
         filtrati.sort((a, b) => {
             const estraiDataInfo = (dataStr) => {
                 const stringa = String(dataStr || "").toLowerCase();
@@ -316,7 +330,7 @@ function filtraI_Tour() {
                 for (let m in mesi) {
                     if (stringa.includes(m)) { meseNum = mesi[m]; break; }
                 }
-                if (meseNum === -1) return 0; // Se non c'è una data riconoscibile, lo mettiamo in cima
+                if (meseNum === -1) return 0; 
                 
                 const matchGiorno = stringa.match(/\d+/);
                 const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
@@ -327,7 +341,6 @@ function filtraI_Tour() {
                 return new Date(annoNum, meseNum, giornoNum).getTime();
             };
             
-            // Sottraendo i millisecondi otteniamo un ordine crescente (dal più vicino al più lontano)
             return estraiDataInfo(a.data) - estraiDataInfo(b.data);
         });
 
@@ -442,6 +455,25 @@ function filtraI_Tour() {
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "flag_stornato_tour", password: document.getElementById("password").value, riga: riga}) })
         .then(res => res.json()).then(d => { if(d.success){ alert("Storno registrato!"); caricaListaPrenotati(); caricaTuttiITour(); } });
     }
+    
+    // NUOVA FUNZIONE: Elimina l'intero tour
+    function eliminaTourIntero() {
+        if(!confirm("ATTENZIONE CRITICA! Vuoi ELIMINARE definitivamente questo intero TOUR e i suoi posti dal database? (Azione irreversibile)")) return;
+        
+        fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({action: "elimina_tour", password: document.getElementById("password").value, idTour: tourSelezionato.id}) 
+        })
+        .then(res => res.json()).then(d => { 
+            if(d.success){ 
+                alert("Tour eliminato con successo!"); 
+                tornaAllaLista(); 
+                caricaTuttiITour(); 
+            } else { 
+                alert("Errore durante l'eliminazione: " + (d.error || 'Generico')); 
+            } 
+        });
+    }
 
     async function apriPannelloNoleggi() {
         document.getElementById("sectionDashboard").classList.add("hidden");
@@ -454,21 +486,28 @@ function filtraI_Tour() {
         document.getElementById("sectionDashboard").classList.remove("hidden"); 
     }
 
+    // MODIFICA: Caricamento Parallelo per velocizzare il pannello admin
     async function caricaPannelloNoleggi() {
         document.getElementById("loadingNoleggi").classList.remove("hidden");
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
         
-        const resNoleggi = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
-        const resOfferte = await fetch(SCRIPT_URL).then(r=>r.json());
+        const requestNoleggi = fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
+        const requestOfferte = fetch(SCRIPT_URL).then(r=>r.json());
         
-        document.getElementById("loadingNoleggi").classList.add("hidden");
-        
-        if(resNoleggi.success){ 
-            datiNoleggiGlobali = resNoleggi; 
-            if(resOfferte && resOfferte.CONFIG_NOLEGGI) {
-                popolaSelectOfferteManuali(resOfferte.CONFIG_NOLEGGI);
+        try {
+            const [resNoleggi, resOfferte] = await Promise.all([requestNoleggi, requestOfferte]);
+            
+            document.getElementById("loadingNoleggi").classList.add("hidden");
+            
+            if(resNoleggi.success){ 
+                datiNoleggiGlobali = resNoleggi; 
+                if(resOfferte && resOfferte.CONFIG_NOLEGGI) {
+                    popolaSelectOfferteManuali(resOfferte.CONFIG_NOLEGGI);
+                }
+                renderizzaNoleggi(); 
             }
-            renderizzaNoleggi(); 
+        } catch (error) {
+            document.getElementById("loadingNoleggi").innerText = "Errore di rete. Riprova.";
         }
     }
 
@@ -492,7 +531,6 @@ function filtraI_Tour() {
         return new Date(0); 
     }
 
-    // Costruisce la UI di un singolo Noleggio (sia Pendente che Confermato)
     function creaCardNoleggio(nol, isPendente) {
         const div = document.createElement("div");
         div.className = "prenotazione-item";
@@ -509,10 +547,14 @@ function filtraI_Tour() {
             let gg = dParsed.getDate();
             let meseNome = mesiNomi[dParsed.getMonth()];
             
+            // MODIFICA: Corretto bug regex sovrapposizione estraendo solo il primo numero della stringa (il giorno effettivo)
             let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
                 if (!t.data) return false;
                 let dt = t.data.toLowerCase();
-                return new RegExp(`\\b${gg}\\b`).test(dt) && dt.includes(meseNome);
+                let matchGiorno = dt.match(/\d+/);
+                let giornoTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
+                
+                return (giornoTour === gg) && dt.includes(meseNome);
             });
             
             if (tourFiltrati.length > 0) {
@@ -534,7 +576,6 @@ function filtraI_Tour() {
         } else if (nol.tour_collegato) {
             bloccoStorno = `<div style="background:#dcfce7; border-left:4px solid #22c55e; color:#166534; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">✅ Scalato dai Tour ID: ${nol.tour_collegato}</div>`;
         } else {
-            // Se ci sono tour mostro Checkbox + Tasto Storno + Tasto Bici Partner
             if (haTourSovrapposti) {
                 bloccoStorno = `
                     <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
@@ -546,7 +587,6 @@ function filtraI_Tour() {
                         </div>
                     </div>`;
             } else {
-                // Se NON ci sono tour, niente checkbox, niente tasto Storno
                 bloccoStorno = `
                     <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
                         ${checkboxesTours}
@@ -607,7 +647,6 @@ function filtraI_Tour() {
         pendenti.sort((a,b) => parseDataNoleggio(a.dataNoleggio) - parseDataNoleggio(b.dataNoleggio));
         confermati.sort((a,b) => parseDataNoleggio(a.dataNoleggio) - parseDataNoleggio(b.dataNoleggio));
 
-        // 1. STAMPA PENDENTI (NON ESPLOSI) IN CIMA
         if (pendenti.length > 0) {
             const headerPen = document.createElement("h4");
             headerPen.style = "background:#ef4444; color:white; padding:10px 12px; border-radius:8px; margin-bottom:10px; font-size:15px; box-shadow:0 4px 6px -1px rgba(239, 68, 68, 0.2);";
@@ -617,7 +656,6 @@ function filtraI_Tour() {
             pendenti.forEach(nol => cont.appendChild(creaCardNoleggio(nol, true)));
         }
 
-        // 2. STAMPA CONFERMATI (ESPLODIBILI PER DATA) SOTTO
         if (confermati.length > 0) {
             const headerConf = document.createElement("h4");
             headerConf.style = "background:#10b981; color:white; padding:10px 12px; border-radius:8px; margin-top:25px; margin-bottom:15px; font-size:15px;";
