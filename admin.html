@@ -107,7 +107,7 @@
         </div>
 
         <div style="background:#e0f2fe; border:1px solid #bae6fd; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#0369a1; display:flex; gap:8px;">
-            <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico ogni 20 minuti.</div>
+            <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico alle 09.00, alle 14.00 ed alle 19.00.</div>
         </div>
 
         <div class="search-box">
@@ -194,7 +194,7 @@
         </div>
 
         <div style="margin-top: 25px;">
-            <div id="loadingNoleggi" class="loading hidden">Sincronizzazione...</div>
+            <div id="loadingNoleggi" class="loading hidden">Sincronizzazione in corso...</div>
             <div id="lista-noleggi-pendenti"></div>
         </div>
         <button class="secondary" onclick="tornaAiTour()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
@@ -485,24 +485,27 @@
         document.getElementById("sectionDashboard").classList.remove("hidden"); 
     }
 
+    // GESTIONE UNIFICATA API: Velocizza ed evita il blocco di Google Apps Script
     async function caricaPannelloNoleggi() {
         document.getElementById("loadingNoleggi").classList.remove("hidden");
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
         
-        const requestNoleggi = fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) }).then(r=>r.json());
-        const requestOfferte = fetch(SCRIPT_URL).then(r=>r.json());
-        
         try {
-            const [resNoleggi, resOfferte] = await Promise.all([requestNoleggi, requestOfferte]);
+            const res = await fetch(SCRIPT_URL, { 
+                method: "POST", 
+                body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) 
+            }).then(r=>r.json());
             
             document.getElementById("loadingNoleggi").classList.add("hidden");
             
-            if(resNoleggi.success){ 
-                datiNoleggiGlobali = resNoleggi; 
-                if(resOfferte && resOfferte.CONFIG_NOLEGGI) {
-                    popolaSelectOfferteManuali(resOfferte.CONFIG_NOLEGGI);
+            if(res.success){ 
+                datiNoleggiGlobali = res; 
+                if(res.CONFIG_NOLEGGI) {
+                    popolaSelectOfferteManuali(res.CONFIG_NOLEGGI);
                 }
                 renderizzaNoleggi(); 
+            } else {
+                alert("Errore: " + (res.error || "Impossibile caricare i dati"));
             }
         } catch (error) {
             document.getElementById("loadingNoleggi").innerText = "Errore di rete. Riprova.";
@@ -553,7 +556,7 @@
         if (dParsed.getTime() > 0) {
             let durata = estraiDurataNoleggio(nol.offerta);
             
-            // Crea un array con tutte le date (oggetti Date a mezzanotte) coperte dal noleggio
+            // LOGICA SOVRAPPOSIZIONE ESTESA (Controlla tutti i giorni, non solo l'inizio)
             let dateNoleggioIntervallo = [];
             for (let i = 0; i < durata; i++) {
                 let dCopia = new Date(dParsed);
@@ -564,14 +567,12 @@
                 });
             }
             
-            // Trova tutti i tour che si sovrappongono a QUALSIASI giorno del noleggio multi-giorno
             let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
                 if (!t.data) return false;
                 let dt = t.data.toLowerCase();
                 let matchGiorno = dt.match(/\d+/);
                 let giornoTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
                 
-                // Controlla se il tour cade in uno qualsiasi dei giorni del noleggio
                 return dateNoleggioIntervallo.some(dInt => (giornoTour === dInt.giorno) && dt.includes(mesiNomi[dInt.mese]));
             });
             
@@ -751,7 +752,6 @@
         const durataGiorni = parseInt(document.getElementById("man-durata").value || "1", 10);
         let nomeOffertaBase = document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "Noleggio Personalizzato";
         
-        // Se la durata è maggiore di 1, incorporiamo la durata nel testo dell'offerta salvata
         let offertaFinale = durataGiorni > 1 ? `${nomeOffertaBase} (${durataGiorni} giorni)` : nomeOffertaBase;
 
         const p = { 
@@ -850,10 +850,7 @@
             return;
         }
         
-        const categorie = ["Mezza giornata mattina", "Mezza giornata pomeriggio", "Giornata Intera"];
         let htmlContent = "";
-        
-        // Categorie dinamiche per noleggi custom
         let categoriePresenti = [...new Set(noleggi.map(n => n.categoria))];
         
         categoriePresenti.forEach(cat => {
