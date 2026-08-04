@@ -714,7 +714,6 @@
         }
     }
 
-    // MODIFICA: Funzione aggiornata con avvisi visivi di successo/errore e caricamento
     function eliminaNol(riga) {
         if(!confirm("ATTENZIONE! Vuoi ELIMINARE definitivamente questo noleggio dal database? (Azione irreversibile)")) return;
         
@@ -726,6 +725,7 @@
             if(d.success){ 
                 alert("🗑️ Noleggio eliminato con successo!");
                 caricaPannelloNoleggi(); 
+                caricaTuttiITour(); // AGGIUNTA: Aggiorna i posti dei tour in background!
             } else {
                 alert("Errore durante l'eliminazione.");
                 document.getElementById("loadingNoleggi").classList.add("hidden");
@@ -756,7 +756,6 @@
         .then(res => res.json()).then(d => { if(d.success){ alert("Storno effettuato!"); caricaPannelloNoleggi(); } });
     }
 
-    // MODIFICA: Funzione aggiornata con avvisi visivi di successo/errore e caricamento
     function gestisciNol(riga, stato) {
         document.getElementById("loadingNoleggi").innerText = "Aggiornamento in corso...";
         document.getElementById("loadingNoleggi").classList.remove("hidden");
