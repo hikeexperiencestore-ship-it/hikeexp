@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Prenotazioni | Hike Experience</title>
     
-    <!-- Script Tailwind e Font Montserrat (Allineamento estetico al sito) -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* --- STILI EREDITATI DAL SITO PER HEADER E FOOTER --- */
         body { font-family: 'Montserrat', sans-serif; background-color: #121212; }
         
         .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background-color: #ffffff; border-bottom: 3px solid #e0e0e0; position: sticky; top: 0; z-index: 1000; }
@@ -18,7 +16,6 @@
         .nav-links { display: flex; gap: 35px; }
         .nav-links a { color: #121212; text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 1rem; letter-spacing: 1px; transition: color 0.3s ease; }
         .nav-links a:hover, .nav-links a.active { color: #2ecc71; }
-        .btn-booking { background-color: #2ecc71; color: #ffffff; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 0.5px; transition: background-color 0.3s ease; }
         
         .main-footer { background-color: #0a0a0a; padding: 60px 5% 30px; border-top: 1px solid #1f1f1f; margin-top: auto; }
         .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; max-width: 1200px; margin: 0 auto; margin-bottom: 40px; color: #ffffff; }
@@ -31,7 +28,6 @@
             .nav-links { flex-direction: column; gap: 12px; }
         }
 
-        /* Gestione modale piattaforma */
         summary::-webkit-details-marker { display: none; }
         summary { list-style: none; }
         details[open] .ruota-freccia { transform: rotate(180deg); }
@@ -44,7 +40,7 @@
     <!-- HEADER -->
     <header class="main-header font-sans">
         <div class="logo-container">
-            <a href="https://tuosito.com"> <!-- Metti il vero link della tua home page -->
+            <a href="https://tuosito.com"> 
                 <img src="logo.png" alt="Hike Experience Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/150x85?text=LOGO'">
             </a>
         </div>
@@ -55,9 +51,9 @@
         </nav>
     </header>
 
-    <!-- AREA TITOLO PIATTAFORMA -->
+    <!-- AREA TITOLO -->
     <div class="bg-[#1a1a1a] border-b-4 border-[#2ecc71] pt-10 pb-10 text-center px-4">
-        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
+        <div class="max-w-md md:max-w-3xl mx-auto flex flex-col items-center">
             <p id="piattaforma-subtitle" class="text-[#2ecc71] font-bold text-sm tracking-wider uppercase mt-1">Calendario Ufficiale 2026</p>
             <h1 id="piattaforma-title" class="text-2xl md:text-3xl font-extrabold text-white mt-2 uppercase">Scegli la tua avventura</h1>
             
@@ -67,10 +63,10 @@
 
     <!-- BOTTONI TAB SCELTA -->
     <div id="tabs-container" class="max-w-md md:max-w-3xl mx-auto w-full px-4 mt-8 flex gap-3">
-        <button id="btn-tab-tour" class="flex-1 bg-[#2ecc71] text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-[#2ecc71] text-sm md:text-base" onclick="cambiaVista('tour')">
+        <button id="btn-tab-tour" class="flex-1 bg-[#2ecc71] text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md border-2 border-[#2ecc71] text-sm md:text-base" onclick="cambiaVista('tour')">
             🚵‍♂️ Date e Tour
         </button>
-        <button id="btn-tab-noleggio" class="flex-1 bg-[#1e1e1e] text-gray-300 hover:bg-[#2a2a2a] font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-[#333] text-sm md:text-base" onclick="cambiaVista('noleggio')">
+        <button id="btn-tab-noleggio" class="flex-1 bg-[#1e1e1e] text-gray-300 hover:bg-[#2a2a2a] font-bold py-3 px-2 md:px-4 rounded-xl border-2 border-[#333] text-sm md:text-base" onclick="cambiaVista('noleggio')">
             🚲 Noleggio Libero
         </button>
     </div>
@@ -123,7 +119,6 @@
             <div class="bg-[#1e1e1e] rounded-2xl p-6 shadow-sm border border-[#333] mb-6 text-white">
                 <form id="formNoleggio" onsubmit="handleNoleggioSubmit(event)">
                     <input type="hidden" name="tipo_richiesta" value="noleggio">
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Offerta Scelta</label>
@@ -145,7 +140,6 @@
                                 <option value="15:00">15:00</option>
                             </select>
                         </div>
-                        
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Nome e Cognome</label>
                             <input type="text" name="name" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" placeholder="Es. Mario Rossi" required>
@@ -167,7 +161,6 @@
                             <input type="text" name="altezza" placeholder="es. 175, 160, 182" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" required>
                         </div>
                     </div>
-                    
                     <button type="submit" id="submit-noleggio-btn" class="mt-8 w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-extrabold p-4 rounded-xl transition-colors text-sm shadow-md uppercase">Invia Richiesta Noleggio</button>
                 </form>
             </div>
@@ -178,7 +171,6 @@
     <div id="bookingModal" class="modal">
         <div class="modal-content" id="modalContent">
             <span class="absolute top-3 right-4 text-3xl font-semibold text-gray-500 hover:text-white cursor-pointer select-none" onclick="closeModal()">&times;</span>
-            
             <form id="bookingForm" onsubmit="handleFormSubmit(event)">
                 <input type="hidden" name="tipo_richiesta" value="tour">
                 <input type="hidden" id="form-id-tour" name="id_tour">
@@ -237,15 +229,13 @@
         </div>
     </footer>
 
-    <!-- SCRIPT GESTIONE PIATTAFORMA -->
+    <!-- SCRIPT GESTIONE PIATTAFORMA AGGIORNATO (Senza Attese Visive e Titolo Corretto) -->
     <script>
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
         
-        let databaseTourLocali = []; 
         let postiInTempoReale = {};
         
-        // Lettura del nome tour dall'URL
         const urlParams = new URLSearchParams(window.location.search);
         const tourDalSito = urlParams.get('tour');
 
@@ -268,59 +258,6 @@
             }
         }
 
-        async function fetchPostiRealtime() {
-            try {
-                const response = await fetch(SCRIPT_URL);
-                if (response.ok) {
-                    postiInTempoReale = await response.json();
-                    
-                    if (postiInTempoReale["CONFIG_NOLEGGI"]) {
-                        const selectOfferta = document.getElementById('select-offerta-noleggio');
-                        selectOfferta.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta...</option>';
-                        postiInTempoReale["CONFIG_NOLEGGI"].forEach((opz) => {
-                            const option = document.createElement('option');
-                            option.value = opz.nome;
-                            option.text = `${opz.nome} ${opz.prezzo ? '- €' + opz.prezzo : ''}`;
-                            selectOfferta.appendChild(option);
-                        });
-                    }
-
-                    if (postiInTempoReale["CONFIG_TOUR"]) {
-                        const tourContainer = document.getElementById('tour-list-container');
-                        tourContainer.innerHTML = ''; 
-                        
-                        postiInTempoReale["CONFIG_TOUR"].forEach((tour) => {
-                            // Nascondo tutti gli altri se cerco un tour specifico
-                            if (tourDalSito && tour.nome.trim().toLowerCase() !== tourDalSito.trim().toLowerCase()) {
-                                return; 
-                            }
-                            
-                            const isOpenAttr = tourDalSito ? "open" : "";
-                            const detailsHtml = `
-                                <details class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-[#333] overflow-hidden" data-tour-name="${tour.nome}" ${isOpenAttr}>
-                                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-[#242424]">
-                                        <div>
-                                            <h2 class="text-lg font-bold text-white mt-1.5 uppercase">${tour.nome}</h2>
-                                            <p class="text-sm font-semibold text-[#2ecc71] mt-1">${tour.prezzo ? 'Prezzo: ' + tour.prezzo + '€' : ''}</p>
-                                        </div>
-                                        <div class="bg-[#333] p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                                            <span class="text-white">▼</span>
-                                        </div>
-                                    </summary>
-                                    <div class="px-5 pb-5 pt-4 border-t border-[#333] space-y-4 bg-[#1a1a1a] container-date text-white">
-                                        <p class="text-xs text-gray-400 italic text-center p-2">Sincronizzazione date in corso...</p>
-                                    </div>
-                                </details>
-                            `;
-                            tourContainer.insertAdjacentHTML('beforeend', detailsHtml);
-                        });
-                    }
-                }
-            } catch (e) {
-                console.error("Errore fetchPostiRealtime", e);
-            }
-        }
-
         const mappaturaMesi = { "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5, "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11 };
 
         function parseCSV(text) {
@@ -339,38 +276,69 @@
         }
 
         async function inizializzaCalendarioDinamico() {
-            try {
-                // MODIFICHE ESTETICHE E NOME TOUR (Punto 1)
-                if (tourDalSito) {
-                    document.getElementById('sezione-filtri-ricerca').style.display = 'none';
-                    document.getElementById('separatore-tour').style.display = 'none';
-                    document.getElementById('tabs-container').style.display = 'none';
-                    // Inserimento del nome dinamico pulito
-                    document.getElementById('piattaforma-title').innerText = "CALENDARIO " + tourDalSito;
-                    document.getElementById('btn-back-all').style.display = 'block';
-                    document.getElementById('tour-list-container').className = "w-full max-w-2xl mx-auto";
-                }
+            const tourContainer = document.getElementById('tour-list-container');
 
-                // ESECUZIONE SIMULTANEA PER VELOCIZZARE IL CARICAMENTO (Punto 2)
-                const [_, responseCsv] = await Promise.all([
-                    fetchPostiRealtime(),
+            // 1. CARICAMENTO ISTANTANEO (Zero Attesa Visiva)
+            if (tourDalSito) {
+                document.getElementById('sezione-filtri-ricerca').style.display = 'none';
+                document.getElementById('separatore-tour').style.display = 'none';
+                document.getElementById('tabs-container').style.display = 'none';
+                
+                // Imposta il titolo pulito e corretto!
+                document.getElementById('piattaforma-title').innerText = "CALENDARIO " + tourDalSito.toUpperCase();
+                document.getElementById('btn-back-all').style.display = 'block';
+                tourContainer.className = "w-full max-w-2xl mx-auto";
+                
+                // Disegna subito una scheda finta mentre carica i dati dal server
+                tourContainer.innerHTML = `
+                    <div class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-[#333] overflow-hidden">
+                        <div class="p-5 bg-[#242424]">
+                            <h2 class="text-lg font-bold text-white mt-1.5 uppercase">${tourDalSito}</h2>
+                            <p class="text-sm font-semibold text-[#2ecc71] mt-1 animate-pulse">Ricerca date disponibili...</p>
+                        </div>
+                        <div class="px-5 pb-5 pt-8 text-center">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#2ecc71] mb-3"></div>
+                            <p class="text-xs text-gray-400">Collegamento in corso al database, attendere qualche secondo...</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            try {
+                // 2. RECUPERA I DATI IN PARALLELO (Velocizza enormemente)
+                const [resJSON, resCSV] = await Promise.all([
+                    fetch(SCRIPT_URL),
                     fetch(CSV_URL)
                 ]);
 
-                const csvText = await responseCsv.text();
+                const dataJSON = await resJSON.json();
+                postiInTempoReale = dataJSON; 
+                
+                const csvText = await resCSV.text();
                 const tuttiITour = parseCSV(csvText);
 
+                // --- Sistema le offerte del Noleggio ---
+                if (postiInTempoReale["CONFIG_NOLEGGI"]) {
+                    const selectOfferta = document.getElementById('select-offerta-noleggio');
+                    selectOfferta.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta...</option>';
+                    postiInTempoReale["CONFIG_NOLEGGI"].forEach((opz) => {
+                        const option = document.createElement('option');
+                        option.value = opz.nome;
+                        option.text = `${opz.nome} ${opz.prezzo ? '- €' + opz.prezzo : ''}`;
+                        selectOfferta.appendChild(option);
+                    });
+                }
+
+                // --- Prepara le Date ---
                 const oggi = new Date(); oggi.setHours(0,0,0,0);
                 const raggruppatiPerTour = {};
                 const prossimiInAssoluto = [];
-                databaseTourLocali = []; 
 
                 tuttiITour.forEach(t => {
                     const dataObj = new Date(t.ANNO, mappaturaMesi[t.MESE.toLowerCase()] || 5, t.GIORNO);
                     if (dataObj < oggi) return; 
 
                     const info = { id: t.ID, giorno: t.GIORNO, meseText: t.MESE, anno: t.ANNO, sessione: t.SESSIONE, nome: t.TOUR, stato: t.STATO ? t.STATO.toUpperCase() : "ATTIVO", dataObj: dataObj };
-                    databaseTourLocali.push(info);
                     
                     if (!raggruppatiPerTour[t.TOUR]) raggruppatiPerTour[t.TOUR] = {};
                     if (!raggruppatiPerTour[t.TOUR][t.MESE]) raggruppatiPerTour[t.TOUR][t.MESE] = [];
@@ -378,48 +346,77 @@
                     prossimiInAssoluto.push(info);
                 });
 
-                document.querySelectorAll('details[data-tour-name]').forEach(detailsEl => {
-                    const nomeTour = detailsEl.getAttribute('data-tour-name');
-                    const container = detailsEl.querySelector('.container-date');
-                    container.innerHTML = "";
+                // --- 3. CREA E MOSTRA I TOUR DEFINITIVI ---
+                tourContainer.innerHTML = ''; // Toglie lo spinner istantaneo
+                let tourTrovati = 0;
 
-                    if (!raggruppatiPerTour[nomeTour]) {
-                        container.innerHTML = "<p class='text-xs text-gray-500 italic p-2 text-center'>Nessuna data in programma al momento.</p>";
-                        return;
-                    }
-
-                    for (const mese in raggruppatiPerTour[nomeTour]) {
-                        const dateMese = raggruppatiPerTour[nomeTour][mese].sort((a,b) => a.dataObj - b.dataObj);
-                        let meseBlock = document.createElement('div');
-                        meseBlock.innerHTML = `<h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-4">${mese}</h3>`;
+                if (postiInTempoReale["CONFIG_TOUR"]) {
+                    postiInTempoReale["CONFIG_TOUR"].forEach((tour) => {
+                        // Se c'è un tour nell'URL, scarta tutti gli altri
+                        if (tourDalSito && tour.nome.trim().toLowerCase() !== tourDalSito.trim().toLowerCase()) {
+                            return; 
+                        }
                         
-                        let wrapperDate = document.createElement('div');
-                        wrapperDate.className = "space-y-2";
+                        tourTrovati++;
+                        const isOpenAttr = tourDalSito ? "open" : "";
+                        
+                        let dateHtml = "";
+                        if (!raggruppatiPerTour[tour.nome]) {
+                            dateHtml = "<p class='text-xs text-gray-500 italic p-4 text-center'>Nessuna data programmata al momento. Torna a trovarci presto!</p>";
+                        } else {
+                            for (const mese in raggruppatiPerTour[tour.nome]) {
+                                const dateMese = raggruppatiPerTour[tour.nome][mese].sort((a,b) => a.dataObj - b.dataObj);
+                                dateHtml += `<div class="mt-4"><h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">${mese}</h3><div class="space-y-2">`;
+                                
+                                dateMese.forEach(d => {
+                                    const shortDay = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'][d.dataObj.getDay()];
+                                    let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
+                                    let isSoldOut = (d.stato.includes("SOLD") || d.stato.includes("ESAURITO") || realTimePosti <= 0);
+                                    
+                                    let btnHtml = isSoldOut 
+                                        ? `<span class="bg-red-900 text-red-300 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-800">COMPLETO</span>`
+                                        : `<button class="bg-[#2ecc71] hover:bg-[#27ae60] text-white text-xs font-bold px-3 py-2 rounded-lg uppercase" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
 
-                        dateMese.forEach(d => {
-                            const shortDay = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'][d.dataObj.getDay()];
-                            let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
-                            let isSoldOut = (d.stato.includes("SOLD") || d.stato.includes("ESAURITO") || realTimePosti <= 0);
-                            
-                            let btnHtml = isSoldOut 
-                                ? `<span class="bg-red-900 text-red-300 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-800">COMPLETO</span>`
-                                : `<button class="bg-[#2ecc71] hover:bg-[#27ae60] text-white text-xs font-bold px-3 py-2 rounded-lg uppercase" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
+                                    dateHtml += `
+                                        <div class="flex items-center justify-between bg-[#242424] p-3 rounded-xl border border-[#444]">
+                                            <div class="flex flex-col">
+                                                <span class="font-bold text-white">${shortDay} ${d.giorno} - ${d.sessione}</span> 
+                                                ${!isSoldOut ? `<span class="text-xs text-gray-400">Posti liberi: ${realTimePosti}</span>` : ''}
+                                            </div>
+                                            ${btnHtml}
+                                        </div>
+                                    `;
+                                });
+                                dateHtml += `</div></div>`;
+                            }
+                        }
 
-                            wrapperDate.innerHTML += `
-                                <div class="flex items-center justify-between bg-[#242424] p-3 rounded-xl border border-[#444]">
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-white">${shortDay} ${d.giorno} - ${d.sessione}</span> 
-                                        ${!isSoldOut ? `<span class="text-xs text-gray-400">Posti: ${realTimePosti}</span>` : ''}
+                        const detailsHtml = `
+                            <details class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-[#333] overflow-hidden" data-tour-name="${tour.nome}" ${isOpenAttr}>
+                                <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-[#242424]">
+                                    <div>
+                                        <h2 class="text-lg font-bold text-white mt-1.5 uppercase">${tour.nome}</h2>
+                                        <p class="text-sm font-semibold text-[#2ecc71] mt-1">${tour.prezzo ? 'Prezzo: ' + tour.prezzo + '€' : ''}</p>
                                     </div>
-                                    ${btnHtml}
+                                    <div class="bg-[#333] p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                                        <span class="text-white">▼</span>
+                                    </div>
+                                </summary>
+                                <div class="px-5 pb-5 pt-2 border-t border-[#333] bg-[#1a1a1a] text-white">
+                                    ${dateHtml}
                                 </div>
-                            `;
-                        });
-                        meseBlock.appendChild(wrapperDate);
-                        container.appendChild(meseBlock);
-                    }
-                });
+                            </details>
+                        `;
+                        tourContainer.insertAdjacentHTML('beforeend', detailsHtml);
+                    });
+                }
 
+                // Sicurezza: se il nome del tour è sbagliato e non trova niente
+                if (tourTrovati === 0 && tourDalSito) {
+                     tourContainer.innerHTML = `<div class="bg-[#242424] border border-[#444] rounded-xl p-6 text-center text-white"><p class="font-bold mb-2 text-xl text-red-500">Ops! Tour non trovato.</p><p class="text-sm text-gray-400">Torna indietro e seleziona il tour dalla lista completa.</p></div>`;
+                }
+
+                // Genera la "Dashboard prossimi tour" se si apre il calendario generale
                 if (!tourDalSito && document.getElementById('sezione-prossimi')) {
                     document.getElementById('sezione-prossimi').style.display = 'block';
                     prossimiInAssoluto.sort((a,b) => a.dataObj - b.dataObj);
@@ -432,14 +429,17 @@
                     document.getElementById('lista-prossimi').innerHTML = listHtml;
                 }
 
-            } catch (error) { console.error(error); }
+            } catch (error) { 
+                console.error(error); 
+                tourContainer.innerHTML = `<div class="text-center text-red-400 font-bold p-5 bg-red-900/30 rounded-xl border border-red-800">Si è verificato un errore di connessione. Ricarica la pagina.</div>`;
+            }
         }
 
+        // Funzioni per gestire i Pop-Up
         function openModal(idTour, nomeTour, dettagliData) {
             document.getElementById('bookingModal').style.display = 'flex';
             document.getElementById('form-id-tour').value = idTour;
             document.getElementById('form-escursione').value = nomeTour + " - " + dettagliData;
-            document.getElementById('bookingForm').style.display = 'block';
             
             const infoPosti = document.getElementById('info-posti-realtime');
             const liberi = postiInTempoReale[idTour] ? postiInTempoReale[idTour].posti_disponibili : 10;
