@@ -215,12 +215,12 @@
             <div class="footer-col">
                 <h3>Hike Experience</h3>
                 <p>Timaja SRL</p>
-                <p>P.IVA: 02184910665</p>
-                <p>Sede: Via Federico Salomone, 67021 ,Barisciano (AQ), Abruzzo</p>
+                <p>P.IVA: 12345678900</p>
+                <p>Sede: Barisciano (AQ), Abruzzo</p>
             </div>
             <div class="footer-col">
                 <h3>Contatti</h3>
-                <p>Email: hike.experience.store@gmail.com</p>
+                <p>Email: info@hikeexperience.it</p>
                 <p>Tel: +39 371 7743946</p>
             </div>
         </div>
@@ -229,7 +229,7 @@
         </div>
     </footer>
 
-    <!-- SCRIPT GESTIONE PIATTAFORMA AGGIORNATO (Senza Attese Visive e Titolo Corretto) -->
+    <!-- SCRIPT GESTIONE PIATTAFORMA INTELLIGENTE -->
     <script>
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
@@ -275,37 +275,39 @@
             return result;
         }
 
+        // Funzione per ripulire le stringhe ed evitare problemi di spazi o minuscole/maiuscole
+        function normalizza(str) {
+            if (!str) return "";
+            return str.toString().trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
         async function inizializzaCalendarioDinamico() {
             const tourContainer = document.getElementById('tour-list-container');
 
-            // 1. CARICAMENTO ISTANTANEO (Zero Attesa Visiva)
             if (tourDalSito) {
                 document.getElementById('sezione-filtri-ricerca').style.display = 'none';
                 document.getElementById('separatore-tour').style.display = 'none';
                 document.getElementById('tabs-container').style.display = 'none';
                 
-                // Imposta il titolo pulito e corretto!
                 document.getElementById('piattaforma-title').innerText = "CALENDARIO " + tourDalSito.toUpperCase();
                 document.getElementById('btn-back-all').style.display = 'block';
                 tourContainer.className = "w-full max-w-2xl mx-auto";
                 
-                // Disegna subito una scheda finta mentre carica i dati dal server
                 tourContainer.innerHTML = `
                     <div class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-[#333] overflow-hidden">
                         <div class="p-5 bg-[#242424]">
                             <h2 class="text-lg font-bold text-white mt-1.5 uppercase">${tourDalSito}</h2>
-                            <p class="text-sm font-semibold text-[#2ecc71] mt-1 animate-pulse">Ricerca date disponibili...</p>
+                            <p class="text-sm font-semibold text-[#2ecc71] mt-1 animate-pulse">Sincronizzazione date e posti in corso...</p>
                         </div>
                         <div class="px-5 pb-5 pt-8 text-center">
                             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#2ecc71] mb-3"></div>
-                            <p class="text-xs text-gray-400">Collegamento in corso al database, attendere qualche secondo...</p>
+                            <p class="text-xs text-gray-400">Attendere prego, connessione al database Google...</p>
                         </div>
                     </div>
                 `;
             }
 
             try {
-                // 2. RECUPERA I DATI IN PARALLELO (Velocizza enormemente)
                 const [resJSON, resCSV] = await Promise.all([
                     fetch(SCRIPT_URL),
                     fetch(CSV_URL)
@@ -317,7 +319,6 @@
                 const csvText = await resCSV.text();
                 const tuttiITour = parseCSV(csvText);
 
-                // --- Sistema le offerte del Noleggio ---
                 if (postiInTempoReale["CONFIG_NOLEGGI"]) {
                     const selectOfferta = document.getElementById('select-offerta-noleggio');
                     selectOfferta.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta...</option>';
@@ -329,7 +330,6 @@
                     });
                 }
 
-                // --- Prepara le Date ---
                 const oggi = new Date(); oggi.setHours(0,0,0,0);
                 const raggruppatiPerTour = {};
                 const prossimiInAssoluto = [];
@@ -340,32 +340,43 @@
 
                     const info = { id: t.ID, giorno: t.GIORNO, meseText: t.MESE, anno: t.ANNO, sessione: t.SESSIONE, nome: t.TOUR, stato: t.STATO ? t.STATO.toUpperCase() : "ATTIVO", dataObj: dataObj };
                     
-                    if (!raggruppatiPerTour[t.TOUR]) raggruppatiPerTour[t.TOUR] = {};
-                    if (!raggruppatiPerTour[t.TOUR][t.MESE]) raggruppatiPerTour[t.TOUR][t.MESE] = [];
-                    raggruppatiPerTour[t.TOUR][t.MESE].push(info);
+                    // Normalizziamo la chiave del tour per raggrupparli senza errori di battitura
+                    const nomePulito = t.TOUR ? t.TOUR.trim() : "Altro";
+                    if (!raggruppatiPerTour[nomePulito]) raggruppatiPerTour[nomePulito] = {};
+                    if (!raggruppatiPerTour[nomePulito][t.MESE]) raggruppatiPerTour[nomePulito][t.MESE] = [];
+                    raggruppatiPerTour[nomePulito][t.MESE].push(info);
                     prossimiInAssoluto.push(info);
                 });
 
-                // --- 3. CREA E MOSTRA I TOUR DEFINITIVI ---
-                tourContainer.innerHTML = ''; // Toglie lo spinner istantaneo
+                tourContainer.innerHTML = ''; 
                 let tourTrovati = 0;
 
                 if (postiInTempoReale["CONFIG_TOUR"]) {
                     postiInTempoReale["CONFIG_TOUR"].forEach((tour) => {
-                        // Se c'è un tour nell'URL, scarta tutti gli altri
-                        if (tourDalSito && tour.nome.trim().toLowerCase() !== tourDalSito.trim().toLowerCase()) {
+                        
+                        // CONFRONTO INTELLIGENTE: Ignora spazi extra e maiuscole/minuscole
+                        if (tourDalSito && normalizza(tour.nome) !== normalizza(tourDalSito)) {
                             return; 
                         }
                         
                         tourTrovati++;
                         const isOpenAttr = tourDalSito ? "open" : "";
                         
+                        // Cerchiamo le date corrispondenti usando la stessa normalizzazione intelligente
+                        let dateMeseTutte = null;
+                        for (const key in raggruppatiPerTour) {
+                            if (normalizza(key) === normalizza(tour.nome)) {
+                                dateMeseTutte = raggruppatiPerTour[key];
+                                break;
+                            }
+                        }
+
                         let dateHtml = "";
-                        if (!raggruppatiPerTour[tour.nome]) {
-                            dateHtml = "<p class='text-xs text-gray-500 italic p-4 text-center'>Nessuna data programmata al momento. Torna a trovarci presto!</p>";
+                        if (!dateMeseTutte || Object.keys(dateMeseTutte).length === 0) {
+                            dateHtml = "<p class='text-xs text-gray-400 italic p-4 text-center'>Nessuna data in programma al momento per questo tour.</p>";
                         } else {
-                            for (const mese in raggruppatiPerTour[tour.nome]) {
-                                const dateMese = raggruppatiPerTour[tour.nome][mese].sort((a,b) => a.dataObj - b.dataObj);
+                            for (const mese in dateMeseTutte) {
+                                const dateMese = dateMeseTutte[mese].sort((a,b) => a.dataObj - b.dataObj);
                                 dateHtml += `<div class="mt-4"><h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">${mese}</h3><div class="space-y-2">`;
                                 
                                 dateMese.forEach(d => {
@@ -411,12 +422,10 @@
                     });
                 }
 
-                // Sicurezza: se il nome del tour è sbagliato e non trova niente
                 if (tourTrovati === 0 && tourDalSito) {
-                     tourContainer.innerHTML = `<div class="bg-[#242424] border border-[#444] rounded-xl p-6 text-center text-white"><p class="font-bold mb-2 text-xl text-red-500">Ops! Tour non trovato.</p><p class="text-sm text-gray-400">Torna indietro e seleziona il tour dalla lista completa.</p></div>`;
+                     tourContainer.innerHTML = `<div class="bg-[#242424] border border-[#444] rounded-xl p-6 text-center text-white"><p class="font-bold mb-2 text-xl text-yellow-500">Attenzione</p><p class="text-sm text-gray-300">Il tour <strong>"${tourDalSito}"</strong> non è stato trovato nella configurazione della piattaforma.</p><a href="index.html" class="mt-4 inline-block bg-[#2ecc71] text-white px-4 py-2 rounded-lg font-bold text-xs uppercase">Torna al calendario generale</a></div>`;
                 }
 
-                // Genera la "Dashboard prossimi tour" se si apre il calendario generale
                 if (!tourDalSito && document.getElementById('sezione-prossimi')) {
                     document.getElementById('sezione-prossimi').style.display = 'block';
                     prossimiInAssoluto.sort((a,b) => a.dataObj - b.dataObj);
@@ -431,11 +440,10 @@
 
             } catch (error) { 
                 console.error(error); 
-                tourContainer.innerHTML = `<div class="text-center text-red-400 font-bold p-5 bg-red-900/30 rounded-xl border border-red-800">Si è verificato un errore di connessione. Ricarica la pagina.</div>`;
+                tourContainer.innerHTML = `<div class="text-center text-red-400 font-bold p-5 bg-red-900/30 rounded-xl border border-red-800">Errore di caricamento dati. Riprova più tardi.</div>`;
             }
         }
 
-        // Funzioni per gestire i Pop-Up
         function openModal(idTour, nomeTour, dettagliData) {
             document.getElementById('bookingModal').style.display = 'flex';
             document.getElementById('form-id-tour').value = idTour;
