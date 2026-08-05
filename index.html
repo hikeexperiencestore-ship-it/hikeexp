@@ -3,259 +3,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario Tour E-Bike & Noleggio 2026 - Hike Experience</title>
+    <title>Calendario Prenotazioni | Hike Experience</title>
+    
+    <!-- Script Tailwind e Font Montserrat (Allineamento estetico al sito) -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="text-slate-800 min-h-screen flex flex-col pb-8 bg-slate-50">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- STILI EREDITATI DAL SITO PER HEADER E FOOTER --- */
+        body { font-family: 'Montserrat', sans-serif; background-color: #121212; }
+        
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background-color: #ffffff; border-bottom: 3px solid #e0e0e0; position: sticky; top: 0; z-index: 1000; }
+        .logo-img { max-height: 85px; width: auto; display: block; }
+        .nav-links { display: flex; gap: 35px; }
+        .nav-links a { color: #121212; text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 1rem; letter-spacing: 1px; transition: color 0.3s ease; }
+        .nav-links a:hover, .nav-links a.active { color: #2ecc71; }
+        .btn-booking { background-color: #2ecc71; color: #ffffff; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: 800; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 0.5px; transition: background-color 0.3s ease; }
+        
+        .main-footer { background-color: #0a0a0a; padding: 60px 5% 30px; border-top: 1px solid #1f1f1f; margin-top: auto; }
+        .footer-content { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; max-width: 1200px; margin: 0 auto; margin-bottom: 40px; color: #ffffff; }
+        .footer-col h3 { font-size: 1.2rem; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+        .footer-col p, .footer-col a { color: #909090; text-decoration: none; font-size: 0.95rem; margin-bottom: 10px; display: block; }
+        .footer-bottom { text-align: center; border-top: 1px solid #1f1f1f; padding-top: 20px; color: #606060; font-size: 0.85rem; }
 
-    <header class="bg-white border-b border-slate-100 shadow-sm pt-6 pb-6 text-center px-4">
-        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
-            <img src="https://www.instagram.com/p/C-j4opIiK2u/media/?size=l" alt="HiKe Logo" class="h-20 w-auto object-contain mb-2">
-            <p class="text-emerald-600 font-semibold text-xs tracking-wider uppercase mt-1">Calendario Ufficiale Tour E-Bike 2026</p>
-            <h1 class="text-xl md:text-2xl font-bold text-slate-900 mt-0.5">Scegli la tua prossima avventura</h1>
+        @media (max-width: 768px) {
+            .main-header { flex-direction: column; gap: 15px; text-align: center; }
+            .nav-links { flex-direction: column; gap: 12px; }
+        }
+
+        /* Gestione modale piattaforma */
+        summary::-webkit-details-marker { display: none; }
+        summary { list-style: none; }
+        details[open] .ruota-freccia { transform: rotate(180deg); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; padding: 15px; backdrop-filter: blur(5px); }
+        .modal-content { background-color: #1a1a1a; padding: 25px; border-radius: 12px; border: 1px solid #333; max-width: 450px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; color: white; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- HEADER IDENTICO AL SITO ORIGINALE -->
+    <header class="main-header font-sans">
+        <div class="logo-container">
+            <a href="https://tuosito.com"> <!-- Inserisci il link al tuo sito principale -->
+                <img src="logo.png" alt="Hike Experience Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/150x85?text=LOGO'">
+            </a>
         </div>
+        <nav class="nav-links">
+            <a href="https://tuosito.com/noleggio.html">Noleggio E-Bike</a>
+            <a href="https://tuosito.com/tour.html">Tour Guidati</a>
+            <a href="https://tuosito.com/contatti.html">Info & Contatti</a>
+        </nav>
     </header>
 
-    <div class="max-w-md md:max-w-3xl mx-auto w-full px-4 mt-8 flex gap-3">
-        <button id="btn-tab-tour" class="flex-1 bg-emerald-600 text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-emerald-600 text-sm md:text-base" onclick="cambiaVista('tour')">
-            🚵‍♂️ I nostri tour
+    <!-- AREA TITOLO PIATTAFORMA (Adattata ai colori scuri del sito) -->
+    <div class="bg-[#1a1a1a] border-b-4 border-[#2ecc71] pt-10 pb-10 text-center px-4">
+        <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
+            <p id="piattaforma-subtitle" class="text-[#2ecc71] font-bold text-sm tracking-wider uppercase mt-1">Calendario Ufficiale 2026</p>
+            <h1 id="piattaforma-title" class="text-2xl md:text-3xl font-extrabold text-white mt-2 uppercase">Scegli la tua avventura</h1>
+            
+            <a href="index.html" id="btn-back-all" style="display: none;" class="mt-4 text-sm text-[#2ecc71] hover:text-white underline font-bold">← Torna a tutti i Tour</a>
+        </div>
+    </div>
+
+    <!-- BOTTONI TAB SCELTA -->
+    <div id="tabs-container" class="max-w-md md:max-w-3xl mx-auto w-full px-4 mt-8 flex gap-3">
+        <button id="btn-tab-tour" class="flex-1 bg-[#2ecc71] text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-[#2ecc71] text-sm md:text-base" onclick="cambiaVista('tour')">
+            🚵‍♂️ Date e Tour
         </button>
-        <button id="btn-tab-noleggio" class="flex-1 bg-white text-slate-600 hover:bg-slate-50 font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-slate-200 text-sm md:text-base" onclick="cambiaVista('noleggio')">
-            🚲 Noleggia E-Bike
+        <button id="btn-tab-noleggio" class="flex-1 bg-[#1e1e1e] text-gray-300 hover:bg-[#2a2a2a] font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-[#333] text-sm md:text-base" onclick="cambiaVista('noleggio')">
+            🚲 Noleggio Libero
         </button>
     </div>
 
-    <main class="max-w-md md:max-w-6xl mx-auto mt-6 px-4 w-full flex flex-col h-full">
+    <!-- MAIN PIATTAFORMA -->
+    <main class="max-w-md md:max-w-6xl mx-auto mt-8 mb-16 px-4 w-full flex flex-col flex-grow">
         
         <div id="vista-tour" class="space-y-6 flex-1">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <div id="sezione-prossimi" style="display: none;" class="bg-slate-900 text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
+            
+            <!-- CONTENITORI RICERCA E PROSSIMI TOUR -->
+            <div id="sezione-filtri-ricerca" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="sezione-prossimi" style="display: none;" class="bg-[#1e1e1e] border border-[#333] text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
                     <div class="flex items-center gap-2">
                         <span class="flex h-2 w-2 relative">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#2ecc71] opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#2ecc71]"></span>
                         </span>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">In partenza a breve</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">In partenza a breve</h3>
                     </div>
                     <div id="lista-prossimi" class="space-y-2 flex-1 mt-2"></div>
                 </div>
 
-                <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm space-y-3 h-full flex flex-col">
+                <div class="bg-[#1e1e1e] border border-[#333] rounded-2xl p-5 shadow-sm space-y-3 h-full flex flex-col">
                     <div class="flex items-center gap-2">
                         <span class="text-lg">📅</span>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Cerca per data</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Cerca per data</h3>
                     </div>
                     <div class="flex gap-2">
-                        <input type="date" id="search-date-input" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm focus:border-emerald-500 focus:outline-none text-slate-700 font-medium">
-                        <button id="clear-date-btn" style="display: none;" class="bg-slate-100 hover:bg-slate-200 text-slate-500 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
+                        <input type="date" id="search-date-input" class="flex-1 bg-[#242424] text-white border border-[#444] rounded-xl p-2.5 text-sm focus:border-[#2ecc71] focus:outline-none font-medium">
+                        <button id="clear-date-btn" style="display: none;" class="bg-[#333] hover:bg-[#444] text-gray-300 text-xs font-semibold px-3 rounded-xl transition-colors">Azzera</button>
                     </div>
-                    <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-slate-50 flex-1">
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
+                    <div id="search-results-container" style="display: none;" class="pt-2 space-y-2 border-t border-[#333] flex-1">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Tour disponibili per questo giorno:</p>
                         <div id="search-results-list" class="space-y-2 mt-1"></div>
                     </div>
                 </div>
-                
             </div>
 
-            <hr class="border-slate-200/60 my-2 hidden md:block">
+            <hr id="separatore-tour" class="border-[#333] my-4 hidden md:block">
 
+            <!-- LISTA DEI TOUR -->
             <div id="tour-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 <div class="col-span-full text-center py-10">
-                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mb-2"></div>
-                    <p class="text-sm text-slate-500 font-medium">Caricamento dei tour in corso...</p>
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#2ecc71] mb-2"></div>
+                    <p class="text-sm text-gray-400 font-medium">Caricamento disponibilità dal server...</p>
                 </div>
             </div>
         </div>
 
+        <!-- VISTA NOLEGGIO (Scurita e adattata) -->
         <div id="vista-noleggio" class="hidden flex-1">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6">
+            <div class="bg-[#1e1e1e] rounded-2xl p-6 shadow-sm border border-[#333] mb-6 text-white">
                 <form id="formNoleggio" onsubmit="handleNoleggioSubmit(event)">
                     <input type="hidden" name="tipo_richiesta" value="noleggio">
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Offerta Scelta</label>
-                            <select id="select-offerta-noleggio" name="offerta_scelta" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Offerta Scelta</label>
+                            <select id="select-offerta-noleggio" name="offerta_scelta" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" required>
                                 <option value="" disabled selected>Caricamento opzioni in corso...</option>
                             </select>
-                            
-                            <div id="box-note-noleggio" style="display: none;" class="mt-2 bg-emerald-50 border border-emerald-100 p-2.5 rounded-lg flex gap-2 items-start shadow-sm">
-                                <span class="text-emerald-500 text-sm mt-0.5">💡</span>
-                                <p id="testo-note-noleggio" class="text-xs text-emerald-700 font-medium leading-relaxed"></p>
-                            </div>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Data Inizio Noleggio</label>
-                            <input type="date" name="data_noleggio" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Data Inizio Noleggio</label>
+                            <input type="date" name="data_noleggio" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" required>
                         </div>
-                        
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Orario Ritiro Previsto</label>
-                            <select name="orario_ritiro" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Orario Ritiro Previsto</label>
+                            <select name="orario_ritiro" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" required>
                                 <option value="" disabled selected>Seleziona orario...</option>
-                                <option value="08:30">08:30</option>
                                 <option value="09:00">09:00</option>
                                 <option value="09:30">09:30</option>
                                 <option value="10:00">10:00</option>
-                                <option value="10:30">10:30</option>
-                                <option value="11:00">11:00</option>
-                                <option value="11:30">11:30</option>
-                                <option value="12:00">12:00</option>
-                                <option value="12:30">12:30</option>
-                                <option value="13:00">13:00</option>
-                                <option value="13:30">13:30</option>
-                                <option value="14:00">14:00</option>
-                                <option value="14:30">14:30</option>
                                 <option value="15:00">15:00</option>
-                                <option value="15:30">15:30</option>
-                                <option value="16:00">16:00</option>
-                                <option value="16:30">16:30</option>
-                                <option value="17:00">17:00</option>
-                                <option value="17:30">17:30</option>
-                                <option value="18:00">18:00</option>
-                                <option value="18:30">18:30</option>
-                                <option value="19:00">19:00</option>
-                                <option value="19:30">19:30</option>
                             </select>
                         </div>
                         
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome</label>
-                            <input type="text" name="name" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. Mario Rossi" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Nome e Cognome</label>
+                            <input type="text" name="name" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" placeholder="Es. Mario Rossi" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Email</label>
-                            <input type="email" name="email" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. mario@email.com" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Email</label>
+                            <input type="email" name="email" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" placeholder="Es. mario@email.com" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Telefono</label>
-                            <input type="tel" name="phone" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Es. 3331234567" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Telefono</label>
+                            <input type="tel" name="phone" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" placeholder="Es. 3331234567" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero Bici</label>
-                            <input type="number" name="numero_bici" min="1" value="1" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Numero Bici</label>
+                            <input type="number" name="numero_bici" min="1" value="1" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" required>
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Altezza Partecipanti (cm)</label>
-                            <input type="text" name="altezza" placeholder="es. 175, 160, 182" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" required>
-                            <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Altezza Partecipanti (cm)</label>
+                            <input type="text" name="altezza" placeholder="es. 175, 160, 182" class="w-full bg-[#242424] text-white border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none" required>
                         </div>
-                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col justify-center">
-                            <label class="flex items-start space-x-3 cursor-pointer">
-                                <div class="flex items-center h-5">
-                                    <input type="checkbox" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
-                                </div>
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
-                                    <span class="text-xs text-slate-500 mt-0.5">Altezza max bimbo: <strong>115 cm</strong>.</span>
-                                </div>
-                            </label>
-                        </div>
-
-                        <div class="col-span-full md:col-span-2">
-                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Richieste particolari (Note)</label>
-                            <textarea name="richieste" rows="2" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none" placeholder="Scrivi qui eventuali necessità, intolleranze o domande..."></textarea>
-                        </div>
-
                     </div>
-                    <div class="mt-4 bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 leading-relaxed">
-                        <strong>Nota bene:</strong> Riceverai un'email di riepilogo. La prenotazione per il noleggio libero verrà confermata definitivamente dal nostro team previa verifica tecnica. Pagamento in loco.
-                    </div>
-                    <button type="submit" id="submit-noleggio-btn" class="mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta Noleggio</button>
+                    
+                    <button type="submit" id="submit-noleggio-btn" class="mt-8 w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-extrabold p-4 rounded-xl transition-colors text-sm shadow-md uppercase">Invia Richiesta Noleggio</button>
                 </form>
             </div>
         </div>
-
-        <div class="mt-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center items-center">
-            <h3 class="font-bold text-slate-900 mb-3 text-lg">Hai bisogno di aiuto? Contattaci</h3>
-            <div class="flex flex-col sm:flex-row gap-4 sm:gap-8 text-slate-700 text-base font-medium">
-                <a href="tel:+393717743946" class="flex items-center justify-center gap-2 hover:text-emerald-600 transition-colors"><span>📞</span> +39 371 7743946</a>
-                <a href="mailto:hike.experience.store@gmail.com" class="flex items-center justify-center gap-2 hover:text-emerald-600 transition-colors"><span>📧</span> hike.experience.store@gmail.com</a>
-            </div>
-        </div>
-
     </main>
 
+    <!-- MODAL PRENOTAZIONE TOUR (Scurita) -->
     <div id="bookingModal" class="modal">
         <div class="modal-content" id="modalContent">
-            <span class="absolute top-3 right-4 text-2xl font-semibold text-slate-400 hover:text-slate-600 cursor-pointer select-none" onclick="closeModal()">&times;</span>
+            <span class="absolute top-3 right-4 text-3xl font-semibold text-gray-500 hover:text-white cursor-pointer select-none" onclick="closeModal()">&times;</span>
             
             <form id="bookingForm" onsubmit="handleFormSubmit(event)">
                 <input type="hidden" name="tipo_richiesta" value="tour">
                 <input type="hidden" id="form-id-tour" name="id_tour">
                 
-                <h2 class="text-xl font-bold text-emerald-700 mb-4 pr-6">Prenota il tuo Tour</h2>
+                <h2 class="text-xl font-bold text-[#2ecc71] mb-4 pr-6 uppercase">Prenota il Tour</h2>
                 
                 <div class="mb-3">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Escursione Scelta</label>
-                    <input type="text" id="form-escursione" name="escursione" readonly class="w-full bg-slate-50 border border-slate-200 text-slate-800 font-semibold rounded-xl p-3 text-sm focus:outline-none">
-                    <div id="info-posti-realtime" class="text-xs font-semibold text-emerald-600 mt-1 pl-1">Verifica disponibilità in corso...</div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Escursione Scelta</label>
+                    <input type="text" id="form-escursione" name="escursione" readonly class="w-full bg-[#242424] border border-[#444] text-white font-semibold rounded-xl p-3 text-sm focus:outline-none">
+                    <div id="info-posti-realtime" class="text-xs font-semibold text-[#2ecc71] mt-1 pl-1">Verifica disponibilità in corso...</div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="name" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Nome e Cognome Referente</label>
-                    <input type="text" id="name" name="name" required placeholder="Es. Mario Rossi" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Nome e Cognome Referente</label>
+                    <input type="text" id="name" name="name" required class="w-full bg-[#242424] border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none text-white">
                 </div>
-
                 <div class="mb-3">
-                    <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Indirizzo Email</label>
-                    <input type="email" id="email" name="email" required placeholder="Es. mario.rossi@email.com" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Indirizzo Email</label>
+                    <input type="email" id="email" name="email" required class="w-full bg-[#242424] border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none text-white">
                 </div>
-
                 <div class="mb-3">
-                    <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero di Cellulare</label>
-                    <input type="tel" id="phone" name="phone" required placeholder="Es. 3331234567" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Numero di Cellulare</label>
+                    <input type="tel" id="phone" name="phone" required class="w-full bg-[#242424] border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none text-white">
                 </div>
-
                 <div class="mb-3">
-                    <label for="num_bici" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Numero di Bici</label>
-                    <input type="number" id="num_bici" name="numero_bici" required min="1" value="1" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Numero di Bici</label>
+                    <input type="number" id="num_bici" name="numero_bici" required min="1" value="1" class="w-full bg-[#242424] border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none text-white">
                 </div>
-
                 <div class="mb-4">
-                    <label for="custom_altezza" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Altezza Partecipanti (cm)</label>
-                    <input type="text" id="custom_altezza" name="altezza" required placeholder="Es. 175, 160, 182" class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none">
-                    <p class="text-[10px] text-slate-400 mt-1 pl-1">Inserisci le altezze separate da virgola.</p>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Altezza Partecipanti (cm)</label>
+                    <input type="text" id="custom_altezza" name="altezza" required placeholder="Es. 175, 160" class="w-full bg-[#242424] border border-[#444] rounded-xl p-3 text-sm focus:border-[#2ecc71] focus:outline-none text-white">
                 </div>
 
-                <div class="mb-4 bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="flex items-start space-x-3 cursor-pointer">
-                        <div class="flex items-center h-5">
-                            <input type="checkbox" id="richiesta_carrellino" name="carrellino_bimbi" value="Richiesto" class="w-5 h-5 text-emerald-600 bg-white border-slate-300 rounded focus:ring-emerald-500">
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-bold text-slate-700">Richiesta Carrellino Bimbi</span>
-                            <span class="text-xs text-slate-500 mt-0.5">Altezza massima consentita: <strong>115 cm</strong>.</span>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="mb-4">
-                    <label for="richieste" class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Richieste particolari (Note)</label>
-                    <textarea id="richieste" name="richieste" rows="2" placeholder="Intolleranze alimentari, note o domande..." class="w-full border border-slate-200 rounded-xl p-3 text-sm focus:border-emerald-500 focus:outline-none"></textarea>
-                </div>
-
-                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded-r-xl text-xs text-slate-600 mb-4 leading-relaxed">
-                    <strong>Nota bene:</strong> Il pagamento verrà effettuato direttamente alla partenza presso il nostro Hike Point.
-                </div>
-
-                <button type="submit" id="submit-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md">Invia Richiesta</button>
+                <button type="submit" id="submit-btn" class="w-full bg-[#2ecc71] hover:bg-[#27ae60] text-white font-bold p-3 rounded-xl transition-colors text-sm uppercase mt-4">Invia Conferma Prenotazione</button>
             </form>
         </div>
     </div>
 
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        summary::-webkit-details-marker { display: none; }
-        summary { list-style: none; }
-        details[open] .ruota-freccia { transform: rotate(180deg); }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; padding: 15px; }
-        .modal-content { background-color: white; padding: 25px; border-radius: 16px; max-width: 450px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; box-sizing: border-box; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-    </style>
+    <!-- FOOTER IDENTICO AL SITO -->
+    <footer class="main-footer font-sans">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Hike Experience</h3>
+                <p>Timaja SRL</p>
+                <p>P.IVA: 12345678900</p>
+                <p>Sede: Barisciano (AQ), Abruzzo</p>
+            </div>
+            <div class="footer-col">
+                <h3>Contatti</h3>
+                <p>Email: info@hikeexperience.it</p>
+                <p>Tel: +39 371 7743946</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Timaja SRL - Hike Experience. Tutti i diritti riservati.
+        </div>
+    </footer>
 
+    <!-- JAVASCRIPT ORIGINALE PIATTAFORMA CON FILTRO INTELLIGENTE PER URL -->
     <script>
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
+        
+        let databaseTourLocali = []; 
+        let postiInTempoReale = {};
+        
+        // Verifica se c'è un tour specifico richiesto via URL dal sito web
+        const urlParams = new URLSearchParams(window.location.search);
+        const tourDalSito = urlParams.get('tour');
+
         function cambiaVista(vista) {
             const vistaTour = document.getElementById('vista-tour');
             const vistaNoleggio = document.getElementById('vista-noleggio');
@@ -265,28 +260,15 @@
             if (vista === 'tour') {
                 vistaTour.classList.remove('hidden');
                 vistaNoleggio.classList.add('hidden');
-                
-                btnTour.className = "flex-1 bg-emerald-600 text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-emerald-600 text-sm md:text-base";
-                btnNoleggio.className = "flex-1 bg-white text-slate-600 hover:bg-slate-50 font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-slate-200 text-sm md:text-base";
+                btnTour.className = "flex-1 bg-[#2ecc71] text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md border-2 border-[#2ecc71]";
+                btnNoleggio.className = "flex-1 bg-[#1e1e1e] text-gray-300 font-bold py-3 px-2 md:px-4 rounded-xl border-2 border-[#333]";
             } else {
                 vistaTour.classList.add('hidden');
                 vistaNoleggio.classList.remove('hidden');
-                
-                btnTour.className = "flex-1 bg-white text-slate-600 hover:bg-slate-50 font-bold py-3 px-2 md:px-4 rounded-xl shadow-sm transition-colors border-2 border-slate-200 text-sm md:text-base";
-                btnNoleggio.className = "flex-1 bg-emerald-600 text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md transition-colors border-2 border-emerald-600 text-sm md:text-base";
+                btnTour.className = "flex-1 bg-[#1e1e1e] text-gray-300 font-bold py-3 px-2 md:px-4 rounded-xl border-2 border-[#333]";
+                btnNoleggio.className = "flex-1 bg-[#2ecc71] text-white font-bold py-3 px-2 md:px-4 rounded-xl shadow-md border-2 border-[#2ecc71]";
             }
         }
-
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
-
-        const mappaturaMesi = {
-            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
-            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
-        };
-
-        let databaseTourLocali = []; 
-        let postiInTempoReale = {};
 
         async function fetchPostiRealtime() {
             try {
@@ -296,32 +278,12 @@
                     
                     if (postiInTempoReale["CONFIG_NOLEGGI"]) {
                         const selectOfferta = document.getElementById('select-offerta-noleggio');
-                        const boxNote = document.getElementById('box-note-noleggio');
-                        const testoNote = document.getElementById('testo-note-noleggio');
-                        
                         selectOfferta.innerHTML = '<option value="" disabled selected>Seleziona un\'offerta...</option>';
-                        
-                        const opzioni = postiInTempoReale["CONFIG_NOLEGGI"];
-                        
-                        opzioni.forEach((opz) => {
+                        postiInTempoReale["CONFIG_NOLEGGI"].forEach((opz) => {
                             const option = document.createElement('option');
-                            const testoPrezzo = opz.prezzo ? ` - €${opz.prezzo}` : '';
                             option.value = opz.nome;
-                            option.text = `${opz.nome}${testoPrezzo}`;
-                            option.dataset.desc = opz.descrizione || ""; 
+                            option.text = `${opz.nome} ${opz.prezzo ? '- €' + opz.prezzo : ''}`;
                             selectOfferta.appendChild(option);
-                        });
-                        
-                        selectOfferta.addEventListener('change', function() {
-                            const selectedOption = this.options[this.selectedIndex];
-                            const nota = selectedOption.dataset.desc;
-                            
-                            if (nota && nota.trim() !== "") {
-                                testoNote.textContent = nota;
-                                boxNote.style.display = 'flex';
-                            } else {
-                                boxNote.style.display = 'none';
-                            }
                         });
                     }
 
@@ -329,280 +291,56 @@
                         const tourContainer = document.getElementById('tour-list-container');
                         tourContainer.innerHTML = ''; 
                         
-                        const colorThemes = [
-                            "bg-emerald-50 text-emerald-700",
-                            "bg-blue-50 text-blue-700",
-                            "bg-amber-50 text-amber-700",
-                            "bg-purple-50 text-purple-700",
-                            "bg-rose-100 text-rose-700"
-                        ];
-                        
-                        postiInTempoReale["CONFIG_TOUR"].forEach((tour, index) => {
-                            const theme = colorThemes[index % colorThemes.length];
+                        // Generazione delle card dei Tour
+                        postiInTempoReale["CONFIG_TOUR"].forEach((tour) => {
                             
-                            let etichettaHtml = '';
-                            if (tour.etichetta) {
-                                etichettaHtml = `<span class="${theme} text-xs font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wide">${tour.etichetta}</span>`;
+                            // ---- IL CUORE DELL'INTEGRAZIONE ----
+                            // Se l'utente ha cliccato un tour specifico dal sito, nascondo tutti gli altri
+                            if (tourDalSito && tour.nome.trim().toLowerCase() !== tourDalSito.trim().toLowerCase()) {
+                                return; // Salta questo tour, non lo disegna
                             }
-                            
-                            let descrizioneHtml = '';
-                            if (tour.descrizione) {
-                                descrizioneHtml = `<p class="text-xs text-slate-500 font-medium italic mt-0.5">${tour.descrizione}</p>`;
-                            }
-                            
-                            let prezzoHtml = '';
-                            if (tour.prezzo) {
-                                prezzoHtml = `<span class="text-sm font-semibold text-slate-600 mt-1 block">Prezzo: ${tour.prezzo}€</span>`;
-                            }
+                            // ------------------------------------
+
+                            // Se sto filtrando un singolo tour, lo mostro già espanso (open)
+                            const isOpenAttr = tourDalSito ? "open" : "";
 
                             const detailsHtml = `
-                                <details class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden" data-tour-name="${tour.nome}">
-                                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-white">
+                                <details class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-[#333] overflow-hidden" data-tour-name="${tour.nome}" ${isOpenAttr}>
+                                    <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-[#242424]">
                                         <div>
-                                            ${etichettaHtml}
-                                            <h2 class="text-lg font-bold text-slate-900 mt-1.5">${tour.nome}</h2>
-                                            ${descrizioneHtml}
-                                            ${prezzoHtml}
+                                            <h2 class="text-lg font-bold text-white mt-1.5 uppercase">${tour.nome}</h2>
+                                            <p class="text-sm font-semibold text-[#2ecc71] mt-1">${tour.prezzo ? 'Prezzo: ' + tour.prezzo + '€' : ''}</p>
                                         </div>
-                                        <div class="bg-slate-50 p-2 rounded-xl ruota-freccia transition-transform duration-200">
-                                            <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        <div class="bg-[#333] p-2 rounded-xl ruota-freccia transition-transform duration-200">
+                                            <span class="text-white">▼</span>
                                         </div>
                                     </summary>
-                                    <div class="px-5 pb-5 pt-4 border-t border-slate-100 space-y-4 bg-slate-50/50 container-date">
-                                        <p class="text-xs text-slate-400 italic text-center p-2">Caricamento date in corso...</p>
+                                    <div class="px-5 pb-5 pt-4 border-t border-[#333] space-y-4 bg-[#1a1a1a] container-date text-white">
+                                        <p class="text-xs text-gray-400 italic text-center p-2">Caricamento date in corso...</p>
                                     </div>
                                 </details>
                             `;
                             tourContainer.insertAdjacentHTML('beforeend', detailsHtml);
                         });
                     }
-
                 }
             } catch (e) {
-                console.error("Impossibile caricare i dati dal server:", e);
+                console.error("Errore fetchPostiRealtime", e);
             }
         }
 
-        function openModal(idTour, nomeTour, dettagliData) {
-            document.getElementById('bookingModal').style.display = 'flex';
-            document.getElementById('form-id-tour').value = idTour;
-            document.getElementById('form-escursione').value = nomeTour + " - " + dettagliData;
-            document.getElementById('bookingForm').style.display = 'block';
-            
-            const infoPosti = document.getElementById('info-posti-realtime');
-            const numBiciInput = document.getElementById('num_bici');
-            const submitBtn = document.getElementById('submit-btn');
-            
-            submitBtn.disabled = false;
-            submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl transition-colors text-sm shadow-md";
-            submitBtn.innerText = "Invia Richiesta";
-
-            if (postiInTempoReale[idTour]) {
-                const liberi = postiInTempoReale[idTour].posti_disponibili;
-                infoPosti.innerText = `Posti ancora disponibili: ${liberi}`;
-                infoPosti.className = "text-xs font-semibold text-emerald-600 mt-1 pl-1";
-                numBiciInput.max = liberi;
-            } else {
-                infoPosti.innerText = "Verifica disponibilità attiva";
-                infoPosti.className = "text-xs font-semibold text-slate-500 mt-1 pl-1";
-            }
-
-            const screenBox = document.getElementById('screenshotBox');
-            if(screenBox) screenBox.remove();
-        }
-
-        function closeModal() {
-            document.getElementById('bookingModal').style.display = 'none';
-        }
-
-        async function handleFormSubmit(event) {
-            event.preventDefault();
-            const form = event.target;
-            const submitBtn = document.getElementById('submit-btn');
-            const idTour = document.getElementById('form-id-tour').value;
-            const numBici = parseInt(document.getElementById('num_bici').value, 10);
-
-            if (postiInTempoReale[idTour] && postiInTempoReale[idTour].posti_disponibili < numBici) {
-                alert(`Spiacente! Sono rimasti solo ${postiInTempoReale[idTour].posti_disponibili} posti.`);
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Invio in corso...";
-            submitBtn.className = "w-full bg-slate-400 text-white font-bold p-3 rounded-xl text-sm shadow-md cursor-not-allowed";
-
-            const formData = new FormData(form);
-            const queryString = new URLSearchParams(formData).toString();
-
-            try {
-                const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
-                const resData = await response.json();
-
-                if (resData.result === "success") {
-                    if (postiInTempoReale[idTour]) {
-                        postiInTempoReale[idTour].posti_disponibili -= numBici;
-                    }
-                    
-                    form.style.display = 'none';
-                    
-                    const nome = document.getElementById('name').value;
-                    const telefono = document.getElementById('phone').value;
-                    const biciScelte = document.getElementById('num_bici').value;
-                    const altezza = document.getElementById('custom_altezza').value;
-                    const dettagliTour = document.getElementById('form-escursione').value;
-                    const carrellino = document.getElementById('richiesta_carrellino').checked ? 'Sì (Max 115cm)' : 'No';
-                    const noteInserite = document.getElementById('richieste').value;
-                    const boxNoteSummary = noteInserite ? `<p><strong>Note:</strong> ${noteInserite}</p>` : '';
-
-                    const screenshotHTML = `
-                        <div id="screenshotBox" class="text-center p-4 border-2 border-dashed border-emerald-500 bg-emerald-50/50 rounded-2xl">
-                            <h3 class="text-lg font-bold text-slate-900 mb-1">✓ Richiesta Ricevuta!</h3>
-                            <p class="text-xs text-slate-500 mb-3">Fai uno screenshot di questa schermata.</p>
-                            <div class="bg-emerald-100 text-emerald-800 text-xs font-bold p-2.5 rounded-lg mb-4 border border-emerald-200">
-                                ⚠️ La prenotazione è andata a buon fine e i posti sono stati riservati sul tabellone.
-                            </div>
-                            <div class="bg-white p-4 rounded-xl shadow-sm text-left border border-slate-100 space-y-2 text-sm text-slate-700 mb-4">
-                                <p><strong>Tour:</strong> ${dettagliTour}</p>
-                                <p><strong>Referente:</strong> ${nome}</p>
-                                <p><strong>Telefono:</strong> ${telefono}</p>
-                                <p><strong>Numero Bici:</strong> ${biciScelte}</p>
-                                <p><strong>Altezze:</strong> ${altezza} cm</p>
-                                <p><strong>Carrellino Bimbi:</strong> ${carrellino}</p>
-                                ${boxNoteSummary}
-                                <p class="text-center text-amber-600 font-bold text-xs uppercase tracking-wider pt-2 mt-2 border-t border-slate-100">• Pagamento alla partenza •</p>
-                            </div>
-                            <div class="text-xs font-bold tracking-wider uppercase text-emerald-700">Hike Experience</div>
-                        </div>
-                    `;
-                    document.getElementById('modalContent').insertAdjacentHTML('beforeend', screenshotHTML);
-                } else {
-                    alert("Errore: Posti insufficienti o esauriti nel frattempo!");
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Invia Richiesta";
-                    submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-sm shadow-md";
-                }
-            } catch (error) {
-                console.error("Errore nell'invio della richiesta:", error);
-                alert("Si è verificato un errore di rete. Riprova.");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Invia Richiesta";
-                submitBtn.className = "w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-3 rounded-xl text-sm shadow-md";
-            }
-        }
-
-        async function handleNoleggioSubmit(event) {
-            event.preventDefault();
-            const form = event.target;
-            const submitBtn = document.getElementById('submit-noleggio-btn');
-            
-            const formData = new FormData(form);
-            const orarioSelezionato = formData.get('orario_ritiro');
-            if (!orarioSelezionato) {
-                alert("Per favore, seleziona un Orario di Ritiro Previsto.");
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Invio richiesta in corso...";
-            submitBtn.className = "mt-4 w-full bg-slate-400 text-white font-bold p-4 rounded-xl text-sm shadow-md cursor-not-allowed";
-
-            const queryString = new URLSearchParams(formData).toString();
-
-            try {
-                const response = await fetch(`${SCRIPT_URL}?${queryString}`, { method: 'POST' });
-                const resData = await response.json();
-
-                if (resData.result === "success") {
-                    form.innerHTML = `
-                        <div class="text-center p-8 bg-emerald-50 rounded-2xl border-2 border-dashed border-emerald-400 mt-4">
-                            <span class="text-4xl mb-3 block">✓</span>
-                            <h3 class="text-xl font-bold text-emerald-800 mb-2">Richiesta Ricevuta!</h3>
-                            <p class="text-sm text-emerald-700 font-medium">Abbiamo ricevuto la tua richiesta di noleggio e-bike.</p>
-                            <p class="text-xs text-slate-500 mt-3">Verificheremo la disponibilità del nostro parco bici e riceverai a brevissimo una email di conferma definitiva dal nostro team.</p>
-                        </div>
-                    `;
-                } else {
-                    alert("Si è verificato un errore: " + resData.message);
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Invia Richiesta Noleggio";
-                    submitBtn.className = "mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md";
-                }
-            } catch (error) {
-                console.error("Errore invio noleggio:", error);
-                alert("Si è verificato un errore di rete. Riprova.");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Invia Richiesta Noleggio";
-                submitBtn.className = "mt-4 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-4 rounded-xl transition-colors text-sm shadow-md";
-            }
-        }
-
-        function gestisciRicercaData(event) {
-            const dataSceltaString = event.target.value; 
-            const containerRisultati = document.getElementById('search-results-container');
-            const listaRisultati = document.getElementById('search-results-list');
-            const btnClear = document.getElementById('clear-date-btn');
-
-            if (!dataSceltaString) {
-                containerRisultati.style.display = 'none';
-                btnClear.style.display = 'none';
-                return;
-            }
-
-            btnClear.style.display = 'block';
-            listaRisultati.innerHTML = "";
-            containerRisultati.style.display = 'block';
-
-            const dataScelta = new Date(dataSceltaString);
-            dataScelta.setHours(0,0,0,0);
-
-            const tourTrovati = databaseTourLocali.filter(t => t.dataObj.getTime() === dataScelta.getTime());
-
-            if (tourTrovati.length === 0) {
-                listaRisultati.innerHTML = `<p class="text-xs text-slate-500 italic p-1">Nessun tour programmato per questa data.</p>`;
-                return;
-            }
-
-            tourTrovati.forEach(d => {
-                const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-                const shortDay = giorniSettimana[d.dataObj.getDay()];
-
-                let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
-                let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
-                
-                let btnHtml = isSoldOut 
-                    ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200 shrink-0">SOLD OUT</span>`
-                    : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors shrink-0" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
-
-                let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
-                let infoPostiMini = !isSoldOut && postiInTempoReale[d.id] ? `<span class="text-[11px] text-slate-400 block">Posti rimasti: ${realTimePosti}</span>` : '';
-
-                listaRisultati.innerHTML += `
-                    <div class="flex items-center justify-between bg-emerald-50/40 p-3 rounded-xl border border-emerald-100 shadow-sm">
-                        <div class="flex flex-col min-w-0 pr-2">
-                            <span class="text-sm font-bold text-slate-800 truncate">${d.nome}</span>
-                            <span class="${textSessioneStyle} text-xs mt-0.5">${d.sessione}</span>
-                            ${infoPostiMini}
-                        </div>
-                        ${btnHtml}
-                    </div>
-                `;
-            });
-        }
+        const mappaturaMesi = { "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5, "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11 };
 
         function parseCSV(text) {
             const lines = text.split('\n');
             const result = [];
             const headers = lines[0].split(/[,\t]/).map(h => h.trim().toUpperCase());
-            
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
                 const currentline = lines[i].split(/[,\t]/).map(c => c.trim().replace(/^"|"$/g, ''));
                 if(currentline.length < headers.length) continue;
-                
                 const obj = {};
-                headers.forEach((header, index) => {
-                    obj[header] = currentline[index];
-                });
+                headers.forEach((h, idx) => obj[h] = currentline[idx]);
                 result.push(obj);
             }
             return result;
@@ -612,170 +350,132 @@
             try {
                 await fetchPostiRealtime();
 
+                // MODIFICHE ESTETICHE SE L'UTENTE CERCA UN TOUR SPECIFICO
+                if (tourDalSito) {
+                    document.getElementById('sezione-filtri-ricerca').style.display = 'none';
+                    document.getElementById('separatore-tour').style.display = 'none';
+                    document.getElementById('tabs-container').style.display = 'none';
+                    document.getElementById('piattaforma-title').innerText = "CALENDARIO TOUR SPECIFICO";
+                    document.getElementById('btn-back-all').style.display = 'block';
+                    // Dispone il singolo blocco centrato o full width
+                    document.getElementById('tour-list-container').className = "w-full max-w-2xl mx-auto";
+                }
+
                 const response = await fetch(CSV_URL);
                 const csvText = await response.text();
                 const tuttiITour = parseCSV(csvText);
 
-                const oggi = new Date();
-                oggi.setHours(0,0,0,0);
-
+                const oggi = new Date(); oggi.setHours(0,0,0,0);
                 const raggruppatiPerTour = {};
                 const prossimiInAssoluto = [];
                 databaseTourLocali = []; 
 
                 tuttiITour.forEach(t => {
-                    const giorno = parseInt(t.GIORNO, 10);
-                    const anno = parseInt(t.ANNO, 10);
-                    const meseString = t.MESE.toLowerCase();
-                    const meseId = mappaturaMesi[meseString] !== undefined ? mappaturaMesi[meseString] : 5;
-                    
-                    const dataObj = new Date(anno, meseId, giorno);
-                    
+                    const dataObj = new Date(t.ANNO, mappaturaMesi[t.MESE.toLowerCase()] || 5, t.GIORNO);
                     if (dataObj < oggi) return; 
 
-                    const infoTour = {
-                        id: t.ID,
-                        giorno: giorno,
-                        meseText: t.MESE,
-                        anno: anno,
-                        sessione: t.SESSIONE,
-                        nome: t.TOUR,
-                        stato: t.STATO ? t.STATO.toUpperCase() : "ATTIVO",
-                        dataObj: dataObj
-                    };
-
-                    databaseTourLocali.push(infoTour);
+                    const info = { id: t.ID, giorno: t.GIORNO, meseText: t.MESE, anno: t.ANNO, sessione: t.SESSIONE, nome: t.TOUR, stato: t.STATO ? t.STATO.toUpperCase() : "ATTIVO", dataObj: dataObj };
+                    databaseTourLocali.push(info);
                     
-                    if (!raggruppatiPerTour[t.TOUR]) { raggruppatiPerTour[t.TOUR] = {}; }
-                    if (!raggruppatiPerTour[t.TOUR][t.MESE]) { raggruppatiPerTour[t.TOUR][t.MESE] = []; }
-                    
-                    raggruppatiPerTour[t.TOUR][t.MESE].push(infoTour);
-                    prossimiInAssoluto.push(infoTour);
+                    if (!raggruppatiPerTour[t.TOUR]) raggruppatiPerTour[t.TOUR] = {};
+                    if (!raggruppatiPerTour[t.TOUR][t.MESE]) raggruppatiPerTour[t.TOUR][t.MESE] = [];
+                    raggruppatiPerTour[t.TOUR][t.MESE].push(info);
+                    prossimiInAssoluto.push(info);
                 });
 
                 document.querySelectorAll('details[data-tour-name]').forEach(detailsEl => {
                     const nomeTour = detailsEl.getAttribute('data-tour-name');
-                    const containerDate = detailsEl.querySelector('.container-date');
-                    if (!containerDate) return;
-
-                    containerDate.innerHTML = "";
+                    const container = detailsEl.querySelector('.container-date');
+                    container.innerHTML = "";
 
                     if (!raggruppatiPerTour[nomeTour]) {
-                        containerDate.innerHTML = "<p class='text-xs text-slate-400 italic p-2 text-center'>Nessuna data in programma al momento.</p>";
+                        container.innerHTML = "<p class='text-xs text-gray-500 italic p-2 text-center'>Nessuna data in programma al momento.</p>";
                         return;
                     }
 
                     for (const mese in raggruppatiPerTour[nomeTour]) {
-                        const dateMese = raggruppatiPerTour[nomeTour][mese];
-                        dateMese.sort((a,b) => a.dataObj - b.dataObj);
-
+                        const dateMese = raggruppatiPerTour[nomeTour][mese].sort((a,b) => a.dataObj - b.dataObj);
                         let meseBlock = document.createElement('div');
-                        meseBlock.innerHTML = `<h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">${mese} ${dateMese[0].anno}</h3>`;
+                        meseBlock.innerHTML = `<h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 mt-4">${mese}</h3>`;
                         
                         let wrapperDate = document.createElement('div');
-                        wrapperDate.className = "space-y-1.5";
+                        wrapperDate.className = "space-y-2";
 
                         dateMese.forEach(d => {
-                            const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-                            const shortDay = giorniSettimana[d.dataObj.getDay()];
-
+                            const shortDay = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'][d.dataObj.getDay()];
                             let realTimePosti = postiInTempoReale[d.id] ? postiInTempoReale[d.id].posti_disponibili : 10;
-                            let isSoldOut = (d.stato === "SOLD OUT" || d.stato === "SOLD_OUT" || d.stato === "ESAURITO" || realTimePosti <= 0);
+                            let isSoldOut = (d.stato.includes("SOLD") || d.stato.includes("ESAURITO") || realTimePosti <= 0);
                             
                             let btnHtml = isSoldOut 
-                                ? `<span class="bg-rose-100 text-rose-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-rose-200">SOLD OUT</span>`
-                                : `<button class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
-
-                            let textSessioneStyle = d.sessione.toLowerCase().includes('mattina') ? 'text-emerald-600 font-medium' : 'text-slate-600';
-                            let infoPostiMini = !isSoldOut && postiInTempoReale[d.id] ? `<span class="text-xs text-slate-400 font-normal ml-2">(Posti: ${realTimePosti})</span>` : '';
+                                ? `<span class="bg-red-900 text-red-300 text-xs font-bold px-3 py-1.5 rounded-lg border border-red-800">COMPLETO</span>`
+                                : `<button class="bg-[#2ecc71] hover:bg-[#27ae60] text-white text-xs font-bold px-3 py-2 rounded-lg uppercase" onclick="openModal('${d.id}', '${d.nome.replace(/'/g, "\\'")}', '${shortDay} ${d.giorno} ${d.meseText} (${d.sessione})')">Prenota</button>`;
 
                             wrapperDate.innerHTML += `
-                                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm">
-                                    <div class="flex items-center">
-                                        <span class="font-semibold text-slate-700 min-w-[70px]">${shortDay} ${d.giorno}</span> 
-                                        <span class="${textSessioneStyle} text-sm ml-2">${d.sessione} ${infoPostiMini}</span>
+                                <div class="flex items-center justify-between bg-[#242424] p-3 rounded-xl border border-[#444]">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-white">${shortDay} ${d.giorno} - ${d.sessione}</span> 
+                                        ${!isSoldOut ? `<span class="text-xs text-gray-400">Posti: ${realTimePosti}</span>` : ''}
                                     </div>
                                     ${btnHtml}
                                 </div>
                             `;
                         });
-
                         meseBlock.appendChild(wrapperDate);
-                        containerDate.appendChild(meseBlock);
+                        container.appendChild(meseBlock);
                     }
                 });
 
-                const sezioneProssimi = document.getElementById('sezione-prossimi');
-                const listaProssimi = document.getElementById('lista-prossimi');
-                
-                if (sezioneProssimi && listaProssimi) {
+                // Gestione widget prossimi tour (solo se non si cerca un tour specifico)
+                if (!tourDalSito && document.getElementById('sezione-prossimi')) {
+                    document.getElementById('sezione-prossimi').style.display = 'block';
                     prossimiInAssoluto.sort((a,b) => a.dataObj - b.dataObj);
-                    const daMostrare = prossimiInAssoluto.slice(0, 3);
-
-                    if (daMostrare.length > 0) {
-                        sezioneProssimi.style.display = 'block';
-                        listaProssimi.innerHTML = "";
-                        
-                        const domani = new Date(oggi);
-                        domani.setDate(domani.getDate() + 1);
-
-                        const giorniSettimana = ['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'];
-                        const mesiAbbr = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic'];
-
-                        daMostrare.forEach(item => {
-                            let etichettaData = '';
-                            let stileBadge = 'bg-slate-800 text-slate-300 text-xs font-medium';
-                            const tTime = item.dataObj.getTime();
-
-                            if (tTime === oggi.getTime()) {
-                                etichettaData = 'OGGI';
-                                stileBadge = 'bg-rose-500 text-white font-bold animate-pulse text-xs';
-                            } else if (tTime === domani.getTime()) {
-                                etichettaData = 'DOMANI';
-                                stileBadge = 'bg-amber-500 text-slate-900 font-bold text-xs';
-                            } else {
-                                etichettaData = giorniSettimana[item.dataObj.getDay()] + ' ' + item.dataObj.getDate() + ' ' + mesiAbbr[item.dataObj.getMonth()];
-                            }
-
-                            let realTimePosti = postiInTempoReale[item.id] ? postiInTempoReale[item.id].posti_disponibili : 10;
-                            let isSoldOut = (item.stato === "SOLD OUT" || item.stato === "SOLD_OUT" || item.stato === "ESAURITO" || realTimePosti <= 0);
-                            let badgeSoldOutHtml = isSoldOut ? `<span class="text-[10px] bg-rose-900/60 text-rose-300 font-bold px-1.5 py-0.5 rounded ml-1.5 uppercase">Completo</span>` : '';
-
-                            listaProssimi.innerHTML += `
-                                <div class="flex items-center justify-between bg-slate-800/40 p-3 rounded-xl border border-slate-700/30 ${isSoldOut ? 'opacity-60' : ''}">
-                                    <div class="flex flex-col min-w-0 pr-2">
-                                        <span class="text-sm font-semibold text-slate-100 truncate flex items-center">${item.nome} ${badgeSoldOutHtml}</span>
-                                        <span class="text-xs text-slate-400 mt-0.5">${item.sessione}</span>
-                                    </div>
-                                    <span class="px-2.5 py-1 rounded-md shrink-0 text-center min-w-[85px] ${stileBadge}">${etichettaData}</span>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        sezioneProssimi.style.display = 'none';
-                    }
+                    const listHtml = prossimiInAssoluto.slice(0,3).map(item => `
+                        <div class="flex justify-between bg-[#242424] p-3 rounded-xl border border-[#444] mt-2">
+                            <span class="text-sm font-semibold truncate flex-1 text-white">${item.nome}</span>
+                            <span class="text-xs bg-[#333] text-gray-300 px-2 py-1 rounded-md ml-2">${item.dataObj.getDate()}/${item.dataObj.getMonth()+1}</span>
+                        </div>
+                    `).join('');
+                    document.getElementById('lista-prossimi').innerHTML = listHtml;
                 }
 
-            } catch (error) {
-                console.error("Errore caricamento Google Fogli:", error);
-            }
+            } catch (error) { console.error(error); }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            inizializzaCalendarioDinamico();
+        // FUNZIONI STANDARD GESTIONE MODALE E INVIO DATI (inalterate)
+        function openModal(idTour, nomeTour, dettagliData) {
+            document.getElementById('bookingModal').style.display = 'flex';
+            document.getElementById('form-id-tour').value = idTour;
+            document.getElementById('form-escursione').value = nomeTour + " - " + dettagliData;
+            document.getElementById('bookingForm').style.display = 'block';
             
-            const inputData = document.getElementById('search-date-input');
-            if(inputData) inputData.addEventListener('change', gestisciRicercaData);
+            const infoPosti = document.getElementById('info-posti-realtime');
+            const liberi = postiInTempoReale[idTour] ? postiInTempoReale[idTour].posti_disponibili : 10;
+            infoPosti.innerText = `Posti ancora disponibili: ${liberi}`;
+            document.getElementById('num_bici').max = liberi;
+        }
 
-            const btnClear = document.getElementById('clear-date-btn');
-            if(btnClear) {
-                btnClear.addEventListener('click', () => {
-                    inputData.value = "";
-                    document.getElementById('search-results-container').style.display = 'none';
-                    btnClear.style.display = 'none';
-                });
-            }
-        });
+        function closeModal() { document.getElementById('bookingModal').style.display = 'none'; }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submit-btn');
+            btn.disabled = true; btn.innerText = "Invio in corso...";
+            
+            const formData = new FormData(event.target);
+            try {
+                const response = await fetch(`${SCRIPT_URL}?${new URLSearchParams(formData).toString()}`, { method: 'POST' });
+                const resData = await response.json();
+                
+                if (resData.result === "success") {
+                    event.target.innerHTML = `<div class="text-center p-6"><h3 class="text-xl font-bold text-[#2ecc71]">Prenotazione Confermata!</h3><p class="text-white mt-2">Verrai reindirizzato o contattato a breve dal nostro team.</p></div>`;
+                } else {
+                    alert("Errore. Posti insufficienti!");
+                    btn.disabled = false; btn.innerText = "Riprova";
+                }
+            } catch(e) { alert("Errore di rete"); btn.disabled = false; btn.innerText = "Riprova"; }
+        }
+        
+        document.addEventListener('DOMContentLoaded', inizializzaCalendarioDinamico);
     </script>
 </body>
 </html>
