@@ -41,10 +41,10 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- HEADER IDENTICO AL SITO ORIGINALE -->
+    <!-- HEADER -->
     <header class="main-header font-sans">
         <div class="logo-container">
-            <a href="https://tuosito.com"> <!-- Inserisci il link al tuo sito principale -->
+            <a href="https://tuosito.com"> <!-- Metti il vero link della tua home page -->
                 <img src="logo.png" alt="Hike Experience Logo" class="logo-img" onerror="this.src='https://via.placeholder.com/150x85?text=LOGO'">
             </a>
         </div>
@@ -55,7 +55,7 @@
         </nav>
     </header>
 
-    <!-- AREA TITOLO PIATTAFORMA (Adattata ai colori scuri del sito) -->
+    <!-- AREA TITOLO PIATTAFORMA -->
     <div class="bg-[#1a1a1a] border-b-4 border-[#2ecc71] pt-10 pb-10 text-center px-4">
         <div class="max-w-md md:max-w-xl mx-auto flex flex-col items-center">
             <p id="piattaforma-subtitle" class="text-[#2ecc71] font-bold text-sm tracking-wider uppercase mt-1">Calendario Ufficiale 2026</p>
@@ -80,7 +80,6 @@
         
         <div id="vista-tour" class="space-y-6 flex-1">
             
-            <!-- CONTENITORI RICERCA E PROSSIMI TOUR -->
             <div id="sezione-filtri-ricerca" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div id="sezione-prossimi" style="display: none;" class="bg-[#1e1e1e] border border-[#333] text-white rounded-2xl p-5 shadow-lg space-y-3 h-full flex flex-col justify-between">
                     <div class="flex items-center gap-2">
@@ -111,16 +110,15 @@
 
             <hr id="separatore-tour" class="border-[#333] my-4 hidden md:block">
 
-            <!-- LISTA DEI TOUR -->
             <div id="tour-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                 <div class="col-span-full text-center py-10">
                     <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#2ecc71] mb-2"></div>
-                    <p class="text-sm text-gray-400 font-medium">Caricamento disponibilità dal server...</p>
+                    <p class="text-sm text-gray-400 font-medium">Sincronizzazione dati in corso...</p>
                 </div>
             </div>
         </div>
 
-        <!-- VISTA NOLEGGIO (Scurita e adattata) -->
+        <!-- VISTA NOLEGGIO -->
         <div id="vista-noleggio" class="hidden flex-1">
             <div class="bg-[#1e1e1e] rounded-2xl p-6 shadow-sm border border-[#333] mb-6 text-white">
                 <form id="formNoleggio" onsubmit="handleNoleggioSubmit(event)">
@@ -176,7 +174,7 @@
         </div>
     </main>
 
-    <!-- MODAL PRENOTAZIONE TOUR (Scurita) -->
+    <!-- MODAL PRENOTAZIONE TOUR -->
     <div id="bookingModal" class="modal">
         <div class="modal-content" id="modalContent">
             <span class="absolute top-3 right-4 text-3xl font-semibold text-gray-500 hover:text-white cursor-pointer select-none" onclick="closeModal()">&times;</span>
@@ -219,7 +217,7 @@
         </div>
     </div>
 
-    <!-- FOOTER IDENTICO AL SITO -->
+    <!-- FOOTER -->
     <footer class="main-footer font-sans">
         <div class="footer-content">
             <div class="footer-col">
@@ -239,7 +237,7 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT ORIGINALE PIATTAFORMA CON FILTRO INTELLIGENTE PER URL -->
+    <!-- SCRIPT GESTIONE PIATTAFORMA -->
     <script>
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQmHDkSaQilr5ZHSy5pwOjxuaOPEJchBJhK9bMWwpXGil8EpD-AnHFMFNAAJLrmc3R0AlmhMhPqkyml/pub?output=csv";
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
@@ -247,7 +245,7 @@
         let databaseTourLocali = []; 
         let postiInTempoReale = {};
         
-        // Verifica se c'è un tour specifico richiesto via URL dal sito web
+        // Lettura del nome tour dall'URL
         const urlParams = new URLSearchParams(window.location.search);
         const tourDalSito = urlParams.get('tour');
 
@@ -291,19 +289,13 @@
                         const tourContainer = document.getElementById('tour-list-container');
                         tourContainer.innerHTML = ''; 
                         
-                        // Generazione delle card dei Tour
                         postiInTempoReale["CONFIG_TOUR"].forEach((tour) => {
-                            
-                            // ---- IL CUORE DELL'INTEGRAZIONE ----
-                            // Se l'utente ha cliccato un tour specifico dal sito, nascondo tutti gli altri
+                            // Nascondo tutti gli altri se cerco un tour specifico
                             if (tourDalSito && tour.nome.trim().toLowerCase() !== tourDalSito.trim().toLowerCase()) {
-                                return; // Salta questo tour, non lo disegna
+                                return; 
                             }
-                            // ------------------------------------
-
-                            // Se sto filtrando un singolo tour, lo mostro già espanso (open)
+                            
                             const isOpenAttr = tourDalSito ? "open" : "";
-
                             const detailsHtml = `
                                 <details class="bg-[#1e1e1e] rounded-2xl shadow-sm border border-[#333] overflow-hidden" data-tour-name="${tour.nome}" ${isOpenAttr}>
                                     <summary class="p-5 flex justify-between items-center cursor-pointer select-none bg-[#242424]">
@@ -316,7 +308,7 @@
                                         </div>
                                     </summary>
                                     <div class="px-5 pb-5 pt-4 border-t border-[#333] space-y-4 bg-[#1a1a1a] container-date text-white">
-                                        <p class="text-xs text-gray-400 italic text-center p-2">Caricamento date in corso...</p>
+                                        <p class="text-xs text-gray-400 italic text-center p-2">Sincronizzazione date in corso...</p>
                                     </div>
                                 </details>
                             `;
@@ -348,21 +340,24 @@
 
         async function inizializzaCalendarioDinamico() {
             try {
-                await fetchPostiRealtime();
-
-                // MODIFICHE ESTETICHE SE L'UTENTE CERCA UN TOUR SPECIFICO
+                // MODIFICHE ESTETICHE E NOME TOUR (Punto 1)
                 if (tourDalSito) {
                     document.getElementById('sezione-filtri-ricerca').style.display = 'none';
                     document.getElementById('separatore-tour').style.display = 'none';
                     document.getElementById('tabs-container').style.display = 'none';
-                    document.getElementById('piattaforma-title').innerText = "CALENDARIO TOUR SPECIFICO";
+                    // Inserimento del nome dinamico pulito
+                    document.getElementById('piattaforma-title').innerText = "CALENDARIO " + tourDalSito;
                     document.getElementById('btn-back-all').style.display = 'block';
-                    // Dispone il singolo blocco centrato o full width
                     document.getElementById('tour-list-container').className = "w-full max-w-2xl mx-auto";
                 }
 
-                const response = await fetch(CSV_URL);
-                const csvText = await response.text();
+                // ESECUZIONE SIMULTANEA PER VELOCIZZARE IL CARICAMENTO (Punto 2)
+                const [_, responseCsv] = await Promise.all([
+                    fetchPostiRealtime(),
+                    fetch(CSV_URL)
+                ]);
+
+                const csvText = await responseCsv.text();
                 const tuttiITour = parseCSV(csvText);
 
                 const oggi = new Date(); oggi.setHours(0,0,0,0);
@@ -425,7 +420,6 @@
                     }
                 });
 
-                // Gestione widget prossimi tour (solo se non si cerca un tour specifico)
                 if (!tourDalSito && document.getElementById('sezione-prossimi')) {
                     document.getElementById('sezione-prossimi').style.display = 'block';
                     prossimiInAssoluto.sort((a,b) => a.dataObj - b.dataObj);
@@ -441,7 +435,6 @@
             } catch (error) { console.error(error); }
         }
 
-        // FUNZIONI STANDARD GESTIONE MODALE E INVIO DATI (inalterate)
         function openModal(idTour, nomeTour, dettagliData) {
             document.getElementById('bookingModal').style.display = 'flex';
             document.getElementById('form-id-tour').value = idTour;
@@ -467,7 +460,7 @@
                 const resData = await response.json();
                 
                 if (resData.result === "success") {
-                    event.target.innerHTML = `<div class="text-center p-6"><h3 class="text-xl font-bold text-[#2ecc71]">Prenotazione Confermata!</h3><p class="text-white mt-2">Verrai reindirizzato o contattato a breve dal nostro team.</p></div>`;
+                    event.target.innerHTML = `<div class="text-center p-6"><h3 class="text-xl font-bold text-[#2ecc71]">Prenotazione Confermata!</h3><p class="text-white mt-2">Riceverai presto i dettagli dal nostro team.</p></div>`;
                 } else {
                     alert("Errore. Posti insufficienti!");
                     btn.disabled = false; btn.innerText = "Riprova";
