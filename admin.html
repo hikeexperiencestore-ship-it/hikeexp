@@ -87,9 +87,45 @@
         
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
+
+        /* --- STILI PER LE NOTIFICHE A COMPARSA (TOAST) --- */
+        #toast-container {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toast {
+            background: #1e293b;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideIn 0.3s forwards, fadeOut 0.4s forwards 3s;
+        }
+        .toast.success { background: #10b981; border-left: 6px solid #047857; }
+        .toast.error { background: #ef4444; border-left: 6px solid #b91c1c; }
+        
+        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(20px); } }
     </style>
 </head>
 <body>
+
+<!-- Contenitore Notifiche -->
+<div id="toast-container"></div>
 
 <div class="container">
     <h2>Hike Exp - Dashboard Soci</h2>
@@ -143,7 +179,7 @@
                 </div>
             </div>
         </div>
-        <button onclick="salvaNuovaPrenotazione()">Salva Prenotazione</button>
+        <button onclick="salvaNuovaPrenotazione()" id="btnSalvaPrenotazione">Salva Prenotazione</button>
         <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
 
         <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
@@ -189,7 +225,7 @@
                 </div>
                 <div class="form-group"><label>Altezze:</label><input type="text" id="man-altezze" required></div>
                 
-                <button type="submit" class="btn-yellow" style="margin-bottom: 0;">Registra Noleggio</button>
+                <button type="submit" id="btnRegistraNoleggio" class="btn-yellow" style="margin-bottom: 0;">Registra Noleggio</button>
             </form>
         </div>
 
@@ -256,6 +292,18 @@
     let calendarioNoleggiCache = [];
     let dataCorrenteCalendario = new Date();
 
+    // --- FUNZIONE PER MOSTARE LE NOTIFICHE VISIVE ---
+    function mostraNotifica(messaggio, tipo = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${tipo}`;
+        toast.innerHTML = messaggio;
+        container.appendChild(toast);
+        
+        // Rimuove l'elemento dal codice html una volta sparito
+        setTimeout(() => { toast.remove(); }, 3500);
+    }
+
     window.onload = function() {
         if (localStorage.getItem("hike_admin_pass")) {
             document.getElementById("password").value = localStorage.getItem("hike_admin_pass");
@@ -282,8 +330,10 @@
                 document.getElementById("sectionModifica").classList.add("hidden");
                 document.getElementById("sectionNoleggi").classList.add("hidden");
                 filtraI_Tour();
-            } else { alert("Errore: " + data.error); }
-        }).catch(err => alert("Errore di rete."));
+            } else { 
+                mostraNotifica("Errore: " + data.error, "error"); 
+            }
+        }).catch(err => mostraNotifica("Errore di rete.", "error"));
     }
 
     function filtraI_Tour() {
@@ -395,8 +445,19 @@
         if(!n) return alert("Nominativo obbligatorio!");
         if(!confirm(b>0 ? `Confermi ${b} posti per ${n}?` : `DISDETTA ${Math.abs(b)} posti per ${n}?`)) return;
 
+        const btn = document.getElementById("btnSalvaPrenotazione");
+        btn.innerText = "Salvataggio...";
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "add_manual_booking", password: p, idTour: tourSelezionato.id, nome: n, telefono: t, numBici: b}) })
-        .then(res => res.json()).then(d => { if(d.success){ alert("Ok!"); caricaTuttiITour(); } else alert("Errore"); });
+        .then(res => res.json()).then(d => { 
+            btn.innerText = "Salva Prenotazione";
+            if(d.success){ 
+                mostraNotifica("✅ Prenotazione inserita nel database!"); 
+                caricaTuttiITour(); 
+            } else {
+                mostraNotifica("❌ Errore durante l'inserimento", "error");
+            } 
+        });
     }
 
     function tornaAllaLista() { document.getElementById("sectionModifica").classList.add("hidden"); document.getElementById("sectionDashboard").classList.remove("hidden"); }
@@ -444,16 +505,28 @@
 
     function eliminaPrenotazioneTour(riga, idTour, numBici) {
         if(!confirm("ATTENZIONE! Vuoi davvero eliminare questa prenotazione? Verranno liberati " + numBici + " posti sul tuo tabellone.")) return;
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_prenotazione_tour", password: document.getElementById("password").value, riga: riga, idTour: idTour, numBici: numBici}) })
         .then(res => res.json()).then(d => { 
-            if(d.success){ caricaListaPrenotati(); caricaTuttiITour(); } 
+            if(d.success){ 
+                mostraNotifica("🗑️ Prenotazione eliminata e posti liberati!");
+                caricaListaPrenotati(); 
+                caricaTuttiITour(); 
+            } 
         });
     }
 
     function flagStornato(riga) {
         if(!confirm("Hai già rimosso fisicamente questi posti da Majellando? Il sistema riequilibrerà la disponibilità.")) return;
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "flag_stornato_tour", password: document.getElementById("password").value, riga: riga}) })
-        .then(res => res.json()).then(d => { if(d.success){ alert("Storno registrato!"); caricaListaPrenotati(); caricaTuttiITour(); } });
+        .then(res => res.json()).then(d => { 
+            if(d.success){ 
+                mostraNotifica("✅ Storno su Majellando segnato correttamente!"); 
+                caricaListaPrenotati(); 
+                caricaTuttiITour(); 
+            } 
+        });
     }
     
     function eliminaTourIntero() {
@@ -465,11 +538,11 @@
         })
         .then(res => res.json()).then(d => { 
             if(d.success){ 
-                alert("Tour eliminato con successo!"); 
+                mostraNotifica("🗑️ Intero Tour eliminato con successo!"); 
                 tornaAllaLista(); 
                 caricaTuttiITour(); 
             } else { 
-                alert("Errore durante l'eliminazione: " + (d.error || 'Generico')); 
+                mostraNotifica("❌ Errore durante l'eliminazione", "error"); 
             } 
         });
     }
@@ -485,7 +558,6 @@
         document.getElementById("sectionDashboard").classList.remove("hidden"); 
     }
 
-    // GESTIONE UNIFICATA API: Velocizza ed evita il blocco di Google Apps Script
     async function caricaPannelloNoleggi() {
         document.getElementById("loadingNoleggi").classList.remove("hidden");
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
@@ -505,7 +577,7 @@
                 }
                 renderizzaNoleggi(); 
             } else {
-                alert("Errore: " + (res.error || "Impossibile caricare i dati"));
+                mostraNotifica("Errore: " + (res.error || "Impossibile caricare i dati"), "error");
             }
         } catch (error) {
             document.getElementById("loadingNoleggi").innerText = "Errore di rete. Riprova.";
@@ -556,7 +628,6 @@
         if (dParsed.getTime() > 0) {
             let durata = estraiDurataNoleggio(nol.offerta);
             
-            // LOGICA SOVRAPPOSIZIONE ESTESA (Controlla tutti i giorni, non solo l'inizio)
             let dateNoleggioIntervallo = [];
             for (let i = 0; i < durata; i++) {
                 let dCopia = new Date(dParsed);
@@ -723,25 +794,30 @@
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_noleggio", password: document.getElementById("password").value, riga: riga}) })
         .then(res => res.json()).then(d => { 
             if(d.success){ 
-                alert("🗑️ Noleggio eliminato con successo!");
+                mostraNotifica("🗑️ Noleggio eliminato con successo!");
                 caricaPannelloNoleggi(); 
-                caricaTuttiITour(); // AGGIUNTA: Aggiorna i posti dei tour in background!
+                caricaTuttiITour(); 
             } else {
-                alert("Errore durante l'eliminazione.");
+                mostraNotifica("❌ Errore durante l'eliminazione.", "error");
                 document.getElementById("loadingNoleggi").classList.add("hidden");
             }
         }).catch(e => {
-            alert("Errore di rete durante l'eliminazione.");
+            mostraNotifica("❌ Errore di rete.", "error");
             document.getElementById("loadingNoleggi").classList.add("hidden");
         });
     }
 
     function segnaNoleggioEsterno(rigaNol) {
         if(!confirm("Confermi di usare BICI PARTNER / ESTERNE per questo noleggio?\n\nNon verranno scalati posti dai tuoi Tour su Majellando.")) return;
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "segna_noleggio_esterno", password: document.getElementById("password").value, riga: rigaNol}) })
         .then(res => res.json()).then(d => { 
-            if(d.success){ alert("Noleggio contrassegnato con successo (Bici Partner)!"); caricaPannelloNoleggi(); } 
-            else { alert("Errore di rete."); }
+            if(d.success){ 
+                mostraNotifica("✅ Noleggio assegnato a Bici Partner!"); 
+                caricaPannelloNoleggi(); 
+            } else { 
+                mostraNotifica("❌ Errore di rete.", "error"); 
+            }
         });
     }
 
@@ -753,7 +829,12 @@
         if (!confirm(msg)) return;
         
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "collega_noleggio_tour", password: document.getElementById("password").value, riga: rigaNol, idTours: selIds}) })
-        .then(res => res.json()).then(d => { if(d.success){ alert("Storno effettuato!"); caricaPannelloNoleggi(); } });
+        .then(res => res.json()).then(d => { 
+            if(d.success){ 
+                mostraNotifica("✅ Storno effettuato sui tour selezionati!"); 
+                caricaPannelloNoleggi(); 
+            } 
+        });
     }
 
     function gestisciNol(riga, stato) {
@@ -763,14 +844,14 @@
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "gestisci_noleggio", password: document.getElementById("password").value, riga: riga, nuovoStato: stato}) })
         .then(res => res.json()).then(d => { 
             if(d.success){ 
-                alert("✅ Noleggio aggiornato come: " + stato);
+                mostraNotifica("✅ Noleggio " + stato.toLowerCase() + "!");
                 caricaPannelloNoleggi(); 
             } else {
-                alert("Errore durante l'aggiornamento.");
+                mostraNotifica("❌ Errore durante l'aggiornamento.", "error");
                 document.getElementById("loadingNoleggi").classList.add("hidden");
             }
         }).catch(e => {
-            alert("Errore di rete durante l'aggiornamento.");
+            mostraNotifica("❌ Errore di rete.", "error");
             document.getElementById("loadingNoleggi").classList.add("hidden");
         });
     }
@@ -781,6 +862,10 @@
         let nomeOffertaBase = document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "Noleggio Personalizzato";
         
         let offertaFinale = durataGiorni > 1 ? `${nomeOffertaBase} (${durataGiorni} giorni)` : nomeOffertaBase;
+        
+        const btn = document.getElementById("btnRegistraNoleggio");
+        btn.innerText = "Registrazione in corso...";
+        btn.disabled = true;
 
         const p = { 
             action: "add_manual_noleggio", 
@@ -797,7 +882,20 @@
             orario: document.getElementById("man-orario") ? document.getElementById("man-orario").value : ""
         };
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { 
-            if(d.success){ alert("Noleggio inserito!"); document.getElementById("form-noleggio-manuale").reset(); document.getElementById("man-durata").value = "1"; caricaPannelloNoleggi(); } 
+            btn.innerText = "Registra Noleggio";
+            btn.disabled = false;
+            if(d.success){ 
+                mostraNotifica("✅ Noleggio inserito!"); 
+                document.getElementById("form-noleggio-manuale").reset(); 
+                document.getElementById("man-durata").value = "1"; 
+                caricaPannelloNoleggi(); 
+            } else {
+                mostraNotifica("❌ Errore di inserimento", "error");
+            }
+        }).catch(() => {
+            btn.innerText = "Registra Noleggio";
+            btn.disabled = false;
+            mostraNotifica("❌ Errore di rete", "error");
         });
     }
 
@@ -814,7 +912,7 @@
             calendarioNoleggiCache = res.noleggi;
             disegnaMeseCalendario();
         } else {
-            alert("Errore caricamento calendario.");
+            mostraNotifica("❌ Errore caricamento calendario.", "error");
         }
     }
 
@@ -945,14 +1043,15 @@
             btn.disabled = false;
             if(d.success){
                 chiudiEditNolCal();
+                mostraNotifica("✅ Dettagli aggiornati con successo!");
                 apriCalendario(); 
             } else {
-                alert("Errore durante il salvataggio.");
+                mostraNotifica("❌ Errore durante il salvataggio.", "error");
             }
         }).catch(err => {
             btn.innerText = "Salva";
             btn.disabled = false;
-            alert("Errore di rete.");
+            mostraNotifica("❌ Errore di rete.", "error");
         });
     }
 </script>
