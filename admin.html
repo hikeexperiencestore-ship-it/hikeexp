@@ -142,9 +142,6 @@
             <button class="btn-yellow" style="flex:1; background: #8b5cf6;" onclick="apriCalendario()">📅 Calendario Noleggi</button>
         </div>
 
-        <!-- NUOVO PULSANTE TOUR PRIVATI -->
-        <button class="btn-yellow" style="width:100%; background: #ec4899; margin-bottom:15px;" onclick="apriTourPrivati()">🚐 Gestione Tour Privati</button>
-
         <div style="background:#e0f2fe; border:1px solid #bae6fd; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#0369a1; display:flex; gap:8px;">
             <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico ogni 20 minuti.</div>
         </div>
@@ -161,31 +158,6 @@
         <button class="secondary" onclick="disconnetti()">Esci</button>
     </div>
 
-    <!-- NUOVA SEZIONE TOUR PRIVATI -->
-    <div id="sectionTourPrivati" class="hidden">
-        <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">🚐 Gestione Tour Privati</h3>
-        
-        <div class="form-box" style="border: 1px solid #fbcfe8; background: #fdf2f8;">
-            <h4 style="color: #be185d; margin-bottom: 10px;">Crea Nuovo Tour Privato / Personalizzato</h4>
-            <div class="form-grid-2">
-                <div class="form-group"><label>Nome Gruppo/Referente:</label><input type="text" id="priv-nome" placeholder="Es. Gruppo Rossi"></div>
-                <div class="form-group"><label>Data del Tour:</label><input type="date" id="priv-data"></div>
-            </div>
-            <div class="form-grid-2">
-                <div class="form-group"><label>Numero di Bici:</label><input type="number" id="priv-bici" value="1" min="1"></div>
-                <div class="form-group"><label>Prezzo Pattuito (€):</label><input type="number" id="priv-prezzo" placeholder="Es. 350"></div>
-            </div>
-            <button onclick="salvaTourPrivato()" style="background: #ec4899; margin-bottom: 0;">Salva e Storna Disponibilità nei Tour</button>
-        </div>
-
-        <div style="margin-top: 25px;">
-            <div id="loadingPrivati" class="loading hidden">Recupero dati...</div>
-            <div id="lista-tour-privati"></div>
-        </div>
-        <button class="secondary" onclick="tornaAiTourDaPrivati()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
-    </div>
-
-    <!-- SEZIONE MODIFICA TOUR (INSERIMENTO PRENOTATI) -->
     <div id="sectionModifica" class="hidden">
         <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
             <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
@@ -206,14 +178,6 @@
                     <div class="btn-counter" onclick="cambiaPostiNuovi(1)">+</div>
                 </div>
             </div>
-
-            <!-- CHECKBOX EBIKE PROPRIA -->
-            <div class="form-group" style="margin-top: 15px;">
-                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; background:#fef08a; padding:10px; border-radius:8px; color:#854d0e;">
-                    <input type="checkbox" id="chk-bici-propria" style="width:20px; height:20px; margin:0;">
-                    Cliente con E-Bike Propria (Viene aggiunto alla lista ma non scala disponibilità)
-                </label>
-            </div>
         </div>
         <button onclick="salvaNuovaPrenotazione()" id="btnSalvaPrenotazione">Salva Prenotazione</button>
         <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
@@ -227,7 +191,6 @@
         </div>
     </div>
 
-    <!-- SEZIONE NOLEGGI -->
     <div id="sectionNoleggi" class="hidden">
         <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi</h3>
         
@@ -337,6 +300,7 @@
         toast.innerHTML = messaggio;
         container.appendChild(toast);
         
+        // Rimuove l'elemento dal codice html una volta sparito
         setTimeout(() => { toast.remove(); }, 3500);
     }
 
@@ -365,7 +329,6 @@
                 document.getElementById("sectionDashboard").classList.remove("hidden");
                 document.getElementById("sectionModifica").classList.add("hidden");
                 document.getElementById("sectionNoleggi").classList.add("hidden");
-                document.getElementById("sectionTourPrivati").classList.add("hidden");
                 filtraI_Tour();
             } else { 
                 mostraNotifica("Errore: " + data.error, "error"); 
@@ -373,7 +336,6 @@
         }).catch(err => mostraNotifica("Errore di rete.", "error"));
     }
 
-    // ==== RIPRISTINATA FILTRA I TOUR ORIGINALE COMPLETA ====
     function filtraI_Tour() {
         const qNome = document.getElementById("searchNome").value.toLowerCase();
         const qData = document.getElementById("searchData").value.toLowerCase();
@@ -461,7 +423,6 @@
         document.getElementById("editDettagli").innerHTML = `Data: <strong>${tourSelezionato.data||'-'}</strong><br>Disponibili: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})`;
         document.getElementById("nuovoNome").value = "";
         document.getElementById("nuovoTelefono").value = "";
-        document.getElementById("chk-bici-propria").checked = false; // Reset checkbox Bici Propria
         document.getElementById("displayNuoviPosti").innerText = "1";
         
         document.getElementById("sectionDashboard").classList.add("hidden");
@@ -475,34 +436,19 @@
         document.getElementById("displayNuoviPosti").innerText = corr;
     }
 
-    // ==== SALVA NUOVA PRENOTAZIONE MODIFICATA PER BICI PROPRIA ====
     function salvaNuovaPrenotazione() {
         const p = document.getElementById("password").value;
         const n = document.getElementById("nuovoNome").value.trim();
         const t = document.getElementById("nuovoTelefono").value.trim();
         const b = parseInt(document.getElementById("displayNuoviPosti").innerText);
-        const biciPropria = document.getElementById("chk-bici-propria").checked;
         
         if(!n) return alert("Nominativo obbligatorio!");
-        
-        const testataConferma = b>0 ? `Confermi ${b} posti per ${n}? ${biciPropria ? "(BICI PROPRIA - Non scala disponibilità)" : ""}` : `DISDETTA ${Math.abs(b)} posti per ${n}?`;
-        if(!confirm(testataConferma)) return;
+        if(!confirm(b>0 ? `Confermi ${b} posti per ${n}?` : `DISDETTA ${Math.abs(b)} posti per ${n}?`)) return;
 
         const btn = document.getElementById("btnSalvaPrenotazione");
         btn.innerText = "Salvataggio...";
         
-        fetch(SCRIPT_URL, { 
-            method: "POST", 
-            body: JSON.stringify({
-                action: "add_manual_booking", 
-                password: p, 
-                idTour: tourSelezionato.id, 
-                nome: n, 
-                telefono: t, 
-                numBici: b,
-                biciPropria: biciPropria
-            }) 
-        })
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "add_manual_booking", password: p, idTour: tourSelezionato.id, nome: n, telefono: t, numBici: b}) })
         .then(res => res.json()).then(d => { 
             btn.innerText = "Salva Prenotazione";
             if(d.success){ 
@@ -532,24 +478,19 @@
                     const div = document.createElement("div");
                     div.className = "prenotazione-item";
                     
-                    const isPropria = p.richieste && p.richieste.includes("BICI PROPRIA");
-                    const badgeExtra = isPropria ? `<span class="badge-bici" style="background:#fef08a; color:#854d0e; margin-left:5px;">Bici Propria</span>` : "";
-                    
                     let btnHTML = p.stornato === "SI" 
                         ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
                         : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
                     
-                    if (isPropria) btnHTML = ""; // Se ha bici propria, non serve storno
-
-                    let noteHTML = p.richieste && !isPropria ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` : "";
+                    let noteHTML = p.richieste ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` : "";
                     
-                    let btnElimina = `<button style="background:#dc2626; font-size:12px; padding:8px 12px; border-radius:6px; color:white; font-weight:bold; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici}, ${isPropria})">🗑️ Elimina</button>`;
+                    let btnElimina = `<button style="background:#dc2626; font-size:12px; padding:8px 12px; border-radius:6px; color:white; font-weight:bold; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici})">🗑️ Elimina</button>`;
                     
                     div.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:start;">
                             <div>
                                 <div class="nome">👤 ${p.nominativo}</div>
-                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span> ${badgeExtra}</div>
+                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
                                 ${noteHTML}
                             </div>
                             <div>${btnElimina}</div>
@@ -562,13 +503,13 @@
         });
     }
 
-    function eliminaPrenotazioneTour(riga, idTour, numBici, isPropria) {
-        if(!confirm("ATTENZIONE! Vuoi davvero eliminare questa prenotazione?" + (isPropria ? "" : " Verranno liberati " + numBici + " posti sul tuo tabellone."))) return;
+    function eliminaPrenotazioneTour(riga, idTour, numBici) {
+        if(!confirm("ATTENZIONE! Vuoi davvero eliminare questa prenotazione? Verranno liberati " + numBici + " posti sul tuo tabellone.")) return;
         
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_prenotazione_tour", password: document.getElementById("password").value, riga: riga, idTour: idTour, numBici: numBici, isBiciPropria: isPropria}) })
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_prenotazione_tour", password: document.getElementById("password").value, riga: riga, idTour: idTour, numBici: numBici}) })
         .then(res => res.json()).then(d => { 
             if(d.success){ 
-                mostraNotifica("🗑️ Prenotazione eliminata!");
+                mostraNotifica("🗑️ Prenotazione eliminata e posti liberati!");
                 caricaListaPrenotati(); 
                 caricaTuttiITour(); 
             } 
@@ -617,91 +558,6 @@
         document.getElementById("sectionDashboard").classList.remove("hidden"); 
     }
 
-    // ==== GESTIONE TOUR PRIVATI ====
-    function apriTourPrivati() {
-        document.getElementById("sectionDashboard").classList.add("hidden");
-        document.getElementById("sectionTourPrivati").classList.remove("hidden");
-        caricaTourPrivati();
-    }
-
-    function tornaAiTourDaPrivati() {
-        document.getElementById("sectionTourPrivati").classList.add("hidden");
-        document.getElementById("sectionDashboard").classList.remove("hidden");
-    }
-
-    function salvaTourPrivato() {
-        const nome = document.getElementById("priv-nome").value;
-        const data = document.getElementById("priv-data").value;
-        const bici = document.getElementById("priv-bici").value;
-        const prezzo = document.getElementById("priv-prezzo").value;
-        
-        if(!nome || !data || !bici) return alert("Compila Nome, Data e Bici!");
-        if(!confirm("Attenzione: salvando questo tour privato, le disponibilità verranno stornate su eventuali tour a calendario coincidenti con la stessa data. Procedo?")) return;
-
-        fetch(SCRIPT_URL, { 
-            method: "POST", 
-            body: JSON.stringify({ action: "add_tour_privato", password: document.getElementById("password").value, nome, dataTour: data, numBici: bici, prezzo }) 
-        })
-        .then(r=>r.json()).then(d=>{
-            if(d.success){
-                mostraNotifica("Tour privato creato!");
-                document.getElementById("priv-nome").value = "";
-                document.getElementById("priv-prezzo").value = "";
-                caricaTourPrivati();
-                caricaTuttiITour(); // Aggiorno il tabellone globale in background
-            } else {
-                mostraNotifica(d.error || "Errore.", "error");
-            }
-        });
-    }
-
-    function caricaTourPrivati() {
-        document.getElementById("loadingPrivati").classList.remove("hidden");
-        const cont = document.getElementById("lista-tour-privati"); cont.innerHTML = "";
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_tour_privati", password: document.getElementById("password").value}) })
-        .then(r=>r.json()).then(d=>{
-            document.getElementById("loadingPrivati").classList.add("hidden");
-            if(!d.success) return cont.innerHTML = "<div style='color:red;'>Errore: " + (d.error || "") + "</div>";
-            
-            d.privati.forEach(p => {
-                let statusBonifico = p.bonifico === "SI" 
-                    ? `<div style="color:green; font-weight:bold; font-size:12px; margin-top:5px;">✅ Bonifico ok (Data: ${p.dataBonifico}) <button style="padding:2px 4px; font-size:10px;" onclick="gestisciBonifico(${p.riga}, 'NO', '')">Annulla</button></div>`
-                    : `<div style="margin-top:8px;"><input type="date" id="bonifico-data-${p.riga}" style="padding:4px; font-size:12px; display:inline; width:auto;"> 
-                       <button style="background:#10b981; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;" onclick="gestisciBonifico(${p.riga}, 'SI', document.getElementById('bonifico-data-${p.riga}').value)">Segna Bonifico Pagato</button></div>`;
-
-                const div = document.createElement("div"); div.className = "prenotazione-item";
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:start;">
-                        <div>
-                            <strong style="font-size:16px;">👤 ${p.nome}</strong><br>
-                            📅 Data Tour: <strong>${p.dataTour}</strong><br>
-                            🚲 Bici: <span class="badge-bici">${p.numBici}</span> | 💰 Prezzo: €${p.prezzo||0}
-                        </div>
-                        <button style="background:#dc2626; color:white; padding:6px; border:none; border-radius:6px; cursor:pointer;" onclick="eliminaPrivato(${p.riga})">Elimina</button>
-                    </div>
-                    <div style="font-size:11px; margin-top:5px; color:#b45309; background:#fef3c7; padding:4px;">Stornati sui Tour di Calendario ID: ${p.tourStornati || 'Nessuno'}</div>
-                    ${statusBonifico}
-                `;
-                cont.appendChild(div);
-            });
-            if(d.privati.length === 0) cont.innerHTML = "<div class='loading'>Nessun tour privato trovato.</div>";
-        });
-    }
-
-    function gestisciBonifico(riga, status, dt) {
-        if(status === "SI" && !dt) return alert("Inserisci la data del bonifico!");
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "update_bonifico_privato", password: document.getElementById("password").value, riga, bonifico: status, dataBonifico: dt}) })
-        .then(r=>r.json()).then(d=>{ if(d.success) caricaTourPrivati(); });
-    }
-
-    function eliminaPrivato(riga) {
-        if(!confirm("Vuoi davvero eliminare questo tour privato? I posti stornati verranno re-immessi nei tour di calendario.")) return;
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_tour_privato", password: document.getElementById("password").value, riga}) })
-        .then(r=>r.json()).then(d=>{ if(d.success) { caricaTourPrivati(); caricaTuttiITour(); } });
-    }
-
-    // ==== TUTTE LE FUNZIONI DI NOLEGGIO E CALENDARIO ORIGINALI INTATTE ====
     async function caricaPannelloNoleggi() {
         document.getElementById("loadingNoleggi").classList.remove("hidden");
         document.getElementById("lista-noleggi-pendenti").innerHTML = "";
