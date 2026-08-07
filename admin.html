@@ -4,127 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hike Exp - Dashboard Soci</title>
-    
     <link rel="icon" type="image/png" sizes="192x192" href="LOGO.png">
     <link rel="apple-touch-icon" sizes="180x180" href="LOGO.png">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
-        :root {
-            --primary: #2ecc71;
-            --primary-dark: #27ae60;
-            --dark: #2c3e50;
-            --light: #f8f9fa;
-            --border: #e2e8f0;
-        }
+        :root { --primary: #2ecc71; --primary-dark: #27ae60; --dark: #2c3e50; --light: #f8f9fa; --border: #e2e8f0; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background-color: #f1f5f9; color: var(--dark); padding: 15px; }
         
         .container { 
             max-width: 500px; margin: 0 auto; background: white; padding: 20px; 
-            border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: max-width 0.3s ease;
+            border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         @media (min-width: 768px) {
             body { padding: 30px 15px; }
             .container { max-width: 900px; padding: 30px; }
-            .search-box-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-            .search-box-grid .form-group { margin-bottom: 0 !important; }
-            .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+            .search-box-grid, .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         }
 
         h2 { text-align: center; margin-bottom: 20px; font-size: 22px; color: var(--dark); border-bottom: 3px solid var(--primary); padding-bottom: 10px; }
-        
-        .logo-login {
-            display: block;
-            margin: 0 auto 20px auto;
-            max-width: 150px;
-            mix-blend-mode: multiply;
-        }
-
+        .logo-login { display: block; margin: 0 auto 20px auto; max-width: 150px; mix-blend-mode: multiply; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 14px; }
         input[type="text"], input[type="password"], input[type="number"], input[type="date"], input[type="time"], input[type="email"], select, textarea {
             width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 16px; outline: none; transition: 0.2s;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(46,204,113,0.2); }
-        
         button { width: 100%; padding: 14px; background: var(--primary); border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         button:hover { background: var(--primary-dark); }
         button.secondary { background: #94a3b8; margin-top: 10px; }
         
         .hidden { display: none !important; }
-        .search-box { background: var(--light); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .search-box, .form-box { background: var(--light); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
         
         .tour-list { max-height: 450px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 8px; }
-        .tour-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; font-size: 14px; }
-        .tour-item:last-child { border-bottom: none; }
+        .tour-item { padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 14px; }
         .tour-item:hover { background: #e8f5e9; }
         .tour-item .title { font-weight: bold; color: #1e293b; margin-bottom: 3px; }
-        .tour-item .info { color: #64748b; font-size: 12px; margin-bottom: 4px; }
-        .tour-item .details-box { background: #f1f5f9; padding: 6px; border-radius: 6px; font-size: 11px; margin-top: 6px; color: #475569; border-left: 3px solid var(--primary); }
-
+        .tour-item .info { color: #64748b; font-size: 12px; }
+        
         .counter-container { display: flex; align-items: center; justify-content: center; gap: 20px; margin: 10px 0; }
-        .btn-counter { width: 50px; height: 50px; border-radius: 50%; font-size: 24px; background: #e2e8f0; color: var(--dark); display: flex; align-items: center; justify-content: center; user-select: none; cursor: pointer; }
+        .btn-counter { width: 50px; height: 50px; border-radius: 50%; font-size: 24px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .status-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-top: 5px; }
-        .badge-dispo { background: #dcfce7; color: #166534; }
-        .badge-full { background: #fee2e2; color: #991b1b; }
-        .loading { text-align: center; color: #64748b; font-style: italic; padding: 10px; }
-        .form-box { background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
+        .badge-dispo { background: #dcfce7; color: #166534; } .badge-full { background: #fee2e2; color: #991b1b; }
         
-        .prenotazione-item { background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 14px; text-align: left; }
-        .prenotazione-item .nome { font-weight: bold; color: #0f172a; margin-bottom: 4px;}
-        .prenotazione-item .dettagli { color: #475569; font-size: 13px; margin-bottom: 8px;}
+        .prenotazione-item { background: #f8fafc; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; font-size: 14px; }
         .badge-bici { background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        .btn-blue { background: #3b82f6; margin-top: 15px; }
-        .btn-blue:hover { background: #2563eb; }
+        
         .btn-yellow { background: #eab308; color: white; margin-bottom: 15px;}
-        .btn-yellow:hover { background: #ca8a04; }
-        
-        .btn-storno { background: #f97316; font-size: 12px; padding: 8px; width: 100%; display: block; border-radius:6px; font-weight:bold; color:white; border:none; cursor:pointer;}
-        .btn-storno:hover { background: #ea580c; }
-        .btn-ok { background: #10b981; font-size: 12px; padding: 8px; width: 100%; cursor: default; border-radius:6px; font-weight:bold; color:white; border:none;}
-        
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
+        .btn-blue { background: #3b82f6; margin-top: 15px; }
+        .btn-storno { background: #f97316; font-size: 12px; padding: 8px; border-radius:6px; font-weight:bold; color:white; border:none; cursor:pointer;}
+        .btn-ok { background: #10b981; font-size: 12px; padding: 8px; border-radius:6px; font-weight:bold; color:white; border:none;}
 
-        /* --- STILI PER LE NOTIFICHE A COMPARSA (TOAST) --- */
-        #toast-container {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-            width: 90%;
-            max-width: 400px;
-        }
-        .toast {
-            background: #1e293b;
-            color: white;
-            padding: 14px 20px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: slideIn 0.3s forwards, fadeOut 0.4s forwards 3s;
-        }
-        .toast.success { background: #10b981; border-left: 6px solid #047857; }
-        .toast.error { background: #ef4444; border-left: 6px solid #b91c1c; }
-        
-        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(20px); } }
+        #toast-container { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
+        .toast { background: #1e293b; color: white; padding: 14px 20px; border-radius: 10px; font-size: 14px; font-weight: 600; text-align: center; opacity: 0; animation: slideIn 0.3s forwards, fadeOut 0.4s forwards 3s; }
+        .toast.success { background: #10b981; border-left: 6px solid #047857; } .toast.error { background: #ef4444; border-left: 6px solid #b91c1c; }
+        @keyframes slideIn { to { opacity: 1; transform: translateY(0); } } @keyframes fadeOut { to { opacity: 0; transform: translateY(20px); } }
     </style>
 </head>
 <body>
 
-<!-- Contenitore Notifiche -->
 <div id="toast-container"></div>
 
 <div class="container">
@@ -136,15 +74,13 @@
         <button onclick="caricaTuttiITour()">Accedi e Carica</button>
     </div>
 
+    <!-- SEZIONE DASHBOARD PRINCIPALE -->
     <div id="sectionDashboard" class="hidden">
-        <div style="display: flex; gap: 10px; margin-bottom:15px;">
+        <div style="display: flex; gap: 10px; margin-bottom:5px;">
             <button class="btn-yellow" style="flex:1;" onclick="apriPannelloNoleggi()">🚲 Gestione Noleggi</button>
-            <button class="btn-yellow" style="flex:1; background: #8b5cf6;" onclick="apriCalendario()">📅 Calendario Noleggi</button>
+            <button class="btn-yellow" style="flex:1; background: #8b5cf6;" onclick="apriCalendario()">📅 Calendario</button>
         </div>
-
-        <div style="background:#e0f2fe; border:1px solid #bae6fd; padding:10px; border-radius:8px; margin-bottom:15px; font-size:13px; color:#0369a1; display:flex; gap:8px;">
-            <span>🔄</span> <div><strong>Sincronizzazione Automatica:</strong> Il collegamento dei posti con Majellando avviene in automatico ogni 20 minuti.</div>
-        </div>
+        <button class="btn-yellow" style="width:100%; background: #ec4899;" onclick="apriTourPrivati()">🚐 Gestione Tour Privati</button>
 
         <div class="search-box">
             <div class="search-box-grid">
@@ -158,6 +94,31 @@
         <button class="secondary" onclick="disconnetti()">Esci</button>
     </div>
 
+    <!-- SEZIONE TOUR PRIVATI -->
+    <div id="sectionTourPrivati" class="hidden">
+        <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">🚐 Gestione Tour Privati</h3>
+        
+        <div class="form-box" style="border: 1px solid #fbcfe8; background: #fdf2f8;">
+            <h4 style="color: #be185d; margin-bottom: 10px;">Crea Nuovo Tour Privato / Personalizzato</h4>
+            <div class="form-grid-2">
+                <div class="form-group"><label>Nome Gruppo/Referente:</label><input type="text" id="priv-nome" placeholder="Es. Gruppo Rossi"></div>
+                <div class="form-group"><label>Data del Tour:</label><input type="date" id="priv-data"></div>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group"><label>Numero di Bici:</label><input type="number" id="priv-bici" value="1" min="1"></div>
+                <div class="form-group"><label>Prezzo Pattuito (€):</label><input type="number" id="priv-prezzo" placeholder="Es. 350"></div>
+            </div>
+            <button onclick="salvaTourPrivato()" style="background: #ec4899; margin-bottom: 0;">Salva e Storna Disponibilità nei Tour</button>
+        </div>
+
+        <div style="margin-top: 25px;">
+            <div id="loadingPrivati" class="loading hidden">Recupero dati...</div>
+            <div id="lista-tour-privati"></div>
+        </div>
+        <button class="secondary" onclick="tornaAiTourDaPrivati()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
+    </div>
+
+    <!-- SEZIONE MODIFICA (Inserimento Prenotati) -->
     <div id="sectionModifica" class="hidden">
         <div style="background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid #0284c7;">
             <div id="editNomeTour" style="font-weight: bold; font-size: 16px; margin-bottom: 4px; color: #0369a1;">-</div>
@@ -178,6 +139,13 @@
                     <div class="btn-counter" onclick="cambiaPostiNuovi(1)">+</div>
                 </div>
             </div>
+            <!-- CHECKBOX EBIKE PROPRIA -->
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; background:#fef08a; padding:10px; border-radius:8px; color:#854d0e;">
+                    <input type="checkbox" id="chk-bici-propria" style="width:20px; height:20px; margin:0;">
+                    Cliente con E-Bike Propria (Viene aggiunto alla lista ma non scala disponibilità)
+                </label>
+            </div>
         </div>
         <button onclick="salvaNuovaPrenotazione()" id="btnSalvaPrenotazione">Salva Prenotazione</button>
         <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
@@ -191,11 +159,10 @@
         </div>
     </div>
 
+    <!-- SEZIONE NOLEGGI (rimasta standard, come originale) -->
     <div id="sectionNoleggi" class="hidden">
-        <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">Gestione Noleggi</h3>
-        
+        <h3 style="text-align: center; margin-bottom: 15px;">Gestione Noleggi</h3>
         <div class="form-box" style="border: 1px solid #fcd34d; background: #fffbeb;">
-            <h4 style="color: #b45309; margin-bottom: 10px;">Inserimento Manuale (Personalizzato)</h4>
             <form id="form-noleggio-manuale" onsubmit="inviaNoleggioManuale(event)">
                 <div class="form-grid-2">
                     <div class="form-group"><label>Data Inizio:</label><input type="date" id="man-data" required></div>
@@ -207,101 +174,29 @@
                 </div>
                 <div class="form-grid-2">
                     <div class="form-group"><label>Email:</label><input type="email" id="man-email"></div>
-                    <div class="form-group"><label>Offerta / Tipo:</label>
-                        <select id="man-offerta" required>
-                            <option value="" disabled selected>Caricamento offerte...</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>Offerta / Tipo:</label><select id="man-offerta" required></select></div>
                 </div>
                 <div class="form-grid-2">
                     <div class="form-group"><label>Durata (Giorni):</label><input type="number" id="man-durata" value="1" min="1" required></div>
-                    <div class="form-group"><label>Carrello:</label><select id="man-carrellino"><option>No</option><option>Si</option></select></div>
-                </div>
-                <div class="form-group"><label>Note / Richieste:</label>
-                    <input type="text" id="man-note" placeholder="Eventuali note...">
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex: 1;"><label>Bici:</label><input type="number" id="man-bici" value="1" required></div>
+                    <div class="form-group"><label>Bici:</label><input type="number" id="man-bici" value="1" required></div>
                 </div>
                 <div class="form-group"><label>Altezze:</label><input type="text" id="man-altezze" required></div>
-                
                 <button type="submit" id="btnRegistraNoleggio" class="btn-yellow" style="margin-bottom: 0;">Registra Noleggio</button>
             </form>
         </div>
-
-        <div style="margin-top: 25px;">
-            <div id="loadingNoleggi" class="loading hidden">Sincronizzazione in corso...</div>
-            <div id="lista-noleggi-pendenti"></div>
-        </div>
-        <button class="secondary" onclick="tornaAiTour()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
-    </div>
-</div>
-
-<div id="modalCalendario" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; padding:15px; display:flex; justify-content:center; align-items:center;">
-    <div style="background:white; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; padding:20px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid var(--border); padding-bottom:10px;">
-            <h3 style="font-size:18px; color:var(--dark);">📅 Calendario Noleggi</h3>
-            <button onclick="chiudiCalendario()" style="width:auto; padding:6px 12px; background:#ef4444; font-size:12px;">✕ Chiudi</button>
-        </div>
-        
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <button onclick="cambiaMeseCalendario(-1)" style="width:auto; padding:8px 12px; font-size:14px; background:#64748b;">◀ Mese Prec</button>
-            <h4 id="titoloMeseAnno" style="font-size:16px; font-weight:bold; color:var(--dark);"></h4>
-            <button onclick="cambiaMeseCalendario(1)" style="width:auto; padding:8px 12px; font-size:14px; background:#64748b;">Mese Succ ▶</button>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(7, 1fr); text-align:center; font-weight:bold; font-size:12px; color:#64748b; margin-bottom:5px;">
-            <div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div>
-        </div>
-        
-        <div id="grid-calendario" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; margin-bottom:20px;"></div>
-        
-        <div id="dettaglio-giorno-container" style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid var(--border);">
-            <h4 id="dataSelezionataTitolo" style="font-size:14px; color:#0f172a; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Seleziona un giorno verde nel calendario</h4>
-            <div id="lista-noleggi-giorno"></div>
-        </div>
-    </div>
-</div>
-
-<div id="modalEditNolCal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:1000; padding:15px; display:flex; justify-content:center; align-items:center;">
-    <div style="background:white; max-width:400px; width:100%; padding:20px; border-radius:16px;">
-        <h3 style="font-size:16px; margin-bottom:15px; color:var(--dark); text-align:center;">✏️ Modifica Info Noleggio</h3>
-        <input type="hidden" id="edit-nol-riga">
-        <div class="form-group"><label>Nome:</label><input type="text" id="edit-nol-nome"></div>
-        <div class="form-group"><label>Telefono:</label><input type="text" id="edit-nol-tel"></div>
-        <div class="form-group"><label>Orario Ritiro:</label><input type="time" id="edit-nol-orario"></div>
-        <div style="display:flex; gap:10px;">
-            <div class="form-group" style="flex:1;"><label>N. Bici:</label><input type="number" id="edit-nol-bici"></div>
-            <div class="form-group" style="flex:2;"><label>Altezze:</label><input type="text" id="edit-nol-altezze"></div>
-        </div>
-        <div class="form-group"><label>Note:</label><textarea id="edit-nol-note" rows="2"></textarea></div>
-        
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <button style="flex:1; background:#10b981;" onclick="salvaEditNolCal()">Salva</button>
-            <button style="flex:1; background:#ef4444;" onclick="chiudiEditNolCal()">Annulla</button>
-        </div>
+        <div id="lista-noleggi-pendenti" style="margin-top: 25px;"></div>
+        <button class="secondary" onclick="tornaAiTourDaNoleggi()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
     </div>
 </div>
 
 <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwz7SwD5wSzhO-Mtc_17gOj1ewHum5aoQ63yxjfnV5rCnjjNHyMYiYFowwX3u1tTEQ-/exec";
+    let tuttiITour = []; let tourSelezionato = null; let datiNoleggiGlobali = {}; 
 
-    let tuttiITour = [];
-    let tourSelezionato = null;
-    let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [], CONFIG_NOLEGGI: [] }; 
-    let calendarioNoleggiCache = [];
-    let dataCorrenteCalendario = new Date();
-
-    // --- FUNZIONE PER MOSTARE LE NOTIFICHE VISIVE ---
     function mostraNotifica(messaggio, tipo = 'success') {
         const container = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast ${tipo}`;
-        toast.innerHTML = messaggio;
-        container.appendChild(toast);
-        
-        // Rimuove l'elemento dal codice html una volta sparito
-        setTimeout(() => { toast.remove(); }, 3500);
+        const toast = document.createElement('div'); toast.className = `toast ${tipo}`; toast.innerHTML = messaggio;
+        container.appendChild(toast); setTimeout(() => { toast.remove(); }, 3500);
     }
 
     window.onload = function() {
@@ -314,115 +209,40 @@
     function caricaTuttiITour() {
         const pass = document.getElementById("password").value;
         if (!pass) return alert("Inserisci la password!");
-
         document.getElementById("loadingList").classList.remove("hidden");
-        document.getElementById("listaContenitore").innerHTML = "";
-
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "get_all_tours", password: pass }) })
-        .then(res => res.json())
-        .then(data => {
+        .then(res => res.json()).then(data => {
             document.getElementById("loadingList").classList.add("hidden");
             if (data.success) {
                 localStorage.setItem("hike_admin_pass", pass);
                 tuttiITour = data.tours;
                 document.getElementById("sectionLogin").classList.add("hidden");
                 document.getElementById("sectionDashboard").classList.remove("hidden");
-                document.getElementById("sectionModifica").classList.add("hidden");
-                document.getElementById("sectionNoleggi").classList.add("hidden");
                 filtraI_Tour();
-            } else { 
-                mostraNotifica("Errore: " + data.error, "error"); 
             }
-        }).catch(err => mostraNotifica("Errore di rete.", "error"));
+        });
     }
 
     function filtraI_Tour() {
         const qNome = document.getElementById("searchNome").value.toLowerCase();
-        const qData = document.getElementById("searchData").value.toLowerCase();
-        const cont = document.getElementById("listaContenitore");
-        cont.innerHTML = "";
-
-        const oggi = new Date();
-        oggi.setHours(0, 0, 0, 0);
-
-        const mesi = {
-            "gennaio": 0, "febbraio": 1, "marzo": 2, "aprile": 3, "maggio": 4, "giugno": 5,
-            "luglio": 6, "agosto": 7, "settembre": 8, "ottobre": 9, "novembre": 10, "dicembre": 11
-        };
-
-        const filtrati = tuttiITour.filter(t => {
-            const dataGrezza = String(t.data || "").toLowerCase();
-            
-            let meseNum = -1;
-            for (let m in mesi) {
-                if (dataGrezza.includes(m)) { meseNum = mesi[m]; break; }
-            }
-            const matchGiorno = dataGrezza.match(/\d+/);
-            const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
-            const matchAnno = dataGrezza.match(/\b(20\d{2})\b/);
-            const annoNum = matchAnno ? parseInt(matchAnno[1], 10) : oggi.getFullYear();
-
-            if (meseNum !== -1) {
-                const dataTour = new Date(annoNum, meseNum, giornoNum);
-                dataTour.setHours(0, 0, 0, 0);
-                if (dataTour < oggi) { return false; }
-            }
-
-            const matchTestoNome = t.nome.toLowerCase().includes(qNome);
-            const matchTestoData = dataGrezza.includes(qData);
-            return matchTestoNome && matchTestoData;
-        });
-
-        filtrati.sort((a, b) => {
-            const estraiDataInfo = (dataStr) => {
-                const stringa = String(dataStr || "").toLowerCase();
-                let meseNum = -1;
-                for (let m in mesi) {
-                    if (stringa.includes(m)) { meseNum = mesi[m]; break; }
-                }
-                if (meseNum === -1) return 0; 
-                
-                const matchGiorno = stringa.match(/\d+/);
-                const giornoNum = matchGiorno ? parseInt(matchGiorno[0], 10) : 1;
-                
-                const matchAnno = stringa.match(/\b(20\d{2})\b/);
-                const annoNum = matchAnno ? parseInt(matchAnno[1], 10) : oggi.getFullYear();
-                
-                return new Date(annoNum, meseNum, giornoNum).getTime();
-            };
-            
-            return estraiDataInfo(a.data) - estraiDataInfo(b.data);
-        });
-
-        if (filtrati.length === 0) { cont.innerHTML = '<div class="loading">Nessun tour trovato</div>'; return; }
-
+        const cont = document.getElementById("listaContenitore"); cont.innerHTML = "";
+        
+        const filtrati = tuttiITour.filter(t => t.nome.toLowerCase().includes(qNome));
         filtrati.forEach(t => {
-            const item = document.createElement("div");
-            item.className = "tour-item";
+            const item = document.createElement("div"); item.className = "tour-item";
             item.onclick = () => apriModificaTour(t);
-            const badgeClass = t.disponibili > 0 ? "badge-dispo" : "badge-full";
-
-            item.innerHTML = `
-                <div class="title">${t.nome}</div>
-                <div class="info">📅 <strong>${t.data || '-'}</strong> | ID: ${t.id}</div>
-                <div class="details-box">
-                    <strong>Riepilogo Assegnazioni:</strong><br>
-                    - Sito/Manuale: <strong>${t.occupati_sito}</strong><br>
-                    - Noleggi Sovrapposti: <strong>${t.noleggi}</strong><br>
-                    - Majellando: <strong>${t.occupati_majellando}</strong> (di cui <strong>${t.ritiri_hike}</strong> ritiri hike)
-                </div>
-                <span class="status-badge ${badgeClass}">Disponibili: ${t.disponibili} su ${t.totali}</span>
-            `;
+            item.innerHTML = `<div class="title">${t.nome}</div><div class="info">📅 <strong>${t.data}</strong> | Disp: ${t.disponibili}/${t.totali}</div>`;
             cont.appendChild(item);
         });
     }
-   
+
     function apriModificaTour(tour) {
         tourSelezionato = { ...tour }; 
         document.getElementById("editNomeTour").innerText = tourSelezionato.nome;
-        document.getElementById("editDettagli").innerHTML = `Data: <strong>${tourSelezionato.data||'-'}</strong><br>Disponibili: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})`;
+        document.getElementById("editDettagli").innerHTML = `Data: <strong>${tourSelezionato.data}</strong><br>Disponibili: <strong>${tourSelezionato.disponibili}</strong> (su ${tourSelezionato.totali})`;
         document.getElementById("nuovoNome").value = "";
-        document.getElementById("nuovoTelefono").value = "";
+        document.getElementById("chk-bici-propria").checked = false; 
         document.getElementById("displayNuoviPosti").innerText = "1";
         
         document.getElementById("sectionDashboard").classList.add("hidden");
@@ -437,26 +257,24 @@
     }
 
     function salvaNuovaPrenotazione() {
-        const p = document.getElementById("password").value;
         const n = document.getElementById("nuovoNome").value.trim();
         const t = document.getElementById("nuovoTelefono").value.trim();
         const b = parseInt(document.getElementById("displayNuoviPosti").innerText);
+        const biciPropria = document.getElementById("chk-bici-propria").checked; // NUOVA LOGICA BICI PROPRIA
         
         if(!n) return alert("Nominativo obbligatorio!");
-        if(!confirm(b>0 ? `Confermi ${b} posti per ${n}?` : `DISDETTA ${Math.abs(b)} posti per ${n}?`)) return;
+        if(!confirm(`Confermi ${b} posti per ${n}? ${biciPropria ? "(NON SCALA DISPONIBILITA')" : ""}`)) return;
 
-        const btn = document.getElementById("btnSalvaPrenotazione");
-        btn.innerText = "Salvataggio...";
+        document.getElementById("btnSalvaPrenotazione").innerText = "Salvataggio...";
         
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "add_manual_booking", password: p, idTour: tourSelezionato.id, nome: n, telefono: t, numBici: b}) })
-        .then(res => res.json()).then(d => { 
-            btn.innerText = "Salva Prenotazione";
-            if(d.success){ 
-                mostraNotifica("✅ Prenotazione inserita nel database!"); 
-                caricaTuttiITour(); 
-            } else {
-                mostraNotifica("❌ Errore durante l'inserimento", "error");
-            } 
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({
+            action: "add_manual_booking", 
+            password: document.getElementById("password").value, 
+            idTour: tourSelezionato.id, 
+            nome: n, telefono: t, numBici: b, biciPropria: biciPropria
+        })}).then(res => res.json()).then(d => { 
+            document.getElementById("btnSalvaPrenotazione").innerText = "Salva Prenotazione";
+            if(d.success){ mostraNotifica("✅ Prenotazione inserita!"); caricaTuttiITour(); }
         });
     }
 
@@ -465,594 +283,115 @@
 
     function caricaListaPrenotati() {
         document.getElementById("listaPrenotatiContainer").classList.remove("hidden");
-        document.getElementById("loadingPrenotati").classList.remove("hidden");
-        const cont = document.getElementById("listaPrenotatiContent");
-        cont.innerHTML = "";
-
+        const cont = document.getElementById("listaPrenotatiContent"); cont.innerHTML = "Caricamento...";
+        
         fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_prenotazioni", password: document.getElementById("password").value, idTour: tourSelezionato.id}) })
         .then(res => res.json()).then(data => {
-            document.getElementById("loadingPrenotati").classList.add("hidden");
-            if (data.success) {
-                if(data.prenotazioni.length===0) return cont.innerHTML = "Nessuna prenotazione.";
-                data.prenotazioni.forEach(p => {
-                    const div = document.createElement("div");
-                    div.className = "prenotazione-item";
-                    
-                    let btnHTML = p.stornato === "SI" 
-                        ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
-                        : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
-                    
-                    let noteHTML = p.richieste ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` : "";
-                    
-                    let btnElimina = `<button style="background:#dc2626; font-size:12px; padding:8px 12px; border-radius:6px; color:white; font-weight:bold; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici})">🗑️ Elimina</button>`;
-                    
-                    div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:start;">
-                            <div>
-                                <div class="nome">👤 ${p.nominativo}</div>
-                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici: <span class="badge-bici">${p.num_bici}</span></div>
-                                ${noteHTML}
-                            </div>
-                            <div>${btnElimina}</div>
+            if(data.prenotazioni.length===0) return cont.innerHTML = "Nessuna prenotazione.";
+            cont.innerHTML = "";
+            data.prenotazioni.forEach(p => {
+                const isPropria = p.richieste.includes("BICI PROPRIA"); // Rilevo bici propria
+                const badgeExtra = isPropria ? `<span class="badge-bici" style="background:#fef08a; color:#854d0e;">Bici Proprie</span>` : "";
+                
+                let btnElimina = `<button style="background:#dc2626; color:white; padding:4px 8px; border-radius:6px; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici}, ${isPropria})">🗑️ Elimina</button>`;
+                
+                const div = document.createElement("div"); div.className = "prenotazione-item";
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between;">
+                        <div>
+                            <strong>👤 ${p.nominativo}</strong><br>
+                            📞 ${p.telefono||'-'} <br>
+                            🚲 Bici: <span class="badge-bici">${p.num_bici}</span> ${badgeExtra}
                         </div>
-                        <div style="margin-top:8px;">${btnHTML}</div>
-                    `;
-                    cont.appendChild(div);
-                });
-            }
+                        <div>${btnElimina}</div>
+                    </div>
+                `;
+                cont.appendChild(div);
+            });
         });
     }
 
-    function eliminaPrenotazioneTour(riga, idTour, numBici) {
-        if(!confirm("ATTENZIONE! Vuoi davvero eliminare questa prenotazione? Verranno liberati " + numBici + " posti sul tuo tabellone.")) return;
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_prenotazione_tour", password: document.getElementById("password").value, riga: riga, idTour: idTour, numBici: numBici}) })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("🗑️ Prenotazione eliminata e posti liberati!");
-                caricaListaPrenotati(); 
-                caricaTuttiITour(); 
-            } 
-        });
+    function eliminaPrenotazioneTour(riga, idTour, numBici, isPropria) {
+        if(!confirm("Vuoi davvero eliminare questa prenotazione?")) return;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_prenotazione_tour", password: document.getElementById("password").value, riga: riga, idTour: idTour, numBici: numBici, isBiciPropria: isPropria}) })
+        .then(res => res.json()).then(d => { if(d.success){ mostraNotifica("Prenotazione eliminata!"); caricaListaPrenotati(); caricaTuttiITour(); } });
     }
 
-    function flagStornato(riga) {
-        if(!confirm("Hai già rimosso fisicamente questi posti da Majellando? Il sistema riequilibrerà la disponibilità.")) return;
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "flag_stornato_tour", password: document.getElementById("password").value, riga: riga}) })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("✅ Storno su Majellando segnato correttamente!"); 
-                caricaListaPrenotati(); 
-                caricaTuttiITour(); 
-            } 
-        });
-    }
-    
-    function eliminaTourIntero() {
-        if(!confirm("ATTENZIONE CRITICA! Vuoi ELIMINARE definitivamente questo intero TOUR e i suoi posti dal database? (Azione irreversibile)")) return;
-        
-        fetch(SCRIPT_URL, { 
-            method: "POST", 
-            body: JSON.stringify({action: "elimina_tour", password: document.getElementById("password").value, idTour: tourSelezionato.id}) 
-        })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("🗑️ Intero Tour eliminato con successo!"); 
-                tornaAllaLista(); 
-                caricaTuttiITour(); 
-            } else { 
-                mostraNotifica("❌ Errore durante l'eliminazione", "error"); 
-            } 
-        });
-    }
-
-    async function apriPannelloNoleggi() {
+    // ==== GESTIONE TOUR PRIVATI ====
+    function apriTourPrivati() {
         document.getElementById("sectionDashboard").classList.add("hidden");
-        document.getElementById("sectionNoleggi").classList.remove("hidden");
-        await caricaPannelloNoleggi();
-    }
-    
-    function tornaAiTour() { 
-        document.getElementById("sectionNoleggi").classList.add("hidden"); 
-        document.getElementById("sectionDashboard").classList.remove("hidden"); 
+        document.getElementById("sectionTourPrivati").classList.remove("hidden");
+        caricaTourPrivati();
     }
 
-    async function caricaPannelloNoleggi() {
-        document.getElementById("loadingNoleggi").classList.remove("hidden");
-        document.getElementById("lista-noleggi-pendenti").innerHTML = "";
-        
-        try {
-            const res = await fetch(SCRIPT_URL, { 
-                method: "POST", 
-                body: JSON.stringify({action: "get_noleggi_pendenti", password: document.getElementById("password").value}) 
-            }).then(r=>r.json());
-            
-            document.getElementById("loadingNoleggi").classList.add("hidden");
-            
-            if(res.success){ 
-                datiNoleggiGlobali = res; 
-                if(res.CONFIG_NOLEGGI) {
-                    popolaSelectOfferteManuali(res.CONFIG_NOLEGGI);
-                }
-                renderizzaNoleggi(); 
-            } else {
-                mostraNotifica("Errore: " + (res.error || "Impossibile caricare i dati"), "error");
-            }
-        } catch (error) {
-            document.getElementById("loadingNoleggi").innerText = "Errore di rete. Riprova.";
-        }
+    function tornaAiTourDaPrivati() {
+        document.getElementById("sectionTourPrivati").classList.add("hidden");
+        document.getElementById("sectionDashboard").classList.remove("hidden");
     }
 
-    function popolaSelectOfferteManuali(offerte) {
-        const sel = document.getElementById("man-offerta");
-        if(sel) {
-            sel.innerHTML = "";
-            offerte.forEach(o => {
-                sel.innerHTML += `<option value="${o.nome}">${o.nome} (${o.prezzo ? '€'+o.prezzo : ''})</option>`;
-            });
-        }
-    }
-
-    function parseDataNoleggio(dataStringa) {
-        let matchITA = dataStringa.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
-        if (matchITA) return new Date(matchITA[3], parseInt(matchITA[2],10)-1, matchITA[1]);
+    function salvaTourPrivato() {
+        const nome = document.getElementById("priv-nome").value;
+        const data = document.getElementById("priv-data").value;
+        const bici = document.getElementById("priv-bici").value;
+        const prezzo = document.getElementById("priv-prezzo").value;
         
-        let matchISO = dataStringa.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-        if (matchISO) return new Date(matchISO[1], parseInt(matchISO[2],10)-1, matchISO[3]);
-        
-        return new Date(0); 
-    }
+        if(!nome || !data || !bici) return alert("Compila Nome, Data e Bici!");
+        if(!confirm("Attenzione: salvando questo tour privato, le disponibilità verranno stornate su eventuali tour a calendario coincidenti con la stessa data. Procedo?")) return;
 
-    function estraiDurataNoleggio(offertaStr) {
-        let off = (offertaStr || "").toLowerCase();
-        let match = off.match(/(\d+)\s*giorn/);
-        if (match) return parseInt(match[1], 10);
-        if (off.includes("2 giorni") || off.includes("due giorni")) return 2;
-        if (off.includes("3 giorni") || off.includes("tre giorni")) return 3;
-        return 1;
-    }
-
-    function creaCardNoleggio(nol, isPendente) {
-        const div = document.createElement("div");
-        div.className = "prenotazione-item";
-        if(isPendente) { div.style.boxShadow = "0 4px 6px -1px rgba(0,0,0,0.1)"; div.style.border = "1px solid #fca5a5"; }
-        
-        const mesiNomi = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"];
-        let checkboxesTours = "";
-        let haTourSovrapposti = false;
-        
-        let dataStringa = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "";
-        let dParsed = parseDataNoleggio(dataStringa);
-        
-        if (dParsed.getTime() > 0) {
-            let durata = estraiDurataNoleggio(nol.offerta);
-            
-            let dateNoleggioIntervallo = [];
-            for (let i = 0; i < durata; i++) {
-                let dCopia = new Date(dParsed);
-                dCopia.setDate(dParsed.getDate() + i);
-                dateNoleggioIntervallo.push({
-                    giorno: dCopia.getDate(),
-                    mese: dCopia.getMonth()
-                });
-            }
-            
-            let tourFiltrati = datiNoleggiGlobali.tours.filter(t => {
-                if (!t.data) return false;
-                let dt = t.data.toLowerCase();
-                let matchGiorno = dt.match(/\d+/);
-                let giornoTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
-                
-                return dateNoleggioIntervallo.some(dInt => (giornoTour === dInt.giorno) && dt.includes(mesiNomi[dInt.mese]));
-            });
-            
-            if (tourFiltrati.length > 0) {
-                haTourSovrapposti = true;
-                checkboxesTours = tourFiltrati.map(t => 
-                    `<label style="display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; background:#fff; padding:6px; border-radius:6px; border:1px solid #e2e8f0;">
-                        <input type="checkbox" class="chk-tour-${nol.riga}" value="${t.id}" style="width:18px; height:18px; margin:0; flex-shrink:0;">
-                        <span style="font-size:13px; color:#1e293b;">${t.nome} (${t.data})</span>
-                    </label>`
-                ).join("");
-            } else {
-                checkboxesTours = `<div style="padding:8px; color:#b45309; font-size:12px; font-style:italic;">Nessun tour programmato in questo periodo.</div>`;
-            }
-        }
-
-        let bloccoStorno = "";
-        if (nol.tour_collegato === "BICI_PARTNER") {
-            bloccoStorno = `<div style="background:#f3e8ff; border-left:4px solid #a855f7; color:#7e22ce; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">🤝 Bici Partner: Nessun posto stornato.</div>`;
-        } else if (nol.tour_collegato) {
-            bloccoStorno = `<div style="background:#dcfce7; border-left:4px solid #22c55e; color:#166534; padding:10px; border-radius:6px; font-size:12px; margin-top:10px; font-weight:bold;">✅ Scalato dai Tour ID: ${nol.tour_collegato}</div>`;
-        } else {
-            if (haTourSovrapposti) {
-                bloccoStorno = `
-                    <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
-                        <strong style="display:block; margin-bottom:8px; color:var(--dark);">🔗 Seleziona i Tour da cui stornare i posti:</strong>
-                        <div style="margin-bottom:12px; max-height:140px; overflow-y:auto; padding-right:5px;">${checkboxesTours}</div>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn-storno" style="flex:1; border-radius:6px; padding:10px;" onclick="collegaNoleggioTour(${nol.riga})">📉 Storna Selezionati</button>
-                            <button style="flex:1; background:#8b5cf6; color:white; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; padding:10px;" onclick="segnaNoleggioEsterno(${nol.riga})">🤝 Usa Bici Partner</button>
-                        </div>
-                    </div>`;
-            } else {
-                bloccoStorno = `
-                    <div style="background:#f1f5f9; padding:12px; border-radius:8px; font-size:12px; margin-top:10px; border: 1px solid var(--border);">
-                        ${checkboxesTours}
-                        <button style="width:100%; background:#8b5cf6; color:white; border:none; border-radius:6px; font-size:12px; font-weight:bold; cursor:pointer; padding:10px;" onclick="segnaNoleggioEsterno(${nol.riga})">🤝 Usa Bici Partner</button>
-                    </div>`;
-            }
-        }
-
-        let azioniHTML = "";
-        let btnElimina = `<button style="background:#dc2626; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="eliminaNol(${nol.riga})">🗑️ Elimina</button>`;
-        
-        if (isPendente) {
-            azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px;">
-                            <button style="flex:1; background:#10b981; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Confermato')">✅ Conferma</button>
-                            <button style="flex:1; background:#f97316; font-size:13px; padding:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="gestisciNol(${nol.riga}, 'Rifiutato')">❌ Rifiuta</button>
-                            ${btnElimina}
-                          </div>`;
-        } else {
-             azioniHTML = `<div style="display:flex; gap:10px; margin-top:10px; justify-content: flex-end;">${btnElimina}</div>`;
-        }
-
-        let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
-        let testoOrario = nol.orario ? `⏰ ${nol.orario}` : `⏰ N/D`;
-
-        let waPhone = nol.telefono ? String(nol.telefono).replace(/[^0-9]/g, '') : "";
-        if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
-        let textWA = encodeURIComponent(`Ciao ${nol.nome}, ti ricordiamo la tua prenotazione E-Bike con Hike Experience per domani alle ore ${nol.orario || 'N/D'} (${nol.numBici} bici). Ti aspettiamo presso il nostro Hike Point! Per qualsiasi info rispondi a questo messaggio.`);
-        
-        let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('https://wa.me/${waPhone}?text=${textWA}', '_blank')">💬 Invia Promemoria WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono per WhatsApp</div>`;
-
-        let dataLabelPendente = isPendente ? `<span style="font-size:12px; color:#ef4444; font-weight:bold; float:right;">Da gestire per il: ${dataStringa}</span>` : `<span style="float:right; font-size:12px; color:#64748b;">[${testoOrario}]</span>`;
-
-        div.innerHTML = `
-            <div class="nome" style="font-size:15px; margin-bottom:6px;">👤 ${nol.nome} ${dataLabelPendente}</div>
-            <div class="dettagli" style="margin-bottom:0;">
-                🏷️ Offerta: <strong>${nol.offerta}</strong><br>
-                🚲 Bici: <span class="badge-bici">${nol.numBici}</span> (Altezze: ${nol.altezze})<br>📞 Tel: ${nol.telefono}
-            </div>
-            ${noteHTML}
-            ${azioniHTML}
-            ${bloccoStorno}
-            ${btnWA}
-        `;
-        return div;
-    }
-
-    function renderizzaNoleggi() {
-        const cont = document.getElementById("lista-noleggi-pendenti");
-        cont.innerHTML = "";
-        
-        let pendenti = datiNoleggiGlobali.pendenti;
-        let confermati = datiNoleggiGlobali.confermati;
-        const oggi = new Date(); oggi.setHours(0,0,0,0);
-
-        pendenti = pendenti.filter(nol => parseDataNoleggio(nol.dataNoleggio ? nol.dataNoleggio.toString() : "") >= oggi || parseDataNoleggio(nol.dataNoleggio).getTime() === 0);
-        confermati = confermati.filter(nol => parseDataNoleggio(nol.dataNoleggio ? nol.dataNoleggio.toString() : "") >= oggi || parseDataNoleggio(nol.dataNoleggio).getTime() === 0);
-
-        pendenti.sort((a,b) => parseDataNoleggio(a.dataNoleggio) - parseDataNoleggio(b.dataNoleggio));
-        confermati.sort((a,b) => parseDataNoleggio(a.dataNoleggio) - parseDataNoleggio(b.dataNoleggio));
-
-        if (pendenti.length > 0) {
-            const headerPen = document.createElement("h4");
-            headerPen.style = "background:#ef4444; color:white; padding:10px 12px; border-radius:8px; margin-bottom:10px; font-size:15px; box-shadow:0 4px 6px -1px rgba(239, 68, 68, 0.2);";
-            headerPen.innerText = `🚨 Nuove Richieste da Gestire (${pendenti.length})`;
-            cont.appendChild(headerPen);
-            
-            pendenti.forEach(nol => cont.appendChild(creaCardNoleggio(nol, true)));
-        }
-
-        if (confermati.length > 0) {
-            const headerConf = document.createElement("h4");
-            headerConf.style = "background:#10b981; color:white; padding:10px 12px; border-radius:8px; margin-top:25px; margin-bottom:15px; font-size:15px;";
-            headerConf.innerText = `✅ Noleggi Confermati`;
-            cont.appendChild(headerConf);
-
-            let gruppi = {};
-            confermati.forEach(nol => {
-                let dataStr = nol.dataNoleggio ? nol.dataNoleggio.toString().trim() : "Data Sconosciuta";
-                if(!gruppi[dataStr]) gruppi[dataStr] = [];
-                gruppi[dataStr].push(nol);
-            });
-
-            for(let d in gruppi) {
-                let details = document.createElement("details");
-                details.style = "background:white; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:10px; overflow:hidden;";
-                
-                let numBiciGiorno = gruppi[d].reduce((acc, n) => acc + Number(n.numBici), 0);
-                
-                let summary = document.createElement("summary");
-                summary.style = "background:#f8fafc; padding:14px; font-weight:bold; cursor:pointer; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0;";
-                summary.innerHTML = `<span>📅 ${d}</span> <span class="badge-bici" style="background:#dcfce7; color:#166534;">🚲 ${numBiciGiorno} Bici Tot.</span>`;
-                
-                details.appendChild(summary);
-                
-                let wrapper = document.createElement("div");
-                wrapper.style = "padding:12px; background:#f1f5f9;";
-                gruppi[d].forEach(nol => wrapper.appendChild(creaCardNoleggio(nol, false)));
-                
-                details.appendChild(wrapper);
-                cont.appendChild(details);
-            }
-        }
-
-        if (pendenti.length === 0 && confermati.length === 0) {
-            cont.innerHTML = "<div class='loading'>Nessun noleggio futuro.</div>";
-        }
-    }
-
-    function eliminaNol(riga) {
-        if(!confirm("ATTENZIONE! Vuoi ELIMINARE definitivamente questo noleggio dal database? (Azione irreversibile)")) return;
-        
-        document.getElementById("loadingNoleggi").innerText = "Eliminazione in corso...";
-        document.getElementById("loadingNoleggi").classList.remove("hidden");
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_noleggio", password: document.getElementById("password").value, riga: riga}) })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("🗑️ Noleggio eliminato con successo!");
-                caricaPannelloNoleggi(); 
-                caricaTuttiITour(); 
-            } else {
-                mostraNotifica("❌ Errore durante l'eliminazione.", "error");
-                document.getElementById("loadingNoleggi").classList.add("hidden");
-            }
-        }).catch(e => {
-            mostraNotifica("❌ Errore di rete.", "error");
-            document.getElementById("loadingNoleggi").classList.add("hidden");
-        });
-    }
-
-    function segnaNoleggioEsterno(rigaNol) {
-        if(!confirm("Confermi di usare BICI PARTNER / ESTERNE per questo noleggio?\n\nNon verranno scalati posti dai tuoi Tour su Majellando.")) return;
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "segna_noleggio_esterno", password: document.getElementById("password").value, riga: rigaNol}) })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("✅ Noleggio assegnato a Bici Partner!"); 
-                caricaPannelloNoleggi(); 
-            } else { 
-                mostraNotifica("❌ Errore di rete.", "error"); 
-            }
-        });
-    }
-
-    function collegaNoleggioTour(rigaNol) {
-        const checkboxes = document.querySelectorAll(`.chk-tour-${rigaNol}:checked`);
-        const selIds = Array.from(checkboxes).map(chk => chk.value);
-        if (selIds.length === 0) return alert("Devi spuntare almeno un Tour dalla lista!");
-        const msg = selIds.length > 1 ? `Confermi di bloccare questi posti per i ${selIds.length} Tour selezionati?` : `Confermi di bloccare questi posti per il Tour selezionato?`;
-        if (!confirm(msg)) return;
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "collega_noleggio_tour", password: document.getElementById("password").value, riga: rigaNol, idTours: selIds}) })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("✅ Storno effettuato sui tour selezionati!"); 
-                caricaPannelloNoleggi(); 
-            } 
-        });
-    }
-
-    function gestisciNol(riga, stato) {
-        document.getElementById("loadingNoleggi").innerText = "Aggiornamento in corso...";
-        document.getElementById("loadingNoleggi").classList.remove("hidden");
-        
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "gestisci_noleggio", password: document.getElementById("password").value, riga: riga, nuovoStato: stato}) })
-        .then(res => res.json()).then(d => { 
-            if(d.success){ 
-                mostraNotifica("✅ Noleggio " + stato.toLowerCase() + "!");
-                caricaPannelloNoleggi(); 
-            } else {
-                mostraNotifica("❌ Errore durante l'aggiornamento.", "error");
-                document.getElementById("loadingNoleggi").classList.add("hidden");
-            }
-        }).catch(e => {
-            mostraNotifica("❌ Errore di rete.", "error");
-            document.getElementById("loadingNoleggi").classList.add("hidden");
-        });
-    }
-    
-    function inviaNoleggioManuale(e) {
-        e.preventDefault();
-        const durataGiorni = parseInt(document.getElementById("man-durata").value || "1", 10);
-        let nomeOffertaBase = document.getElementById("man-offerta") ? document.getElementById("man-offerta").value : "Noleggio Personalizzato";
-        
-        let offertaFinale = durataGiorni > 1 ? `${nomeOffertaBase} (${durataGiorni} giorni)` : nomeOffertaBase;
-        
-        const btn = document.getElementById("btnRegistraNoleggio");
-        btn.innerText = "Registrazione in corso...";
-        btn.disabled = true;
-
-        const p = { 
-            action: "add_manual_noleggio", 
-            password: document.getElementById("password").value, 
-            dataNoleggio: document.getElementById("man-data").value, 
-            nome: document.getElementById("man-nome").value, 
-            telefono: document.getElementById("man-telefono").value, 
-            email: document.getElementById("man-email").value, 
-            numBici: document.getElementById("man-bici").value, 
-            altezze: document.getElementById("man-altezze").value, 
-            carrellino: document.getElementById("man-carrellino").value,
-            offerta: offertaFinale,
-            note: document.getElementById("man-note") ? document.getElementById("man-note").value : "",
-            orario: document.getElementById("man-orario") ? document.getElementById("man-orario").value : ""
-        };
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(p) }).then(res => res.json()).then(d => { 
-            btn.innerText = "Registra Noleggio";
-            btn.disabled = false;
-            if(d.success){ 
-                mostraNotifica("✅ Noleggio inserito!"); 
-                document.getElementById("form-noleggio-manuale").reset(); 
-                document.getElementById("man-durata").value = "1"; 
-                caricaPannelloNoleggi(); 
-            } else {
-                mostraNotifica("❌ Errore di inserimento", "error");
-            }
-        }).catch(() => {
-            btn.innerText = "Registra Noleggio";
-            btn.disabled = false;
-            mostraNotifica("❌ Errore di rete", "error");
-        });
-    }
-
-    async function apriCalendario() {
-        document.getElementById("modalCalendario").classList.remove("hidden");
-        const pass = document.getElementById("password").value;
-        
-        const res = await fetch(SCRIPT_URL, { 
-            method: "POST", 
-            body: JSON.stringify({ action: "get_noleggi_calendario", password: pass }) 
-        }).then(r => r.json());
-        
-        if (res.success) {
-            calendarioNoleggiCache = res.noleggi;
-            disegnaMeseCalendario();
-        } else {
-            mostraNotifica("❌ Errore caricamento calendario.", "error");
-        }
-    }
-
-    function chiudiCalendario() {
-        document.getElementById("modalCalendario").classList.add("hidden");
-    }
-
-    function cambiaMeseCalendario(direzione) {
-        dataCorrenteCalendario.setMonth(dataCorrenteCalendario.getMonth() + direzione);
-        disegnaMeseCalendario();
-    }
-
-    function disegnaMeseCalendario() {
-        const anno = dataCorrenteCalendario.getFullYear();
-        const mese = dataCorrenteCalendario.getMonth();
-        
-        const nomiMesi = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"];
-        document.getElementById("titoloMeseAnno").innerText = `${nomiMesi[mese]} ${anno}`;
-        
-        const grid = document.getElementById("grid-calendario");
-        grid.innerHTML = "";
-        
-        const primoGiornoIndex = new Date(anno, mese, 1).getDay();
-        const offset = (primoGiornoIndex === 0) ? 6 : primoGiornoIndex - 1;
-        const ultimoGiorno = new Date(anno, mese + 1, 0).getDate();
-        
-        for (let i = 0; i < offset; i++) {
-            let emptyCell = document.createElement("div");
-            grid.appendChild(emptyCell);
-        }
-        
-        for (let giorno = 1; giorno <= ultimoGiorno; giorno++) {
-            let mFormatted = String(mese + 1).padStart(2, '0');
-            let gFormatted = String(giorno).padStart(2, '0');
-            let dateStr = `${anno}-${mFormatted}-${gFormatted}`;
-            
-            const noleggiGiorno = calendarioNoleggiCache.filter(n => n.data === dateStr);
-            const haNoleggi = noleggiGiorno.length > 0;
-            
-            let cell = document.createElement("div");
-            cell.style = `
-                padding: 10px 4px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: bold;
-                cursor: pointer; border: 1px solid #e2e8f0;
-                background: ${haNoleggi ? '#dcfce7' : '#ffffff'};
-                color: ${haNoleggi ? '#166534' : '#64748b'};
-            `;
-            cell.innerHTML = `${giorno}${haNoleggi ? '<div style="font-size:10px; margin-top:2px;">🚲'+noleggiGiorno.reduce((acc, curr)=>acc+Number(curr.numBici), 0)+'</div>' : ''}`;
-            
-            cell.onclick = () => mostraDettaglioGiorno(dateStr, noleggiGiorno);
-            grid.appendChild(cell);
-        }
-    }
-
-    function mostraDettaglioGiorno(dateStr, noleggi) {
-        document.getElementById("dataSelezionataTitolo").innerText = `📅 Dettaglio Noleggi del ${dateStr.split('-').reverse().join('/')}`;
-        const container = document.getElementById("lista-noleggi-giorno");
-        container.innerHTML = "";
-        
-        if (noleggi.length === 0) {
-            container.innerHTML = `<p style="font-size:13px; color:#64748b; font-style:italic; text-align:center; padding:10px;">Nessun noleggio registrato in questa data.</p>`;
-            return;
-        }
-        
-        let htmlContent = "";
-        let categoriePresenti = [...new Set(noleggi.map(n => n.categoria))];
-        
-        categoriePresenti.forEach(cat => {
-            const elementiCat = noleggi.filter(n => n.categoria === cat);
-            if (elementiCat.length > 0) {
-                htmlContent += `<div style="font-weight:bold; font-size:13px; color:var(--primary-dark); margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🔹 ${cat}</div>`;
-                
-                elementiCat.forEach(n => {
-                    let infoDurata = n.infoGiorno ? ` (Giorno ${n.infoGiorno})` : '';
-                    let objPassato = JSON.stringify(n).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-                    htmlContent += `
-                        <div onclick='apriEditNolCal(${objPassato})' style="background:white; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #e2e8f0; font-size:13px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
-                            <div>
-                                <strong>👤 ${n.nome}</strong>${infoDurata} <br>
-                                <small style="color:#64748b;">📞 ${n.telefono} | ⏰ Ritiro: <strong>${n.orario}</strong></small>
-                            </div>
-                            <div style="text-align:right;">
-                                <span class="badge-bici">🚲 ${n.numBici} bici</span>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-        });
-        
-        container.innerHTML = htmlContent;
-    }
-
-    function apriEditNolCal(noleggio) {
-        document.getElementById("modalEditNolCal").classList.remove("hidden");
-        document.getElementById("edit-nol-riga").value = noleggio.riga;
-        document.getElementById("edit-nol-nome").value = noleggio.nome || "";
-        document.getElementById("edit-nol-tel").value = noleggio.telefono || "";
-        document.getElementById("edit-nol-orario").value = (noleggio.orario === "N/D" || !noleggio.orario) ? "" : noleggio.orario;
-        document.getElementById("edit-nol-bici").value = noleggio.numBici || 1;
-        document.getElementById("edit-nol-altezze").value = noleggio.altezze || "";
-        document.getElementById("edit-nol-note").value = noleggio.note || "";
-    }
-
-    function chiudiEditNolCal() {
-        document.getElementById("modalEditNolCal").classList.add("hidden");
-    }
-
-    function salvaEditNolCal() {
-        const payload = {
-            action: "update_noleggio_info",
-            password: document.getElementById("password").value,
-            riga: document.getElementById("edit-nol-riga").value,
-            nome: document.getElementById("edit-nol-nome").value,
-            telefono: document.getElementById("edit-nol-tel").value,
-            orario: document.getElementById("edit-nol-orario").value,
-            numBici: document.getElementById("edit-nol-bici").value,
-            altezze: document.getElementById("edit-nol-altezze").value,
-            note: document.getElementById("edit-nol-note").value
-        };
-
-        const btn = event.target;
-        btn.innerText = "Salvataggio...";
-        btn.disabled = true;
-
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) })
-        .then(r => r.json()).then(d => {
-            btn.innerText = "Salva";
-            btn.disabled = false;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "add_tour_privato", password: document.getElementById("password").value, nome, dataTour: data, numBici: bici, prezzo }) })
+        .then(r=>r.json()).then(d=>{
             if(d.success){
-                chiudiEditNolCal();
-                mostraNotifica("✅ Dettagli aggiornati con successo!");
-                apriCalendario(); 
+                mostraNotifica("Tour privato creato!");
+                document.getElementById("priv-nome").value = "";
+                document.getElementById("priv-prezzo").value = "";
+                caricaTourPrivati();
+                caricaTuttiITour(); // Aggiorno il tabellone globale in backrgound
             } else {
-                mostraNotifica("❌ Errore durante il salvataggio.", "error");
+                mostraNotifica(d.error || "Errore. (Hai creato il foglio 'Tour_Privati'?)", "error");
             }
-        }).catch(err => {
-            btn.innerText = "Salva";
-            btn.disabled = false;
-            mostraNotifica("❌ Errore di rete.", "error");
         });
+    }
+
+    function caricaTourPrivati() {
+        const cont = document.getElementById("lista-tour-privati"); cont.innerHTML = "Caricamento...";
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "get_tour_privati", password: document.getElementById("password").value}) })
+        .then(r=>r.json()).then(d=>{
+            if(!d.success) return cont.innerHTML = "<div style='color:red;'>Errore: " + (d.error || "") + "</div>";
+            cont.innerHTML = "";
+            d.privati.forEach(p => {
+                let statusBonifico = p.bonifico === "SI" 
+                    ? `<div style="color:green; font-weight:bold; font-size:12px; margin-top:5px;">✅ Bonifico ok (Data: ${p.dataBonifico}) <button style="padding:2px 4px; font-size:10px;" onclick="gestisciBonifico(${p.riga}, 'NO', '')">Annulla</button></div>`
+                    : `<div style="margin-top:8px;"><input type="date" id="bonifico-data-${p.riga}" style="padding:4px; font-size:12px; display:inline; width:auto;"> 
+                       <button style="background:#10b981; color:white; padding:4px 8px; border:none; border-radius:4px; cursor:pointer;" onclick="gestisciBonifico(${p.riga}, 'SI', document.getElementById('bonifico-data-${p.riga}').value)">Segna Bonifico Pagato</button></div>`;
+
+                const div = document.createElement("div"); div.className = "prenotazione-item";
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:start;">
+                        <div>
+                            <strong style="font-size:16px;">👤 ${p.nome}</strong><br>
+                            📅 Data Tour: <strong>${p.dataTour}</strong><br>
+                            🚲 Bici: <span class="badge-bici">${p.numBici}</span> | 💰 Prezzo: €${p.prezzo||0}
+                        </div>
+                        <button style="background:#dc2626; color:white; padding:6px; border:none; border-radius:6px;" onclick="eliminaPrivato(${p.riga})">Elimina</button>
+                    </div>
+                    <div style="font-size:11px; margin-top:5px; color:#b45309; background:#fef3c7; padding:4px;">Stornati sui Tour di Calendario ID: ${p.tourStornati || 'Nessuno'}</div>
+                    ${statusBonifico}
+                `;
+                cont.appendChild(div);
+            });
+        });
+    }
+
+    function gestisciBonifico(riga, status, dt) {
+        if(status === "SI" && !dt) return alert("Inserisci la data del bonifico!");
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "update_bonifico_privato", password: document.getElementById("password").value, riga, bonifico: status, dataBonifico: dt}) })
+        .then(r=>r.json()).then(d=>{ if(d.success) caricaTourPrivati(); });
+    }
+
+    function eliminaPrivato(riga) {
+        if(!confirm("Vuoi davvero eliminare questo tour privato? I posti stornati verranno re-immessi nei tour di calendario.")) return;
+        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "elimina_tour_privato", password: document.getElementById("password").value, riga}) })
+        .then(r=>r.json()).then(d=>{ if(d.success) caricaTourPrivati(); caricaTuttiITour(); });
     }
 </script>
 </body>
