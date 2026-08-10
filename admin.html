@@ -243,7 +243,7 @@
         <button class="secondary" onclick="tornaAiTour()" style="margin-top: 25px;">⬅ Torna ai Tour</button>
     </div>
 
-    <!-- SEZIONE NUOVA: TOUR PRIVATI -->
+    <!-- SEZIONE TOUR PRIVATI -->
     <div id="sectionTourPrivati" class="hidden">
         <h3 style="text-align: center; margin-bottom: 15px; color: #1e293b;">🚙 Tour Privati Personalizzati</h3>
         
@@ -252,12 +252,13 @@
             <form id="form-tour-privato" onsubmit="inviaTourPrivato(event)">
                 <div class="form-grid-2">
                     <div class="form-group"><label>Nome Referente:</label><input type="text" id="tp-nome" required></div>
-                    <div class="form-group"><label>Data Tour:</label><input type="date" id="tp-data" required></div>
+                    <div class="form-group"><label>Nome/Descrizione Tour:</label><input type="text" id="tp-nome-tour" required></div>
                 </div>
                 <div class="form-grid-2">
+                    <div class="form-group"><label>Data Tour:</label><input type="date" id="tp-data" required></div>
                     <div class="form-group"><label>Numero Bici (Da Scalare):</label><input type="number" id="tp-bici" min="1" value="1" required></div>
-                    <div class="form-group"><label>Prezzo Pattuito Totale (€):</label><input type="number" id="tp-prezzo" step="0.01" required></div>
                 </div>
+                <div class="form-group"><label>Prezzo Pattuito Totale (€):</label><input type="number" id="tp-prezzo" step="0.01" required></div>
                 <button type="submit" id="btnSalvaPrivato" class="btn-blue">Salva Tour Privato</button>
             </form>
         </div>
@@ -334,8 +335,6 @@
         toast.className = `toast ${tipo}`;
         toast.innerHTML = messaggio;
         container.appendChild(toast);
-        
-        // Rimuove l'elemento dal codice html una volta sparito
         setTimeout(() => { toast.remove(); }, 3500);
     }
 
@@ -460,7 +459,6 @@
         document.getElementById("nuovoTelefono").value = "";
         document.getElementById("displayNuoviPosti").innerText = "1";
         
-        // Reset checkbox Bici Propria
         if(document.getElementById("nuovaBiciPropria")) document.getElementById("nuovaBiciPropria").checked = false;
         
         document.getElementById("sectionDashboard").classList.add("hidden");
@@ -1108,6 +1106,16 @@
         document.getElementById("sectionDashboard").classList.remove("hidden"); 
     }
 
+    function toggleImportoPrivato(riga) {
+        const tipo = document.getElementById("tipo-pag-"+riga).value;
+        const inputImp = document.getElementById("importo-acc-"+riga);
+        if(tipo === "TOTALE") {
+            inputImp.style.display = "none";
+        } else {
+            inputImp.style.display = "inline-block";
+        }
+    }
+
     function caricaTourPrivati() {
         document.getElementById("loadingPrivati").classList.remove("hidden");
         const cont = document.getElementById("lista-tour-privati");
@@ -1149,9 +1157,33 @@
                         }
                     }
 
-                    let btnBonifico = tp.accontoPagato === "SI" 
-                        ? `<div style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #bbf7d0;">✅ Acconto Ricevuto: ${tp.dataAcconto}</div>` 
-                        : `<div style="display:flex; gap:8px; align-items:center;"><input type="date" id="data-acc-${tp.riga}" style="width:auto; padding:6px;" class="form-control"><button style="background:#10b981; font-size:12px; padding:8px 10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="segnaAccontoPrivato(${tp.riga})">💰 Conferma Bonifico</button></div>`;
+                    // GESTIONE SEZIONE PAGAMENTO / BONIFICO
+                    let btnBonifico = "";
+                    if (tp.statoPagamento === "TOTALE") {
+                        btnBonifico = `<div style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #bbf7d0;">✅ Pagamento TOTALE ricevuto il: ${tp.dataPagamento}</div>`;
+                    } else if (tp.statoPagamento === "ACCONTO") {
+                        btnBonifico = `
+                            <div style="background:#fef08a; color:#854d0e; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #fde047; margin-bottom: 8px;">
+                                ⚠️ Acconto Ricevuto: €${tp.importoVersato} (il ${tp.dataPagamento})
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap: wrap;">
+                                <input type="date" id="data-acc-${tp.riga}" style="width:auto; padding:6px;" class="form-control">
+                                <button style="background:#10b981; font-size:12px; padding:8px 10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="segnaAccontoPrivato(${tp.riga}, true)">💰 Conferma Saldo Totale</button>
+                            </div>
+                        `;
+                    } else {
+                        btnBonifico = `
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap: wrap; background: #f8fafc; padding: 10px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                                <select id="tipo-pag-${tp.riga}" style="width:auto; padding:6px;" class="form-control" onchange="toggleImportoPrivato(${tp.riga})">
+                                    <option value="ACCONTO">Acconto</option>
+                                    <option value="TOTALE">Saldo Totale</option>
+                                </select>
+                                <input type="number" step="0.01" id="importo-acc-${tp.riga}" placeholder="€ Importo" style="width:95px; padding:6px;" class="form-control">
+                                <input type="date" id="data-acc-${tp.riga}" style="width:auto; padding:6px;" class="form-control">
+                                <button style="background:#10b981; font-size:12px; padding:8px 10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer;" onclick="segnaAccontoPrivato(${tp.riga}, false)">💰 Registra</button>
+                            </div>
+                        `;
+                    }
 
                     let bloccoStorno = "";
                     if (tp.tourCollegati) {
@@ -1170,7 +1202,7 @@
                     div.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
                             <div>
-                                <div class="nome" style="font-size:16px; margin-bottom:4px; color:#0369a1;">🚙 ${tp.nome}</div>
+                                <div class="nome" style="font-size:16px; margin-bottom:4px; color:#0369a1;">🚙 ${tp.nomeTourPrivato || 'Tour Personalizzato'} <span style="font-size:13px; color:#475569;">(Ref: ${tp.nome})</span></div>
                                 <div class="dettagli" style="margin-bottom:0; color:#0f172a; font-weight:500;">
                                     📅 Data: <strong>${tp.dataTour.split('-').reverse().join('/')}</strong><br>
                                     🚲 Bici Riservate: <span class="badge-bici">${tp.numBici}</span><br>
@@ -1201,6 +1233,7 @@
                 action: "add_tour_privato", 
                 password: document.getElementById("password").value, 
                 nome: document.getElementById("tp-nome").value, 
+                nomeTourPrivato: document.getElementById("tp-nome-tour").value,
                 dataTour: document.getElementById("tp-data").value, 
                 numBici: document.getElementById("tp-bici").value, 
                 prezzo: document.getElementById("tp-prezzo").value
@@ -1216,16 +1249,34 @@
         });
     }
 
-    function segnaAccontoPrivato(riga) {
-        const d = document.getElementById("data-acc-"+riga).value;
-        if(!d) return alert("Inserisci la data di ricezione del bonifico prima di confermare.");
+    function segnaAccontoPrivato(riga, isSaldo) {
+        let tipo = isSaldo ? "TOTALE" : document.getElementById("tipo-pag-"+riga).value;
+        let d = document.getElementById("data-acc-"+riga).value;
+        let importo = isSaldo ? "" : (tipo === "ACCONTO" ? document.getElementById("importo-acc-"+riga).value : "");
         
-        const stringaData = d.split('-').reverse().join('/');
-        if(!confirm(`Confermi di aver ricevuto l'acconto in data ${stringaData}?`)) return;
+        if(!d) return alert("Inserisci la data di ricezione del pagamento prima di confermare.");
+        if(!isSaldo && tipo === "ACCONTO" && !importo) return alert("Inserisci l'importo dell'acconto ricevuto.");
 
-        fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({action: "update_acconto_privato", password: document.getElementById("password").value, riga: riga, dataAcconto: stringaData}) })
+        const stringaData = d.split('-').reverse().join('/');
+        let msgConfirm = isSaldo 
+            ? `Confermi di aver ricevuto il SALDO TOTALE in data ${stringaData}?` 
+            : `Confermi di aver ricevuto il pagamento (${tipo}) in data ${stringaData}?`;
+
+        if(!confirm(msgConfirm)) return;
+
+        fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({
+                action: "update_acconto_privato", 
+                password: document.getElementById("password").value, 
+                riga: riga, 
+                tipoPagamento: tipo,
+                importoVersato: importo,
+                dataPagamento: stringaData
+            }) 
+        })
         .then(res => res.json()).then(d => { 
-            if(d.success){ mostraNotifica("✅ Acconto Registrato!"); caricaTourPrivati(); } 
+            if(d.success){ mostraNotifica("✅ Pagamento Registrato!"); caricaTourPrivati(); } 
         });
     }
 
