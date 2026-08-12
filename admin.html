@@ -187,8 +187,22 @@
             </div>
         </div>
         <button onclick="salvaNuovaPrenotazione()" id="btnSalvaPrenotazione">Salva Prenotazione</button>
-        <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
 
+        <!-- Sezione Blocca Bici (Nuova) -->
+        <div class="form-box" style="border: 1px solid #f97316; background: #fff7ed; margin-top: 15px;">
+            <h4 style="color: #ea580c; margin-bottom: 10px;">🛠️ Blocca Bici (Manutenzione, Prestate, ecc.)</h4>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <div class="form-group" style="flex:1; margin-bottom:0;">
+                    <input type="number" id="numBiciBloccate" min="1" value="1" placeholder="N. Bici">
+                </div>
+                <div class="form-group" style="flex:2; margin-bottom:0;">
+                    <input type="text" id="motivoBlocco" placeholder="Motivo (Es. Rotta)">
+                </div>
+                <button style="background:#f97316; flex:1;" onclick="bloccaBici()">🔒 Blocca</button>
+            </div>
+        </div>
+
+        <button class="secondary" onclick="tornaAllaLista()">Annulla</button>
         <button class="btn-blue" onclick="caricaListaPrenotati()">📋 Mostra Lista Prenotati</button>
         <button style="background: #dc2626; margin-top: 15px;" onclick="eliminaTourIntero()">🗑️ Elimina Tour Definitivamente</button>
 
@@ -275,7 +289,7 @@
     <div id="modalCalendario" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; padding:15px; display:flex; justify-content:center; align-items:center;">
         <div style="background:white; max-width:600px; width:100%; max-height:90vh; overflow-y:auto; padding:20px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,0.2);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:2px solid var(--border); padding-bottom:10px;">
-                <h3 style="font-size:18px; color:var(--dark);">📅 Calendario Noleggi</h3>
+                <h3 style="font-size:18px; color:var(--dark);">📅 Calendario Noleggi e Tour</h3>
                 <button onclick="chiudiCalendario()" style="width:auto; padding:6px 12px; background:#ef4444; font-size:12px;">✕ Chiudi</button>
             </div>
             
@@ -292,7 +306,7 @@
             <div id="grid-calendario" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; margin-bottom:20px;"></div>
             
             <div id="dettaglio-giorno-container" style="background:#f8fafc; padding:15px; border-radius:10px; border:1px solid var(--border);">
-                <h4 id="dataSelezionataTitolo" style="font-size:14px; color:#0f172a; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Seleziona un giorno verde nel calendario</h4>
+                <h4 id="dataSelezionataTitolo" style="font-size:14px; color:#0f172a; margin-bottom:10px; border-bottom:1px solid #e2e8f0; padding-bottom:6px;">Seleziona un giorno evidenziato nel calendario</h4>
                 <div id="lista-noleggi-giorno"></div>
             </div>
         </div>
@@ -329,7 +343,6 @@
     let calendarioNoleggiCache = [];
     let dataCorrenteCalendario = new Date();
 
-    // --- FUNZIONE PER MOSTARE LE NOTIFICHE VISIVE ---
     function mostraNotifica(messaggio, tipo = 'success') {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
@@ -449,7 +462,7 @@
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
                     <span class="status-badge ${badgeClass}" style="flex:1; text-align:center;">Disponibili: ${t.disponibili} su ${t.totali}</span>
-                    <span class="status-badge" style="background:#e0f2fe; color:#0369a1; flex:1; text-align:center;">Prenotati Tour: ${t.prenotati_tour || 0}</span>
+                    <span class="status-badge" style="background:#e0f2fe; color:#0369a1; flex:1; text-align:center;">👥 Prenotati Tour: ${t.prenotati_tour || 0}</span>
                 </div>
             `;
             cont.appendChild(item);
@@ -463,6 +476,8 @@
         document.getElementById("nuovoNome").value = "";
         document.getElementById("nuovoTelefono").value = "";
         document.getElementById("displayNuoviPosti").innerText = "1";
+        document.getElementById("numBiciBloccate").value = "1";
+        document.getElementById("motivoBlocco").value = "";
         
         if(document.getElementById("nuovaBiciPropria")) document.getElementById("nuovaBiciPropria").checked = false;
         
@@ -502,6 +517,31 @@
         });
     }
 
+    function bloccaBici() {
+        const b = parseInt(document.getElementById("numBiciBloccate").value);
+        const motivo = document.getElementById("motivoBlocco").value.trim() || "Nessun motivo";
+        if(isNaN(b) || b <= 0) return alert("Inserisci un numero valido di bici da bloccare.");
+        if(!confirm(`Confermi di voler BLOCCARE ${b} bici per questo tour?\n\nVerranno inserite nella lista prenotati e scalaranno i posti. Potrai stornarle da Majellando direttamente da lì.`)) return;
+
+        const p = document.getElementById("password").value;
+        const nomeBlocco = "🛠️ BICI BLOCCATE (" + motivo + ")";
+
+        fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({action: "add_manual_booking", password: p, idTour: tourSelezionato.id, nome: nomeBlocco, telefono: "-", numBici: b, biciPropria: false}) 
+        })
+        .then(res => res.json()).then(d => { 
+            if(d.success){ 
+                mostraNotifica("✅ Bici bloccate correttamente!"); 
+                document.getElementById("numBiciBloccate").value = "1";
+                document.getElementById("motivoBlocco").value = "";
+                caricaTuttiITour(); 
+            } else {
+                mostraNotifica("❌ Errore durante il blocco", "error");
+            } 
+        });
+    }
+
     function tornaAllaLista() { document.getElementById("sectionModifica").classList.add("hidden"); document.getElementById("sectionDashboard").classList.remove("hidden"); }
     function disconnetti() { localStorage.removeItem("hike_admin_pass"); location.reload(); }
 
@@ -520,6 +560,8 @@
                     const div = document.createElement("div");
                     div.className = "prenotazione-item";
                     
+                    let isBlocco = p.nominativo.includes("🛠️ BICI BLOCCATE");
+                    
                     let btnHTML = p.stornato === "SI" 
                         ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
                         : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
@@ -529,12 +571,15 @@
                     let btnElimina = `<button style="background:#dc2626; font-size:12px; padding:8px 12px; border-radius:6px; color:white; font-weight:bold; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici})">🗑️ Elimina</button>`;
                     
                     let badgePropria = (p.richieste && p.richieste.includes("BICI_PROPRIA")) ? `<span style="background:#10b981; color:white; padding:2px 6px; border-radius:4px; font-weight:bold; font-size:11px; margin-left:6px;">🚲 Bici Propria</span>` : "";
+                    
+                    let colorNome = isBlocco ? "#ea580c" : "#0f172a";
+                    let etichettaBici = isBlocco ? "Bici Bloccate" : "Bici Noleggiate";
 
                     div.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:start;">
                             <div>
-                                <div class="nome">👤 ${p.nominativo} ${badgePropria}</div>
-                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 Bici Noleggiate: <span class="badge-bici">${p.num_bici}</span></div>
+                                <div class="nome" style="color:${colorNome};">👤 ${p.nominativo} ${badgePropria}</div>
+                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 ${etichettaBici}: <span class="badge-bici">${p.num_bici}</span></div>
                                 ${noteHTML}
                             </div>
                             <div>${btnElimina}</div>
@@ -994,7 +1039,6 @@
             const noleggiGiorno = calendarioNoleggiCache.filter(n => n.data === dateStr);
             const numBiciNoleggio = noleggiGiorno.reduce((acc, curr) => acc + Number(curr.numBici), 0);
             
-            // Trova i tour di oggi
             const nomeMeseCorrente = nomiMesi[mese].toLowerCase();
             const tourDelGiorno = tuttiITour.filter(t => {
                  if(!t.data) return false;
@@ -1004,6 +1048,7 @@
                  return (gTour === giorno && dLow.includes(nomeMeseCorrente));
             });
             const numBiciTour = tourDelGiorno.reduce((acc, t) => acc + Number(t.prenotati_tour || 0), 0);
+            
             const totaleBiciUsate = numBiciNoleggio + numBiciTour;
             const haNoleggiOTour = totaleBiciUsate > 0;
             
