@@ -252,8 +252,9 @@
             <form id="form-tour-privato" onsubmit="inviaTourPrivato(event)">
                 <div class="form-grid-2">
                     <div class="form-group"><label>Nome Referente:</label><input type="text" id="tp-nome" required></div>
-                    <div class="form-group"><label>Nome/Descrizione Tour:</label><input type="text" id="tp-nome-tour" required></div>
+                    <div class="form-group"><label>Telefono:</label><input type="text" id="tp-telefono" placeholder="Es. 333..."></div>
                 </div>
+                <div class="form-group"><label>Nome/Descrizione Tour:</label><input type="text" id="tp-nome-tour" required></div>
                 <div class="form-grid-2">
                     <div class="form-group"><label>Data Tour:</label><input type="date" id="tp-data" required></div>
                     <div class="form-group"><label>Numero Bici (Da Scalare):</label><input type="number" id="tp-bici" min="1" value="1" required></div>
@@ -443,9 +444,13 @@
                     <strong>Riepilogo Assegnazioni:</strong><br>
                     - Sito/Manuale: <strong>${t.occupati_sito}</strong><br>
                     - Noleggi Sovrapposti: <strong>${t.noleggi}</strong><br>
-                    - Majellando: <strong>${t.occupati_majellando}</strong> (di cui <strong>${t.ritiri_hike}</strong> ritiri hike)
+                    - Majellando: <strong>${t.occupati_majellando}</strong> (di cui <strong>${t.ritiri_hike}</strong> ritiri hike)<br>
+                    - Bici Proprie: <strong style="color: #10b981;">${t.bici_proprie || 0}</strong>
                 </div>
-                <span class="status-badge ${badgeClass}">Disponibili: ${t.disponibili} su ${t.totali}</span>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <span class="status-badge ${badgeClass}" style="flex:1; text-align:center;">Disponibili: ${t.disponibili} su ${t.totali}</span>
+                    <span class="status-badge" style="background:#e0f2fe; color:#0369a1; flex:1; text-align:center;">Prenotati Tour: ${t.prenotati_tour || 0}</span>
+                </div>
             `;
             cont.appendChild(item);
         });
@@ -740,11 +745,9 @@
         let noteHTML = nol.note ? `<div style="margin-top:8px; font-size:12px; color:#b45309; background:#fffbeb; padding:8px; border-radius:6px; border-left:3px solid #d97706;"><strong>📝 Note:</strong> ${nol.note}</div>` : "";
         let testoOrario = nol.orario ? `⏰ ${nol.orario}` : `⏰ N/D`;
 
-      let waPhone = nol.telefono ? String(nol.telefono).replace(/[^0-9]/g, '') : "";
+        let waPhone = nol.telefono ? String(nol.telefono).replace(/[^0-9]/g, '') : "";
         if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
         let textWA = encodeURIComponent(`Ciao ${nol.nome}, ti ricordiamo la tua prenotazione E-Bike con Hike Experience per domani alle ore ${nol.orario || 'N/D'} (${nol.numBici} bici). Ti aspettiamo presso il nostro Hike Point! Per qualsiasi info rispondi a questo messaggio.`);
-        
-        // MODIFICA: Usiamo lo schema nativo whatsapp:// per forzare l'app Business se installata
         let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('whatsapp://send?phone=${waPhone}&text=${textWA}', '_blank')">💬 Invia Promemoria WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono per WhatsApp</div>`;
         
         let dataLabelPendente = isPendente ? `<span style="font-size:12px; color:#ef4444; font-weight:bold; float:right;">Da gestire per il: ${dataStringa}</span>` : `<span style="float:right; font-size:12px; color:#64748b;">[${testoOrario}]</span>`;
@@ -989,35 +992,65 @@
             let dateStr = `${anno}-${mFormatted}-${gFormatted}`;
             
             const noleggiGiorno = calendarioNoleggiCache.filter(n => n.data === dateStr);
-            const haNoleggi = noleggiGiorno.length > 0;
+            const numBiciNoleggio = noleggiGiorno.reduce((acc, curr) => acc + Number(curr.numBici), 0);
+            
+            // Trova i tour di oggi
+            const nomeMeseCorrente = nomiMesi[mese].toLowerCase();
+            const tourDelGiorno = tuttiITour.filter(t => {
+                 if(!t.data) return false;
+                 let dLow = t.data.toLowerCase();
+                 let matchGiorno = dLow.match(/\d+/);
+                 let gTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
+                 return (gTour === giorno && dLow.includes(nomeMeseCorrente));
+            });
+            const numBiciTour = tourDelGiorno.reduce((acc, t) => acc + Number(t.prenotati_tour || 0), 0);
+            const totaleBiciUsate = numBiciNoleggio + numBiciTour;
+            const haNoleggiOTour = totaleBiciUsate > 0;
             
             let cell = document.createElement("div");
             cell.style = `
                 padding: 10px 4px; text-align: center; border-radius: 8px; font-size: 13px; font-weight: bold;
                 cursor: pointer; border: 1px solid #e2e8f0;
-                background: ${haNoleggi ? '#dcfce7' : '#ffffff'};
-                color: ${haNoleggi ? '#166534' : '#64748b'};
+                background: ${haNoleggiOTour ? '#dcfce7' : '#ffffff'};
+                color: ${haNoleggiOTour ? '#166534' : '#64748b'};
             `;
-            cell.innerHTML = `${giorno}${haNoleggi ? '<div style="font-size:10px; margin-top:2px;">🚲'+noleggiGiorno.reduce((acc, curr)=>acc+Number(curr.numBici), 0)+'</div>' : ''}`;
+            cell.innerHTML = `${giorno}${haNoleggiOTour ? '<div style="font-size:10px; margin-top:2px; color:#0369a1;">🚲 Tot: '+totaleBiciUsate+'</div>' : ''}`;
             
-            cell.onclick = () => mostraDettaglioGiorno(dateStr, noleggiGiorno);
+            cell.onclick = () => mostraDettaglioGiorno(dateStr, noleggiGiorno, tourDelGiorno);
             grid.appendChild(cell);
         }
     }
 
-    function mostraDettaglioGiorno(dateStr, noleggi) {
-        document.getElementById("dataSelezionataTitolo").innerText = `📅 Dettaglio Noleggi del ${dateStr.split('-').reverse().join('/')}`;
+    function mostraDettaglioGiorno(dateStr, noleggi, toursDelGiorno = []) {
+        document.getElementById("dataSelezionataTitolo").innerText = `📅 Dettaglio del ${dateStr.split('-').reverse().join('/')}`;
         const container = document.getElementById("lista-noleggi-giorno");
         container.innerHTML = "";
         
-        if (noleggi.length === 0) {
-            container.innerHTML = `<p style="font-size:13px; color:#64748b; font-style:italic; text-align:center; padding:10px;">Nessun noleggio registrato in questa data.</p>`;
+        if (noleggi.length === 0 && toursDelGiorno.length === 0) {
+            container.innerHTML = `<p style="font-size:13px; color:#64748b; font-style:italic; text-align:center; padding:10px;">Nessun noleggio o tour registrato in questa data.</p>`;
             return;
         }
         
         let htmlContent = "";
-        let categoriePresenti = [...new Set(noleggi.map(n => n.categoria))];
+
+        if (toursDelGiorno.length > 0) {
+            htmlContent += `<div style="font-weight:bold; font-size:13px; color:#0369a1; margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🚵 TOUR IN PROGRAMMA</div>`;
+            toursDelGiorno.forEach(t => {
+                htmlContent += `
+                    <div style="background:#f0f9ff; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #bae6fd; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>${t.nome}</strong><br>
+                            <small style="color:#0284c7;">Disponibili: ${t.disponibili} su ${t.totali}</small>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge-bici" style="background:#0284c7; color:white;">Bici usate: ${t.prenotati_tour}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
         
+        let categoriePresenti = [...new Set(noleggi.map(n => n.categoria))];
         categoriePresenti.forEach(cat => {
             const elementiCat = noleggi.filter(n => n.categoria === cat);
             if (elementiCat.length > 0) {
@@ -1157,14 +1190,25 @@
                         }
                     }
 
+                    // Formattazione dataPagamento senza T22:00.000Z
+                    let dataPagFormattata = tp.dataPagamento;
+                    if(dataPagFormattata && dataPagFormattata.includes("T")) {
+                        let dObj = new Date(dataPagFormattata);
+                        if(!isNaN(dObj.getTime())) {
+                            dataPagFormattata = ("0" + dObj.getDate()).slice(-2) + "/" + ("0" + (dObj.getMonth() + 1)).slice(-2) + "/" + dObj.getFullYear();
+                        } else {
+                            dataPagFormattata = dataPagFormattata.split("T")[0];
+                        }
+                    }
+
                     // GESTIONE SEZIONE PAGAMENTO / BONIFICO
                     let btnBonifico = "";
                     if (tp.statoPagamento === "TOTALE") {
-                        btnBonifico = `<div style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #bbf7d0;">✅ Pagamento TOTALE ricevuto il: ${tp.dataPagamento}</div>`;
+                        btnBonifico = `<div style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #bbf7d0;">✅ Pagamento TOTALE ricevuto il: ${dataPagFormattata}</div>`;
                     } else if (tp.statoPagamento === "ACCONTO") {
                         btnBonifico = `
                             <div style="background:#fef08a; color:#854d0e; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #fde047; margin-bottom: 8px;">
-                                ⚠️ Acconto Ricevuto: €${tp.importoVersato} (il ${tp.dataPagamento})
+                                ⚠️ Acconto Ricevuto: €${tp.importoVersato} (il ${dataPagFormattata})
                             </div>
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap: wrap;">
                                 <input type="date" id="data-acc-${tp.riga}" style="width:auto; padding:6px;" class="form-control">
@@ -1199,12 +1243,19 @@
                         bloccoStorno = `<div style="background:#f8fafc; padding:8px; color:#64748b; font-size:11px; margin-top:10px; border-radius:6px; border:1px solid #e2e8f0;">Nessun tour a calendario rilevato in questa data.</div>`;
                     }
 
+                    // Pulsante WhatsApp per Tour Privati
+                    let waPhone = tp.telefono ? String(tp.telefono).replace(/[^0-9]/g, '') : "";
+                    if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
+                    let textWA = encodeURIComponent(`Ciao ${tp.nome}, ti ricordiamo il tuo Tour Privato "${tp.nomeTourPrivato}" del ${tp.dataTour.split('-').reverse().join('/')} con Hike Experience. A presto!`);
+                    let btnWA = waPhone ? `<button style="background:#25D366; font-size:13px; padding:10px; margin-top:10px; border:none; border-radius:6px; color:white; font-weight:bold; cursor:pointer; width:100%; display:block;" onclick="window.open('whatsapp://send?phone=${waPhone}&text=${textWA}', '_blank')">💬 Invia Messaggio WhatsApp</button>` : `<div style="font-size:11px; color:#ef4444; margin-top:10px;">Nessun telefono registrato per WhatsApp</div>`;
+
                     div.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
                             <div>
                                 <div class="nome" style="font-size:16px; margin-bottom:4px; color:#0369a1;">🚙 ${tp.nomeTourPrivato || 'Tour Personalizzato'} <span style="font-size:13px; color:#475569;">(Ref: ${tp.nome})</span></div>
                                 <div class="dettagli" style="margin-bottom:0; color:#0f172a; font-weight:500;">
                                     📅 Data: <strong>${tp.dataTour.split('-').reverse().join('/')}</strong><br>
+                                    📞 Tel: <strong>${tp.telefono || 'N/D'}</strong><br>
                                     🚲 Bici Riservate: <span class="badge-bici">${tp.numBici}</span><br>
                                     💶 Prezzo Pattuito: <strong>€${tp.prezzo}</strong>
                                 </div>
@@ -1213,6 +1264,7 @@
                         </div>
                         <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #cbd5e1;">${btnBonifico}</div>
                         ${bloccoStorno}
+                        ${btnWA}
                     `;
                     cont.appendChild(div);
                 });
@@ -1233,6 +1285,7 @@
                 action: "add_tour_privato", 
                 password: document.getElementById("password").value, 
                 nome: document.getElementById("tp-nome").value, 
+                telefono: document.getElementById("tp-telefono").value,
                 nomeTourPrivato: document.getElementById("tp-nome-tour").value,
                 dataTour: document.getElementById("tp-data").value, 
                 numBici: document.getElementById("tp-bici").value, 
