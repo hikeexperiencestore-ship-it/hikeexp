@@ -450,6 +450,8 @@
             item.onclick = () => apriModificaTour(t);
             const badgeClass = t.disponibili > 0 ? "badge-dispo" : "badge-full";
 
+            let infoBloccate = t.bici_bloccate > 0 ? ` | <span style="color:#ea580c; font-weight:bold;">🛠️ Bloccate: ${t.bici_bloccate}</span>` : "";
+
             item.innerHTML = `
                 <div class="title">${t.nome}</div>
                 <div class="info">📅 <strong>${t.data || '-'}</strong> | ID: ${t.id}</div>
@@ -458,7 +460,7 @@
                     - Sito/Manuale: <strong>${t.occupati_sito}</strong><br>
                     - Noleggi Sovrapposti: <strong>${t.noleggi}</strong><br>
                     - Majellando: <strong>${t.occupati_majellando}</strong> (di cui <strong>${t.ritiri_hike}</strong> ritiri hike)<br>
-                    - Bici Proprie: <strong style="color: #10b981;">${t.bici_proprie || 0}</strong>
+                    - Bici Proprie: <strong style="color: #10b981;">${t.bici_proprie || 0}</strong>${infoBloccate}
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
                     <span class="status-badge ${badgeClass}" style="flex:1; text-align:center;">Disponibili: ${t.disponibili} su ${t.totali}</span>
@@ -528,7 +530,16 @@
 
         fetch(SCRIPT_URL, { 
             method: "POST", 
-            body: JSON.stringify({action: "add_manual_booking", password: p, idTour: tourSelezionato.id, nome: nomeBlocco, telefono: "-", numBici: b, biciPropria: false}) 
+            body: JSON.stringify({
+                action: "add_manual_booking", 
+                password: p, 
+                idTour: tourSelezionato.id, 
+                nome: nomeBlocco, 
+                telefono: "-", 
+                numBici: b, 
+                biciPropria: false,
+                noteAggiuntive: "BICI_BLOCCATA"
+            }) 
         })
         .then(res => res.json()).then(d => { 
             if(d.success){ 
@@ -566,7 +577,9 @@
                         ? `<button class="btn-ok">✅ Già Stornato su Majellando</button>`
                         : `<button class="btn-storno" onclick="flagStornato(${p.riga})">🔄 Segna come Stornato su Majellando</button>`;
                     
-                    let noteHTML = p.richieste ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` : "";
+                    let noteHTML = p.richieste && p.richieste !== "BICI_BLOCCATA" && p.richieste !== "BICI_PROPRIA" 
+                        ? `<div style="margin-top:4px; font-size:12px; color:#b45309;">📝 Note: ${p.richieste}</div>` 
+                        : "";
                     
                     let btnElimina = `<button style="background:#dc2626; font-size:12px; padding:8px 12px; border-radius:6px; color:white; font-weight:bold; border:none; cursor:pointer;" onclick="eliminaPrenotazioneTour(${p.riga}, '${tourSelezionato.id}', ${p.num_bici})">🗑️ Elimina</button>`;
                     
@@ -574,12 +587,13 @@
                     
                     let colorNome = isBlocco ? "#ea580c" : "#0f172a";
                     let etichettaBici = isBlocco ? "Bici Bloccate" : "Bici Noleggiate";
+                    let bgDettagli = isBlocco ? "background:#fff7ed; padding:6px; border-radius:6px; margin-top:4px; border:1px dashed #fdba74;" : "";
 
                     div.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:start;">
                             <div>
                                 <div class="nome" style="color:${colorNome};">👤 ${p.nominativo} ${badgePropria}</div>
-                                <div class="dettagli">📞 ${p.telefono||'-'} <br>🚲 ${etichettaBici}: <span class="badge-bici">${p.num_bici}</span></div>
+                                <div class="dettagli" style="${bgDettagli}">📞 ${p.telefono||'-'} <br>🚲 ${etichettaBici}: <span class="badge-bici" style="${isBlocco ? 'background:#ea580c;color:white;':''}">${p.num_bici}</span></div>
                                 ${noteHTML}
                             </div>
                             <div>${btnElimina}</div>
@@ -1047,7 +1061,12 @@
                  let gTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
                  return (gTour === giorno && dLow.includes(nomeMeseCorrente));
             });
-            const numBiciTour = tourDelGiorno.reduce((acc, t) => acc + Number(t.prenotati_tour || 0), 0);
+            
+            // Per le bici tour consideriamo i prenotati (senza sovrapposizioni e bici bloccate) e le bici bloccate stesse
+            let numBiciTour = 0;
+            tourDelGiorno.forEach(t => {
+                numBiciTour += Number(t.prenotati_tour || 0) + Number(t.bici_bloccate || 0);
+            });
             
             const totaleBiciUsate = numBiciNoleggio + numBiciTour;
             const haNoleggiOTour = totaleBiciUsate > 0;
@@ -1081,6 +1100,9 @@
         if (toursDelGiorno.length > 0) {
             htmlContent += `<div style="font-weight:bold; font-size:13px; color:#0369a1; margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🚵 TOUR IN PROGRAMMA</div>`;
             toursDelGiorno.forEach(t => {
+                let infoBloccate = t.bici_bloccate > 0 ? ` (+ ${t.bici_bloccate} bloccate)` : "";
+                let bgBici = t.prenotati_tour > 0 ? '#0284c7' : '#64748b';
+                
                 htmlContent += `
                     <div style="background:#f0f9ff; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #bae6fd; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
                         <div>
@@ -1088,7 +1110,7 @@
                             <small style="color:#0284c7;">Disponibili: ${t.disponibili} su ${t.totali}</small>
                         </div>
                         <div style="text-align:right;">
-                            <span class="badge-bici" style="background:#0284c7; color:white;">Bici usate: ${t.prenotati_tour}</span>
+                            <span class="badge-bici" style="background:${bgBici}; color:white;">Partecipanti: ${t.prenotati_tour}${infoBloccate}</span>
                         </div>
                     </div>
                 `;
