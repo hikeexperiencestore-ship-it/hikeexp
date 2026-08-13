@@ -121,6 +121,9 @@ def aggiorna_google(id_tour, nuovi_occupati):
 if __name__ == "__main__":
     print("🚀 Inizio controllo calendario da GitHub Actions...")
     
+    # Data di oggi a mezzanotte (per confrontarla con i tour)
+    oggi = datetime.date.today()
+    
     # 1. Scarica la mappa degli URL dinamicamente da Google Fogli
     mappa_urls = ottieni_mappa_urls()
     print(f"🔗 Trovati {len(mappa_urls)} link configurati su Google Fogli.")
@@ -131,6 +134,22 @@ if __name__ == "__main__":
     for t in tours_attivi:
         id_tour = t['id']
         nome_tour = t['tour']
+        
+        # --- CONTROLLO DATA PASSATA (SALTA I TOUR VECCHI) ---
+        try:
+            mese_num = int(MESI.get(str(t['mese']).lower().strip(), "0"))
+            anno_num = int(t['anno']) if (t['anno'] and str(t['anno']) not in ["None", "null"]) else oggi.year
+            giorno_num = int(t['giorno'])
+            data_tour_obj = datetime.date(anno_num, mese_num, giorno_num)
+            
+            # Se la data del tour è strictly precedente ad oggi, la saltiamo!
+            if data_tour_obj < oggi:
+                print(f"⏩ SALTO '{nome_tour}' del {data_tour_obj} (Tour passato, mantengo lo storico originale).")
+                continue
+        except Exception as err:
+            print(f"⚠️ Impossibile verificare la data per {nome_tour}: {err}")
+        # ---------------------------------------------------
+
         data_majellando = formatta_data(t['giorno'], t['mese'], t['anno'])
         
         url = mappa_urls.get(nome_tour)
