@@ -188,7 +188,7 @@
         </div>
         <button onclick="salvaNuovaPrenotazione()" id="btnSalvaPrenotazione">Salva Prenotazione</button>
 
-        <!-- Sezione Blocca Bici (Nuova) -->
+        <!-- Sezione Blocca Bici -->
         <div class="form-box" style="border: 1px solid #f97316; background: #fff7ed; margin-top: 15px;">
             <h4 style="color: #ea580c; margin-bottom: 10px;">🛠️ Blocca Bici (Manutenzione, Prestate, ecc.)</h4>
             <div style="display:flex; gap:10px; align-items:center;">
@@ -1062,7 +1062,6 @@
                  return (gTour === giorno && dLow.includes(nomeMeseCorrente));
             });
             
-            // Per le bici tour consideriamo i prenotati (senza sovrapposizioni e bici bloccate) e le bici bloccate stesse
             let numBiciTour = 0;
             tourDelGiorno.forEach(t => {
                 numBiciTour += Number(t.prenotati_tour || 0) + Number(t.bici_bloccate || 0);
@@ -1257,7 +1256,6 @@
                         }
                     }
 
-                    // Formattazione dataPagamento senza T22:00.000Z
                     let dataPagFormattata = tp.dataPagamento;
                     if(dataPagFormattata && dataPagFormattata.includes("T")) {
                         let dObj = new Date(dataPagFormattata);
@@ -1268,7 +1266,6 @@
                         }
                     }
 
-                    // GESTIONE SEZIONE PAGAMENTO / BONIFICO
                     let btnBonifico = "";
                     if (tp.statoPagamento === "TOTALE") {
                         btnBonifico = `<div style="background:#dcfce7; color:#166534; padding:6px 10px; border-radius:6px; font-size:12px; font-weight:bold; display:inline-block; border: 1px solid #bbf7d0;">✅ Pagamento TOTALE ricevuto il: ${dataPagFormattata}</div>`;
@@ -1310,7 +1307,6 @@
                         bloccoStorno = `<div style="background:#f8fafc; padding:8px; color:#64748b; font-size:11px; margin-top:10px; border-radius:6px; border:1px solid #e2e8f0;">Nessun tour a calendario rilevato in questa data.</div>`;
                     }
 
-                    // Pulsante WhatsApp per Tour Privati
                     let waPhone = tp.telefono ? String(tp.telefono).replace(/[^0-9]/g, '') : "";
                     if (waPhone && !waPhone.startsWith('39') && waPhone.length >= 9) waPhone = '39' + waPhone;
                     let textWA = encodeURIComponent(`Ciao ${tp.nome}, ti ricordiamo il tuo Tour Privato "${tp.nomeTourPrivato}" del ${tp.dataTour.split('-').reverse().join('/')} con Hike Experience. A presto!`);
