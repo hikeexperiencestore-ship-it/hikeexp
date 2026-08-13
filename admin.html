@@ -341,6 +341,7 @@
     let tourSelezionato = null;
     let datiNoleggiGlobali = { pendenti: [], confermati: [], tours: [], CONFIG_NOLEGGI: [] }; 
     let calendarioNoleggiCache = [];
+    let tourPrivatiCache = []; 
     let dataCorrenteCalendario = new Date();
 
     function mostraNotifica(messaggio, tipo = 'success') {
@@ -1004,17 +1005,31 @@
         document.getElementById("modalCalendario").classList.remove("hidden");
         const pass = document.getElementById("password").value;
         
-        const res = await fetch(SCRIPT_URL, { 
+        // Scarica Noleggi
+        const resNol = await fetch(SCRIPT_URL, { 
             method: "POST", 
             body: JSON.stringify({ action: "get_noleggi_calendario", password: pass }) 
         }).then(r => r.json());
         
-        if (res.success) {
-            calendarioNoleggiCache = res.noleggi;
-            disegnaMeseCalendario();
+        // Scarica Tour Privati
+        const resPriv = await fetch(SCRIPT_URL, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "get_tour_privati", password: pass }) 
+        }).then(r => r.json());
+        
+        if (resNol.success) {
+            calendarioNoleggiCache = resNol.noleggi;
         } else {
-            mostraNotifica("❌ Errore caricamento calendario.", "error");
+            mostraNotifica("❌ Errore caricamento noleggi calendario.", "error");
         }
+        
+        if (resPriv.success) {
+            tourPrivatiCache = resPriv.privati;
+        } else {
+            mostraNotifica("❌ Errore caricamento tour privati calendario.", "error");
+        }
+        
+        disegnaMeseCalendario();
     }
 
     function chiudiCalendario() {
@@ -1050,9 +1065,11 @@
             let gFormatted = String(giorno).padStart(2, '0');
             let dateStr = `${anno}-${mFormatted}-${gFormatted}`;
             
+            // 1. Calcolo Bici da Noleggi Liberi
             const noleggiGiorno = calendarioNoleggiCache.filter(n => n.data === dateStr);
             const numBiciNoleggio = noleggiGiorno.reduce((acc, curr) => acc + Number(curr.numBici), 0);
             
+            // 2. Calcolo Bici da Tour Pubblici (Majellando/Sito)
             const nomeMeseCorrente = nomiMesi[mese].toLowerCase();
             const tourDelGiorno = tuttiITour.filter(t => {
                  if(!t.data) return false;
@@ -1061,13 +1078,20 @@
                  let gTour = matchGiorno ? parseInt(matchGiorno[0], 10) : -1;
                  return (gTour === giorno && dLow.includes(nomeMeseCorrente));
             });
-            
             let numBiciTour = 0;
             tourDelGiorno.forEach(t => {
                 numBiciTour += Number(t.prenotati_tour || 0) + Number(t.bici_bloccate || 0);
             });
             
-            const totaleBiciUsate = numBiciNoleggio + numBiciTour;
+            // 3. Calcolo Bici da Tour Privati
+            const privatiDelGiorno = tourPrivatiCache.filter(p => p.dataTour === dateStr);
+            let numBiciPrivati = 0;
+            privatiDelGiorno.forEach(p => {
+                numBiciPrivati += Number(p.numBici || 0);
+            });
+            
+            // Somma Totale
+            const totaleBiciUsate = numBiciNoleggio + numBiciTour + numBiciPrivati;
             const haNoleggiOTour = totaleBiciUsate > 0;
             
             let cell = document.createElement("div");
@@ -1079,25 +1103,44 @@
             `;
             cell.innerHTML = `${giorno}${haNoleggiOTour ? '<div style="font-size:10px; margin-top:2px; color:#0369a1;">🚲 Tot: '+totaleBiciUsate+'</div>' : ''}`;
             
-            cell.onclick = () => mostraDettaglioGiorno(dateStr, noleggiGiorno, tourDelGiorno);
+            cell.onclick = () => mostraDettaglioGiorno(dateStr, noleggiGiorno, tourDelGiorno, privatiDelGiorno);
             grid.appendChild(cell);
         }
     }
 
-    function mostraDettaglioGiorno(dateStr, noleggi, toursDelGiorno = []) {
+    function mostraDettaglioGiorno(dateStr, noleggi, toursDelGiorno = [], privatiDelGiorno = []) {
         document.getElementById("dataSelezionataTitolo").innerText = `📅 Dettaglio del ${dateStr.split('-').reverse().join('/')}`;
         const container = document.getElementById("lista-noleggi-giorno");
         container.innerHTML = "";
         
-        if (noleggi.length === 0 && toursDelGiorno.length === 0) {
+        if (noleggi.length === 0 && toursDelGiorno.length === 0 && privatiDelGiorno.length === 0) {
             container.innerHTML = `<p style="font-size:13px; color:#64748b; font-style:italic; text-align:center; padding:10px;">Nessun noleggio o tour registrato in questa data.</p>`;
             return;
         }
         
         let htmlContent = "";
 
+        // 1. SEZIONE TOUR PRIVATI
+        if (privatiDelGiorno.length > 0) {
+            htmlContent += `<div style="font-weight:bold; font-size:13px; color:#0ea5e9; margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🚙 TOUR PRIVATI</div>`;
+            privatiDelGiorno.forEach(p => {
+                htmlContent += `
+                    <div style="background:#f0f9ff; padding:8px 12px; border-radius:6px; margin-bottom:5px; border:1px solid #bae6fd; font-size:13px; display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <strong>🚙 ${p.nomeTourPrivato || 'Tour Personalizzato'}</strong> (${p.nome})<br>
+                            <small style="color:#0284c7;">📞 ${p.telefono || 'N/D'}</small>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="badge-bici" style="background:#0ea5e9; color:white;">🚲 ${p.numBici} bici</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 2. SEZIONE TOUR PUBBLICI IN PROGRAMMA
         if (toursDelGiorno.length > 0) {
-            htmlContent += `<div style="font-weight:bold; font-size:13px; color:#0369a1; margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🚵 TOUR IN PROGRAMMA</div>`;
+            htmlContent += `<div style="font-weight:bold; font-size:13px; color:#0369a1; margin-top:12px; margin-bottom:4px; text-transform:uppercase;">🚵 TOUR PUBBLICI IN PROGRAMMA</div>`;
             toursDelGiorno.forEach(t => {
                 let infoBloccate = t.bici_bloccate > 0 ? ` (+ ${t.bici_bloccate} bloccate)` : "";
                 let bgBici = t.prenotati_tour > 0 ? '#0284c7' : '#64748b';
@@ -1116,11 +1159,12 @@
             });
         }
         
+        // 3. SEZIONE NOLEGGI
         let categoriePresenti = [...new Set(noleggi.map(n => n.categoria))];
         categoriePresenti.forEach(cat => {
             const elementiCat = noleggi.filter(n => n.categoria === cat);
             if (elementiCat.length > 0) {
-                htmlContent += `<div style="font-weight:bold; font-size:13px; color:var(--primary-dark); margin-top:8px; margin-bottom:4px; text-transform:uppercase;">🔹 ${cat}</div>`;
+                htmlContent += `<div style="font-weight:bold; font-size:13px; color:var(--primary-dark); margin-top:12px; margin-bottom:4px; text-transform:uppercase;">🔹 ${cat}</div>`;
                 
                 elementiCat.forEach(n => {
                     let infoDurata = n.infoGiorno ? ` (Giorno ${n.infoGiorno})` : '';
